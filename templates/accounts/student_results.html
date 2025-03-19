@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Student Results - {{ user.get_full_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .results-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .results-title {
+        color: #1a202c;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+    
+    .results-placeholder {
+        text-align: center;
+        padding: 3rem;
+        color: #718096;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Results Section -->
+    <div class="results-section">
+        <div class="results-header">
+            <h3 class="results-title">Academic Results</h3>
+        </div>
+        <div class="results-placeholder">
+            <i class="fas fa-graduation-cap fa-3x mb-3"></i>
+            <h4>Results Module Coming Soon</h4>
+            <p>The results management system is under development.</p>
+        </div>
+    </div>
+</div>
+{% endblock %} 

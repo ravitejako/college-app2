@@ -1,0 +1,627 @@
+/* Registration Form Styles */
+:root {
+    --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    --secondary-gradient: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    --error-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    --card-bg: rgba(255, 255, 255, 0.98);
+    --input-bg: rgba(255, 255, 255, 0.9);
+    --border-color: #e5e7eb;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 10px 40px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+body {
+    background: var(--primary-gradient);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 2rem 0;
+    position: relative;
+    overflow-x: hidden;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.15) 0%, transparent 50%);
+    z-index: 0;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 
+        0 10px 40px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    animation: slideUp 0.5s ease-out;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 8px;
+    background: var(--primary-gradient);
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.15),
+        0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+.card-body {
+    padding: 3rem;
+}
+
+.icon-circle {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    position: relative;
+    animation: float 6s ease-in-out infinite;
+    box-shadow: 
+        0 0 0 2px rgba(59, 130, 246, 0.1),
+        0 0 20px rgba(59, 130, 246, 0.2),
+        inset 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+.icon-circle i {
+    font-size: 2.5rem;
+    color: white;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.section-title {
+    color: #1f2937;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(59, 130, 246, 0.1);
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border-radius: 3px;
+}
+
+.form-floating {
+    margin-bottom: 1.25rem;
+}
+
+.form-floating > .form-control,
+.form-floating > .form-select {
+    height: calc(3.5rem + 2px);
+    padding: 1rem 0.75rem;
+    border: 2px solid rgba(229, 231, 235, 0.5);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.95);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.form-floating > .form-control:focus,
+.form-floating > .form-select:focus {
+    border-color: #3b82f6;
+    box-shadow: 
+        0 0 0 4px rgba(59, 130, 246, 0.1),
+        0 0 20px rgba(59, 130, 246, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.form-floating > label {
+    padding: 1rem 0.75rem;
+    color: #6b7280;
+    font-size: 0.95rem;
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+    transform: scale(0.85) translateY(-0.75rem) translateX(0.15rem);
+    color: #3b82f6;
+    opacity: 1;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    transition: 0.5s;
+    z-index: -1;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 
+        0 8px 24px rgba(37, 99, 235, 0.2),
+        0 0 0 2px rgba(255, 255, 255, 0.1);
+}
+
+.btn-primary:hover::before {
+    left: 100%;
+}
+
+.invalid-feedback {
+    font-size: 0.875rem;
+    color: #ef4444;
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+}
+
+.invalid-feedback::before {
+    content: '⚠️';
+    margin-right: 0.5rem;
+}
+
+.form-text {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+}
+
+/* Profile Picture Upload */
+.profile-upload {
+    position: relative;
+    width: 100%;
+    height: 120px;
+    border: 2px dashed rgba(59, 130, 246, 0.3);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.profile-upload:hover {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.profile-upload input[type="file"] {
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.profile-upload i {
+    font-size: 2rem;
+    color: #6b7280;
+    transition: all 0.3s ease;
+}
+
+.profile-upload:hover i {
+    color: #3b82f6;
+    transform: scale(1.1);
+}
+
+.profile-upload::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+    animation: rotate 10s linear infinite;
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.preview-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.preview-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.preview-container:hover img {
+    transform: scale(1.1);
+}
+
+/* Animations */
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    .form-floating {
+        margin-bottom: 1rem;
+    }
+    
+    .section-title {
+        font-size: 1rem;
+    }
+    
+    .form-floating > .form-control,
+    .form-floating > .form-select {
+        font-size: 0.9rem;
+    }
+    
+    .form-floating > label {
+        font-size: 0.9rem;
+    }
+    
+    .field-group {
+        padding: 1rem;
+    }
+}
+
+/* Select Styling */
+select.form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236b7280'%3E%3Cpath d='M7 10l5 5 5-5H7z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1.5em;
+}
+
+/* Blood Group Select Special Styling */
+select[name="blood_group"] {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+}
+
+/* Date Input Styling */
+input[type="date"] {
+    position: relative;
+    padding-right: 2.5rem;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    filter: invert(60%) sepia(0%) saturate(1000%) hue-rotate(180deg);
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+
+/* Progress Bar */
+.registration-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: rgba(229, 231, 235, 0.2);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        #3b82f6,
+        #2563eb,
+        #6366f1,
+        #3b82f6
+    );
+    background-size: 200% 100%;
+    width: 0;
+    transition: width 0.3s ease;
+    animation: gradient-shift 3s linear infinite;
+}
+
+@keyframes gradient-shift {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 200% 50%;
+    }
+}
+
+/* Field Groups */
+.field-group {
+    position: relative;
+    padding: 1.5rem;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.field-group:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Help Text Tooltips */
+.help-tooltip {
+    position: relative;
+    display: inline-block;
+    margin-left: 0.5rem;
+    color: #6b7280;
+    cursor: help;
+    font-size: 0.9rem;
+}
+
+.help-tooltip:hover::before {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.5rem 1rem;
+    background: #1f2937;
+    color: white;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    white-space: nowrap;
+    z-index: 1000;
+}
+
+.help-tooltip:hover::after {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #1f2937;
+}
+
+/* Particle Background */
+.particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.particle {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: float-particle 15s infinite linear;
+}
+
+@keyframes float-particle {
+    0% {
+        transform: translateY(0) rotate(0deg);
+    }
+    100% {
+        transform: translateY(-100vh) rotate(360deg);
+    }
+}
+
+/* Password Strength Indicator */
+.password-strength-meter {
+    height: 4px;
+    background: #e5e7eb;
+    border-radius: 2px;
+    margin-top: 0.5rem;
+    overflow: hidden;
+    position: relative;
+}
+
+.password-strength-meter .strength {
+    height: 100%;
+    width: 0;
+    transition: all 0.3s ease;
+    border-radius: 2px;
+}
+
+.strength-weak {
+    background: #ef4444;
+    width: 25% !important;
+}
+
+.strength-fair {
+    background: #f59e0b;
+    width: 50% !important;
+}
+
+.strength-good {
+    background: #10b981;
+    width: 75% !important;
+}
+
+.strength-strong {
+    background: #059669;
+    width: 100% !important;
+}
+
+/* Loading State */
+.btn-primary.loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.btn-primary.loading::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    margin: -10px 0 0 -10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.icon-circle::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, transparent 70%);
+    animation: pulse-ring 3s infinite;
+}
+
+@keyframes pulse-ring {
+    0% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+}
+
+/* Password Requirements Adjustments */
+.password-requirements {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.password-requirements ul {
+    margin: 0;
+    padding: 0;
+}
+
+.password-requirements li {
+    margin-bottom: 0.25rem;
+}
+
+.password-requirements i {
+    width: 1rem;
+    text-align: center;
+}
+
+/* Upload Placeholder Adjustments */
+.upload-placeholder {
+    text-align: center;
+}
+
+.upload-placeholder i {
+    font-size: 1.5rem;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+}
+
+.upload-placeholder p {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin: 0;
+} 

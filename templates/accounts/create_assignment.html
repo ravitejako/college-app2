@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create Assignment - Staff Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-header {
+        margin-bottom: 2rem;
+    }
+    
+    .form-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-subtitle {
+        color: #718096;
+    }
+    
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e2e8f0;
+    }
+    
+    .btn-cancel {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #e2e8f0;
+        color: #4a5568;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    
+    .btn-cancel:hover {
+        background: #cbd5e0;
+    }
+    
+    .btn-submit {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #3b82f6;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-submit:hover {
+        background: #2563eb;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-header">
+        <h1 class="form-title">Create New Assignment</h1>
+        <p class="form-subtitle">Create a new assignment for your students to complete.</p>
+    </div>
+    
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="row">
+            <div class="col-md-12">
+                {{ form.title|as_crispy_field }}
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12">
+                {{ form.description|as_crispy_field }}
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                {{ form.subject|as_crispy_field }}
+            </div>
+            <div class="col-md-6">
+                {{ form.due_date|as_crispy_field }}
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                {{ form.max_marks|as_crispy_field }}
+            </div>
+            <div class="col-md-6">
+                {{ form.file_attachment|as_crispy_field }}
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <a href="{% url 'staff_assignments' %}" class="btn-cancel">
+                <i class="fas fa-times"></i>
+                Cancel
+            </a>
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-save"></i>
+                Create Assignment
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %} 

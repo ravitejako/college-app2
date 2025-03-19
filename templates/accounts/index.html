@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Welcome - College Attendance System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .index-wrapper {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        min-height: 100vh;
+        margin: 0;
+        padding: 2rem;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .particles {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        background: 
+            radial-gradient(circle at 20% 20%, rgba(255,255,255,0.1) 0%, transparent 20%),
+            radial-gradient(circle at 80% 80%, rgba(255,255,255,0.1) 0%, transparent 20%),
+            radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05) 0%, transparent 50%);
+        animation: particles 20s linear infinite;
+    }
+    
+    .welcome-card {
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 24px;
+        padding: 3rem;
+        width: 100%;
+        max-width: 800px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        animation: slideUp 0.5s ease-out;
+    }
+    
+    .role-card {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 20px;
+        padding: 2rem;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        height: 100%;
+    }
+    
+    .role-card:hover {
+        transform: translateY(-5px);
+        border-color: #3b82f6;
+        box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+    }
+    
+    .role-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+    }
+    
+    .role-icon i {
+        font-size: 2.5rem;
+        color: white;
+    }
+    
+    .welcome-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+    
+    .welcome-subtitle {
+        font-size: 1.2rem;
+        color: #6b7280;
+        margin-bottom: 3rem;
+        text-align: center;
+    }
+    
+    .role-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+    
+    .role-description {
+        color: #6b7280;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+    
+    .btn-role {
+        width: 100%;
+        padding: 0.75rem;
+        border-radius: 12px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-login {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white;
+        border: none;
+        margin-bottom: 0.5rem;
+    }
+    
+    .btn-register {
+        background: transparent;
+        border: 2px solid #3b82f6;
+        color: #3b82f6;
+    }
+    
+    .btn-role:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+    
+    .btn-login:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        color: white;
+    }
+    
+    .btn-register:hover {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white;
+    }
+    
+    @keyframes particles {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes slideUp {
+        from {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .welcome-card {
+            margin: 1rem;
+            padding: 2rem;
+        }
+        
+        .welcome-title {
+            font-size: 2rem;
+        }
+        
+        .role-card {
+            margin-bottom: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="index-wrapper">
+    <div class="particles"></div>
+    <div class="container d-flex flex-column justify-content-center align-items-center min-vh-100">
+        <div class="welcome-card">
+            <h1 class="welcome-title">Welcome to College Attendance System</h1>
+            <p class="welcome-subtitle">Choose your role to continue</p>
+            
+            <div class="row g-4">
+                <!-- Student Card -->
+                <div class="col-md-6">
+                    <div class="role-card">
+                        <div class="role-icon">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <h2 class="role-title">Student</h2>
+                        <p class="role-description">Access your attendance records, view schedules, and manage your academic profile</p>
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'login' %}?role=student" class="btn btn-role btn-login">
+                                <i class="fas fa-sign-in-alt me-2"></i>Student Login
+                            </a>
+                            <a href="{% url 'student_register' %}" class="btn btn-role btn-register">
+                                <i class="fas fa-user-plus me-2"></i>Register as Student
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Staff Card -->
+                <div class="col-md-6">
+                    <div class="role-card">
+                        <div class="role-icon">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <h2 class="role-title">Staff</h2>
+                        <p class="role-description">Manage attendance, view class schedules, and track student performance</p>
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'login' %}?role=staff" class="btn btn-role btn-login">
+                                <i class="fas fa-sign-in-alt me-2"></i>Staff Login
+                            </a>
+                            <a href="{% url 'staff_register' %}" class="btn btn-role btn-register">
+                                <i class="fas fa-user-plus me-2"></i>Register as Staff
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

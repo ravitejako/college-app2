@@ -1,0 +1,391 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Take Attendance - {{ subject.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .attendance-container {
+        padding: 2rem;
+    }
+    
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .page-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: #2d3748;
+    }
+    
+    .class-info {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .class-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+    }
+    
+    .class-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+        color: #718096;
+        font-size: 0.875rem;
+    }
+    
+    .class-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .attendance-form {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .form-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2d3748;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        font-weight: 500;
+        color: #4a5568;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-control {
+        border-radius: 0.5rem;
+        border: 1px solid #e2e8f0;
+        padding: 0.75rem 1rem;
+        width: 100%;
+    }
+    
+    .form-control:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .btn-primary {
+        background-color: #3b82f6;
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-primary:hover {
+        background-color: #2563eb;
+    }
+    
+    .btn-secondary {
+        background-color: #e2e8f0;
+        color: #4a5568;
+        border: none;
+        border-radius: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-secondary:hover {
+        background-color: #cbd5e0;
+    }
+    
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .table th {
+        background-color: #f8fafc;
+        color: #4a5568;
+        font-weight: 600;
+        text-align: left;
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .table td {
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+        color: #2d3748;
+    }
+    
+    .table tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .attendance-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .attendance-radio {
+        display: flex;
+        gap: 1rem;
+    }
+    
+    .radio-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+    }
+    
+    .radio-label input {
+        cursor: pointer;
+    }
+    
+    .present-label {
+        color: #38a169;
+    }
+    
+    .absent-label {
+        color: #e53e3e;
+    }
+    
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e2e8f0;
+    }
+    
+    .student-row:hover {
+        background-color: #f7fafc;
+    }
+    
+    .mark-all-container {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 1rem;
+    }
+    
+    .mark-all-btn {
+        background-color: #f7fafc;
+        color: #4a5568;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .mark-all-btn:hover {
+        background-color: #edf2f7;
+    }
+    
+    .mark-all-btn + .mark-all-btn {
+        margin-left: 0.5rem;
+    }
+    
+    .mark-all-present {
+        color: #38a169;
+    }
+    
+    .mark-all-absent {
+        color: #e53e3e;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="attendance-container">
+    <div class="page-header">
+        <h1 class="page-title">Take Attendance</h1>
+        <a href="{% url 'mark_attendance' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i>
+            Back to Classes
+        </a>
+    </div>
+    
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <div class="class-info">
+        <h2 class="class-title">{{ subject.name }} ({{ subject.code }})</h2>
+        <div class="class-meta">
+            <div class="class-meta-item">
+                <i class="fas fa-calendar"></i>
+                <span>Date: {{ class_date|date:"F d, Y" }}</span>
+            </div>
+            <div class="class-meta-item">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Semester: {{ subject.semester }}</span>
+            </div>
+            <div class="class-meta-item">
+                <i class="fas fa-users"></i>
+                <span>Students: {{ students.count }}</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="attendance-form">
+        <div class="form-header">
+            <h3 class="form-title">Student Attendance</h3>
+            {% if existing %}
+                <span class="badge bg-info">Attendance already marked</span>
+            {% endif %}
+        </div>
+        
+        <form method="post" action="">
+            {% csrf_token %}
+            
+            <input type="hidden" name="subject" value="{{ subject.id }}">
+            <input type="hidden" name="date" value="{{ class_date|date:'Y-m-d' }}">
+            {% if class_obj %}
+            <input type="hidden" name="class_id" value="{{ class_obj.id }}">
+            {% endif %}
+            
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="start_time" class="form-label">Start Time</label>
+                        <input type="time" name="start_time" id="start_time" class="form-control" value="{% if class_obj %}{{ class_obj.start_time|time:'H:i' }}{% else %}09:00{% endif %}" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="end_time" class="form-label">End Time</label>
+                        <input type="time" name="end_time" id="end_time" class="form-control" value="{% if class_obj %}{{ class_obj.end_time|time:'H:i' }}{% else %}10:00{% endif %}" required>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mark-all-container">
+                <button type="button" class="mark-all-btn mark-all-present" onclick="markAllPresent()">
+                    <i class="fas fa-check-circle"></i>
+                    Mark All Present
+                </button>
+                <button type="button" class="mark-all-btn mark-all-absent" onclick="markAllAbsent()">
+                    <i class="fas fa-times-circle"></i>
+                    Mark All Absent
+                </button>
+            </div>
+            
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>ID</th>
+                        <th>Attendance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr class="student-row">
+                        <td>
+                            <div class="d-flex align-items-center">
+                                {% if student.profile_picture %}
+                                    <img src="{{ student.profile_picture.url }}" alt="{{ student.get_full_name }}" class="rounded-circle me-2" width="40" height="40">
+                                {% else %}
+                                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                        {{ student.first_name|first }}{{ student.last_name|first }}
+                                    </div>
+                                {% endif %}
+                                <div>
+                                    <div class="fw-bold">{{ student.get_full_name }}</div>
+                                    <div class="text-muted small">{{ student.email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ student.student_id }}</td>
+                        <td>
+                            <div class="attendance-radio">
+                                <label class="radio-label present-label">
+                                    <input type="radio" name="student_{{ student.id }}" value="present" {% if student.id in attendance_records and attendance_records|get_item:student.id %}checked{% endif %}>
+                                    Present
+                                </label>
+                                <label class="radio-label absent-label">
+                                    <input type="radio" name="student_{{ student.id }}" value="absent" {% if student.id in attendance_records and not attendance_records|get_item:student.id %}checked{% endif %} {% if student.id not in attendance_records %}checked{% endif %}>
+                                    Absent
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center py-4">
+                            <div class="text-muted">No students found for this semester.</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            <div class="form-actions">
+                <a href="{% url 'mark_attendance' %}" class="btn btn-secondary">
+                    Cancel
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    Save Attendance
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    function markAllPresent() {
+        const presentRadios = document.querySelectorAll('input[value="present"]');
+        presentRadios.forEach(radio => {
+            radio.checked = true;
+        });
+    }
+    
+    function markAllAbsent() {
+        const absentRadios = document.querySelectorAll('input[value="absent"]');
+        absentRadios.forEach(radio => {
+            radio.checked = true;
+        });
+    }
+</script>
+{% endblock %}
+{% endblock %} 

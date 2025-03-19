@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Attendance Records - College Attendance System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2>Attendance Records</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                {% if attendances %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Subject</th>
+                                    <th>Class Time</th>
+                                    {% if user.user_type == 'staff' or user.user_type == 'hod' %}
+                                        <th>Student</th>
+                                    {% endif %}
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for attendance in attendances %}
+                                    <tr>
+                                        <td>{{ attendance.class_session.date|date:"F d, Y" }}</td>
+                                        <td>{{ attendance.class_session.subject.name }}</td>
+                                        <td>{{ attendance.class_session.start_time|time:"H:i" }} - {{ attendance.class_session.end_time|time:"H:i" }}</td>
+                                        {% if user.user_type == 'staff' or user.user_type == 'hod' %}
+                                            <td>{{ attendance.student.get_full_name|default:attendance.student.username }}</td>
+                                        {% endif %}
+                                        <td>
+                                            <span class="badge {% if attendance.is_present %}bg-success{% else %}bg-danger{% endif %}">
+                                                {% if attendance.is_present %}Present{% else %}Absent{% endif %}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        No attendance records found.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,316 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Submission - {{ assignment.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .submission-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+    }
+    
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .page-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: #2d3748;
+    }
+    
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #e2e8f0;
+        color: #4a5568;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    
+    .btn-back:hover {
+        background: #cbd5e0;
+    }
+    
+    .assignment-details {
+        background: white;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .assignment-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+    }
+    
+    .assignment-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+        color: #718096;
+        font-size: 0.875rem;
+    }
+    
+    .assignment-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .submission-details {
+        background: white;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .submission-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .submission-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2d3748;
+    }
+    
+    .submission-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+        color: #718096;
+        font-size: 0.875rem;
+    }
+    
+    .submission-content {
+        background: #f8fafc;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-top: 1rem;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .submission-text {
+        color: #4a5568;
+        white-space: pre-wrap;
+    }
+    
+    .feedback-section {
+        background: white;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .feedback-header {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 1rem;
+    }
+    
+    .feedback-content {
+        background: #f8fafc;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        border: 1px solid #e2e8f0;
+        color: #4a5568;
+    }
+    
+    .marks-display {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .marks-value {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #2d3748;
+    }
+    
+    .marks-max {
+        color: #718096;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    
+    .status-submitted {
+        background: #ebf8ff;
+        color: #2c5282;
+    }
+    
+    .status-graded {
+        background: #c6f6d5;
+        color: #22543d;
+    }
+    
+    .status-late {
+        background: #feebc8;
+        color: #744210;
+    }
+    
+    .status-resubmit {
+        background: #fed7d7;
+        color: #822727;
+    }
+    
+    .btn-resubmit {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #3b82f6;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s;
+        margin-top: 1.5rem;
+    }
+    
+    .btn-resubmit:hover {
+        background: #2563eb;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="submission-container">
+    <div class="page-header">
+        <h1 class="page-title">Assignment Submission</h1>
+        <a href="{% url 'assignments' %}" class="btn-back">
+            <i class="fas fa-arrow-left"></i>
+            Back to Assignments
+        </a>
+    </div>
+    
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <div class="assignment-details">
+        <h2 class="assignment-title">{{ assignment.title }}</h2>
+        <div class="assignment-meta">
+            <div class="assignment-meta-item">
+                <i class="fas fa-book"></i>
+                <span>{{ assignment.subject.name }}</span>
+            </div>
+            <div class="assignment-meta-item">
+                <i class="fas fa-calendar"></i>
+                <span>Due: {{ assignment.due_date|date:"M d, Y h:i A" }}</span>
+            </div>
+            <div class="assignment-meta-item">
+                <i class="fas fa-star"></i>
+                <span>Max Marks: {{ assignment.max_marks }}</span>
+            </div>
+        </div>
+        
+        {% if assignment.file_attachment %}
+        <div class="assignment-meta-item">
+            <i class="fas fa-paperclip"></i>
+            <a href="{{ assignment.file_attachment.url }}" target="_blank">Download Assignment File</a>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="submission-details">
+        <div class="submission-header">
+            <h2 class="submission-title">Your Submission</h2>
+            <span class="status-badge status-{{ submission.status }}">
+                {{ submission.get_status_display }}
+            </span>
+        </div>
+        
+        <div class="submission-meta">
+            <div class="assignment-meta-item">
+                <i class="fas fa-calendar"></i>
+                <span>Submitted: {{ submission.submission_date|date:"M d, Y h:i A" }}</span>
+            </div>
+            
+            {% if submission.submission_date > assignment.due_date %}
+            <div class="assignment-meta-item">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Late by {{ submission.submission_date|timeuntil:assignment.due_date }}</span>
+            </div>
+            {% endif %}
+        </div>
+        
+        {% if submission.submission_file %}
+        <div class="assignment-meta-item">
+            <i class="fas fa-paperclip"></i>
+            <a href="{{ submission.submission_file.url }}" target="_blank">Download Your Submission</a>
+        </div>
+        {% endif %}
+        
+        {% if submission.submission_text %}
+        <div class="submission-content">
+            <h3>Your Answer:</h3>
+            <div class="submission-text">{{ submission.submission_text|linebreaks }}</div>
+        </div>
+        {% endif %}
+        
+        {% if submission.status == 'resubmit' %}
+        <a href="{% url 'submit_assignment' assignment.id %}" class="btn-resubmit">
+            <i class="fas fa-redo"></i>
+            Resubmit Assignment
+        </a>
+        {% endif %}
+    </div>
+    
+    {% if submission.status == 'graded' or submission.feedback %}
+    <div class="feedback-section">
+        <h2 class="feedback-header">Feedback</h2>
+        
+        {% if submission.marks %}
+        <div class="marks-display">
+            <i class="fas fa-award"></i>
+            <span class="marks-value">{{ submission.marks }}</span>
+            <span class="marks-max">/ {{ assignment.max_marks }}</span>
+        </div>
+        {% endif %}
+        
+        {% if submission.feedback %}
+        <div class="feedback-content">
+            {{ submission.feedback|linebreaks }}
+        </div>
+        {% else %}
+        <p>No feedback provided yet.</p>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

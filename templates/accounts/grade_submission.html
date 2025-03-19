@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Grade Submission - Staff Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-header {
+        margin-bottom: 2rem;
+    }
+    
+    .form-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-subtitle {
+        color: #718096;
+    }
+    
+    .submission-details {
+        background: #f8fafc;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .submission-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+    
+    .submission-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2d3748;
+    }
+    
+    .submission-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+        color: #718096;
+        font-size: 0.875rem;
+    }
+    
+    .submission-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .submission-content {
+        background: white;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-top: 1rem;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .submission-text {
+        color: #4a5568;
+        white-space: pre-wrap;
+    }
+    
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e2e8f0;
+    }
+    
+    .btn-cancel {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #e2e8f0;
+        color: #4a5568;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    
+    .btn-cancel:hover {
+        background: #cbd5e0;
+    }
+    
+    .btn-submit {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #3b82f6;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-submit:hover {
+        background: #2563eb;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    
+    .status-submitted {
+        background: #ebf8ff;
+        color: #2c5282;
+    }
+    
+    .status-graded {
+        background: #c6f6d5;
+        color: #22543d;
+    }
+    
+    .status-late {
+        background: #feebc8;
+        color: #744210;
+    }
+    
+    .status-resubmit {
+        background: #fed7d7;
+        color: #822727;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-header">
+        <h1 class="form-title">Grade Submission</h1>
+        <p class="form-subtitle">Review and grade the student's submission.</p>
+    </div>
+    
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <div class="submission-details">
+        <div class="submission-header">
+            <h2 class="submission-title">{{ submission.assignment.title }}</h2>
+            <span class="status-badge status-{{ submission.status }}">
+                {{ submission.get_status_display }}
+            </span>
+        </div>
+        
+        <div class="submission-meta">
+            <div class="submission-meta-item">
+                <i class="fas fa-user"></i>
+                <span>{{ submission.student.get_full_name }}</span>
+            </div>
+            <div class="submission-meta-item">
+                <i class="fas fa-calendar"></i>
+                <span>Submitted: {{ submission.submission_date|date:"M d, Y h:i A" }}</span>
+            </div>
+            <div class="submission-meta-item">
+                <i class="fas fa-clock"></i>
+                <span>
+                    {% if submission.submission_date > submission.assignment.due_date %}
+                        Late by {{ submission.submission_date|timeuntil:submission.assignment.due_date }}
+                    {% else %}
+                        On time ({{ submission.assignment.due_date|timeuntil:submission.submission_date }} before deadline)
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+        
+        {% if submission.submission_file %}
+        <div class="submission-meta-item">
+            <i class="fas fa-paperclip"></i>
+            <a href="{{ submission.submission_file.url }}" target="_blank">Download Submission File</a>
+        </div>
+        {% endif %}
+        
+        {% if submission.submission_text %}
+        <div class="submission-content">
+            <h3>Submission Text:</h3>
+            <div class="submission-text">{{ submission.submission_text|linebreaks }}</div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="row">
+            <div class="col-md-6">
+                {{ form.marks|as_crispy_field }}
+            </div>
+            <div class="col-md-6">
+                {{ form.status|as_crispy_field }}
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12">
+                {{ form.feedback|as_crispy_field }}
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <a href="{% url 'assignment_submissions' submission.assignment.id %}" class="btn-cancel">
+                <i class="fas fa-times"></i>
+                Cancel
+            </a>
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-check"></i>
+                Submit Grading
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %} 

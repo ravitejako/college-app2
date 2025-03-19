@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Exam Schedules - {{ user.get_full_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .exams-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .exams-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .exams-title {
+        color: #1a202c;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .exam-filters {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .filter-select {
+        padding: 0.5rem 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background: white;
+        color: #4a5568;
+        min-width: 200px;
+    }
+
+    .exam-timeline {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .exam-date-group {
+        border-left: 2px solid #e2e8f0;
+        padding-left: 2rem;
+        position: relative;
+    }
+
+    .exam-date {
+        position: absolute;
+        left: -10px;
+        background: white;
+        padding: 0.5rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        color: #4a5568;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+    .exam-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1rem;
+        padding-top: 2rem;
+    }
+
+    .exam-card {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 1.5rem;
+        border: 1px solid #e2e8f0;
+    }
+
+    .exam-time {
+        color: #4299e1;
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .exam-subject {
+        color: #1a202c;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .exam-details {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        color: #4a5568;
+    }
+
+    .exam-detail {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .exam-detail i {
+        width: 16px;
+        color: #718096;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="exams-section">
+        <div class="exams-header">
+            <h3 class="exams-title">Exam Schedules</h3>
+        </div>
+        <div class="exam-filters">
+            <select class="filter-select">
+                <option>Mid Semester Examination</option>
+                <option>End Semester Examination</option>
+                <option>Internal Assessment 1</option>
+                <option>Internal Assessment 2</option>
+            </select>
+        </div>
+        <div class="exam-timeline">
+            <div class="exam-date-group">
+                <div class="exam-date">Apr 1</div>
+                <div class="exam-cards">
+                    <div class="exam-card">
+                        <div class="exam-time">09:30 AM - 12:30 PM</div>
+                        <div class="exam-subject">Python Programming</div>
+                        <div class="exam-details">
+                            <div class="exam-detail">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Room: 301, Block A
+                            </div>
+                            <div class="exam-detail">
+                                <i class="fas fa-book"></i>
+                                Syllabus: Units 1-5
+                            </div>
+                            <div class="exam-detail">
+                                <i class="fas fa-info-circle"></i>
+                                Bring programming manual
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="exam-date-group">
+                <div class="exam-date">Apr 3</div>
+                <div class="exam-cards">
+                    <div class="exam-card">
+                        <div class="exam-time">09:30 AM - 12:30 PM</div>
+                        <div class="exam-subject">Data Structures</div>
+                        <div class="exam-details">
+                            <div class="exam-detail">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Room: 302, Block A
+                            </div>
+                            <div class="exam-detail">
+                                <i class="fas fa-book"></i>
+                                Syllabus: Units 1-5
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="exam-date-group">
+                <div class="exam-date">Apr 5</div>
+                <div class="exam-cards">
+                    <div class="exam-card">
+                        <div class="exam-time">09:30 AM - 12:30 PM</div>
+                        <div class="exam-subject">Database Management</div>
+                        <div class="exam-details">
+                            <div class="exam-detail">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Room: 303, Block A
+                            </div>
+                            <div class="exam-detail">
+                                <i class="fas fa-book"></i>
+                                Syllabus: Units 1-5
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

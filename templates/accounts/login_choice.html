@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Welcome - College Attendance System{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center mb-5">
+            <h1 class="display-4 fw-bold text-primary mb-3">Welcome to College Attendance System</h1>
+            <p class="lead text-muted">Choose your login type to continue</p>
+        </div>
+    </div>
+    
+    <div class="row justify-content-center g-4">
+        <!-- Student Login Card -->
+        <div class="col-md-5">
+            <div class="card h-100 border-0 shadow-lg hover-card">
+                <div class="card-body p-5 text-center">
+                    <div class="icon-circle mb-4">
+                        <i class="fas fa-user-graduate fa-3x text-primary"></i>
+                    </div>
+                    <h2 class="card-title h3 mb-4">Student Login</h2>
+                    <p class="card-text text-muted mb-4">Access your attendance records, view class schedules, and manage leave requests.</p>
+                    <a href="{% url 'student_login' %}" class="btn btn-primary btn-lg w-100">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login as Student
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Staff Login Card -->
+        <div class="col-md-5">
+            <div class="card h-100 border-0 shadow-lg hover-card">
+                <div class="card-body p-5 text-center">
+                    <div class="icon-circle mb-4">
+                        <i class="fas fa-chalkboard-teacher fa-3x text-primary"></i>
+                    </div>
+                    <h2 class="card-title h3 mb-4">Staff Login</h2>
+                    <p class="card-text text-muted mb-4">Mark attendance, manage classes, and handle leave requests.</p>
+                    <a href="{% url 'staff_login' %}" class="btn btn-primary btn-lg w-100">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login as Staff
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add hover effect to cards
+    const cards = document.querySelectorAll('.hover-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-10px)';
+            this.style.transition = 'transform 0.3s ease';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}
+{% endblock %} 

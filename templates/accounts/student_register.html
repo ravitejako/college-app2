@@ -1,0 +1,641 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Student Registration{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: linear-gradient(135deg, #6B46C1 0%, #2C5282 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .registration-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(10px);
+    }
+
+    .form-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .form-section:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-title {
+        color: #2D3748;
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #E2E8F0;
+        position: relative;
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -2px;
+        width: 50px;
+        height: 2px;
+        background: linear-gradient(90deg, #6B46C1, #2C5282);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #4A5568;
+        margin-bottom: 0.5rem;
+        display: block;
+        transition: color 0.3s ease;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        border: 2px solid #E2E8F0;
+        padding: 0.75rem;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+        width: 100%;
+        background: #F8FAFC;
+    }
+
+    .form-control:focus {
+        border-color: #6B46C1;
+        box-shadow: 0 0 0 3px rgba(107, 70, 193, 0.15);
+        background: white;
+    }
+
+    .form-control:hover {
+        border-color: #CBD5E0;
+    }
+
+    .help-text {
+        font-size: 0.875rem;
+        color: #718096;
+        margin-top: 0.25rem;
+        transition: color 0.3s ease;
+    }
+
+    .form-group:hover .help-text {
+        color: #4A5568;
+    }
+
+    .submit-btn {
+        background: linear-gradient(135deg, #6B46C1 0%, #2C5282 100%);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 10px;
+        border: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        width: 100%;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(107, 70, 193, 0.4);
+    }
+
+    .submit-btn:active {
+        transform: translateY(0);
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 1rem;
+    }
+
+    .form-header .icon-container {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 1.5rem;
+        background: linear-gradient(135deg, #6B46C1 0%, #2C5282 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 20px rgba(107, 70, 193, 0.3);
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(107, 70, 193, 0.4);
+        }
+        70% {
+            box-shadow: 0 0 0 15px rgba(107, 70, 193, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(107, 70, 193, 0);
+        }
+    }
+
+    .form-header i {
+        font-size: 3rem;
+        color: white;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-header h1 {
+        color: #1A202C;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .form-header p {
+        color: #4A5568;
+        font-size: 1.2rem;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .required-field::after {
+        content: "*";
+        color: #E53E3E;
+        margin-left: 4px;
+        font-size: 1.2em;
+    }
+
+    .text-danger {
+        color: #E53E3E;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    .text-primary {
+        color: #6B46C1;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+
+    .text-primary:hover {
+        color: #2C5282;
+    }
+
+    /* Profile picture upload styling */
+    .profile-upload {
+        border: 2px dashed #E2E8F0;
+        border-radius: 10px;
+        padding: 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #F8FAFC;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .profile-upload:hover {
+        border-color: #6B46C1;
+        background: rgba(107, 70, 193, 0.05);
+    }
+
+    .profile-upload i {
+        font-size: 2.5rem;
+        color: #718096;
+        margin-bottom: 1rem;
+        transition: color 0.3s ease;
+    }
+
+    .profile-upload:hover i {
+        color: #6B46C1;
+    }
+
+    .preview-container {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        margin: 0 auto;
+        border-radius: 50%;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .preview-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Password requirements styling */
+    .password-requirements {
+        background: #F8FAFC;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 0.5rem;
+    }
+
+    .password-requirements ul {
+        margin: 0;
+        padding: 0;
+    }
+
+    .password-requirements li {
+        color: #718096;
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .password-requirements li i {
+        color: #6B46C1;
+        margin-right: 0.5rem;
+    }
+
+    /* Custom select styling */
+    select.form-control {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%234a5568' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        padding-right: 2.5rem;
+    }
+
+    /* Date input styling */
+    input[type="date"] {
+        position: relative;
+        padding-right: 2.5rem;
+    }
+
+    @media (max-width: 768px) {
+        body {
+            padding: 1rem;
+        }
+
+        .registration-container {
+            padding: 1.5rem;
+            margin: 0 1rem;
+        }
+
+        .form-section {
+            padding: 1.5rem;
+        }
+
+        .form-header h1 {
+            font-size: 2rem;
+        }
+
+        .form-header p {
+            font-size: 1rem;
+        }
+
+        .form-header .icon-container {
+            width: 80px;
+            height: 80px;
+        }
+
+        .form-header i {
+            font-size: 2.5rem;
+        }
+    }
+
+    /* Add subtle animation for form sections */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .form-section {
+        animation: fadeInUp 0.5s ease forwards;
+        opacity: 0;
+    }
+
+    .form-section:nth-child(1) { animation-delay: 0.1s; }
+    .form-section:nth-child(2) { animation-delay: 0.2s; }
+    .form-section:nth-child(3) { animation-delay: 0.3s; }
+    .form-section:nth-child(4) { animation-delay: 0.4s; }
+    .form-section:nth-child(5) { animation-delay: 0.5s; }
+
+    /* Alert styling */
+    .alert {
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+    }
+
+    .alert-dismissible .btn-close {
+        padding: 1.25rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="registration-container">
+    <div class="form-header">
+        <div class="icon-container">
+            <i class="fas fa-user-graduate"></i>
+        </div>
+        <h1>Student Registration</h1>
+        <p>Please fill in your details to create an account</p>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+
+        <!-- Personal Information -->
+        <div class="form-section">
+            <h2 class="section-title">Personal Information</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">First Name</label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
+                            <div class="text-danger">{{ form.first_name.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">Last Name</label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}
+                            <div class="text-danger">{{ form.last_name.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">Username</label>
+                        {{ form.username }}
+                        <div class="help-text">This will be used to log in to your account</div>
+                        {% if form.username.errors %}
+                            <div class="text-danger">{{ form.username.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">Email</label>
+                        {{ form.email }}
+                        <div class="help-text">Please use your institutional email</div>
+                        {% if form.email.errors %}
+                            <div class="text-danger">{{ form.email.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">Phone Number</label>
+                        {{ form.phone_number }}
+                        {% if form.phone_number.errors %}
+                            <div class="text-danger">{{ form.phone_number.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">Date of Birth</label>
+                        {{ form.date_of_birth }}
+                        {% if form.date_of_birth.errors %}
+                            <div class="text-danger">{{ form.date_of_birth.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">Blood Group</label>
+                        {{ form.blood_group }}
+                        {% if form.blood_group.errors %}
+                            <div class="text-danger">{{ form.blood_group.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">Address</label>
+                        {{ form.address }}
+                        {% if form.address.errors %}
+                            <div class="text-danger">{{ form.address.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Academic Details -->
+        <div class="form-section">
+            <h2 class="section-title">Academic Details</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">Student ID</label>
+                        {{ form.student_id }}
+                        <div class="help-text">Your unique student identification number</div>
+                        {% if form.student_id.errors %}
+                            <div class="text-danger">{{ form.student_id.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">Department</label>
+                        {{ form.department }}
+                        {% if form.department.errors %}
+                            <div class="text-danger">{{ form.department.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">Semester</label>
+                        {{ form.semester }}
+                        {% if form.semester.errors %}
+                            <div class="text-danger">{{ form.semester.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">Academic Year</label>
+                        {{ form.academic_year }}
+                        {% if form.academic_year.errors %}
+                            <div class="text-danger">{{ form.academic_year.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emergency Contact -->
+        <div class="form-section">
+            <h2 class="section-title">Emergency Contact</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">Emergency Contact Name</label>
+                        {{ form.emergency_contact }}
+                        {% if form.emergency_contact.errors %}
+                            <div class="text-danger">{{ form.emergency_contact.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">Parent/Guardian Name</label>
+                        {{ form.parent_name }}
+                        {% if form.parent_name.errors %}
+                            <div class="text-danger">{{ form.parent_name.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">Parent/Guardian Phone</label>
+                        {{ form.parent_phone }}
+                        {% if form.parent_phone.errors %}
+                            <div class="text-danger">{{ form.parent_phone.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Picture -->
+        <div class="form-section">
+            <h2 class="section-title">Profile Picture</h2>
+            <div class="profile-upload">
+                {{ form.profile_picture }}
+                <div class="upload-placeholder">
+                    <i class="fas fa-camera"></i>
+                    <p>Click to upload profile picture</p>
+                </div>
+                <div class="preview-container d-none">
+                    <img id="imagePreview" src="#" alt="Preview">
+                </div>
+            </div>
+            {% if form.profile_picture.errors %}
+                <div class="text-danger">{{ form.profile_picture.errors }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Security -->
+        <div class="form-section">
+            <h2 class="section-title">Security</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">Password</label>
+                        {{ form.password1 }}
+                        {% if form.password1.errors %}
+                            <div class="text-danger">{{ form.password1.errors }}</div>
+                        {% endif %}
+                        <div class="password-requirements">
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-info-circle"></i>At least 8 characters</li>
+                                <li><i class="fas fa-info-circle"></i>Must contain numbers</li>
+                                <li><i class="fas fa-info-circle"></i>Must contain uppercase letters</li>
+                                <li><i class="fas fa-info-circle"></i>Must contain special characters</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">Confirm Password</label>
+                        {{ form.password2 }}
+                        {% if form.password2.errors %}
+                            <div class="text-danger">{{ form.password2.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="submit-btn">Register</button>
+
+        <div class="text-center mt-4">
+            <p>Already have an account? <a href="{% url 'login' %}?role=student" class="text-primary">Login here</a></p>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Profile picture preview
+    const profileInput = document.querySelector('input[type="file"]');
+    const previewContainer = document.querySelector('.preview-container');
+    const imagePreview = document.getElementById('imagePreview');
+    const uploadPlaceholder = document.querySelector('.upload-placeholder');
+
+    profileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                previewContainer.classList.remove('d-none');
+                uploadPlaceholder.classList.add('d-none');
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Form section animations
+    const formSections = document.querySelectorAll('.form-section');
+    formSections.forEach((section, index) => {
+        section.style.animationDelay = `${index * 0.1}s`;
+    });
+});
+</script>
+{% endblock %} 

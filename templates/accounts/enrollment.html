@@ -1,0 +1,429 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Course Enrollment - {{ user.get_full_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .enrollment-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .enrollment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .enrollment-title {
+        color: #1a202c;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .enrollment-filters {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .filter-select {
+        padding: 0.5rem 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background: white;
+        color: #4a5568;
+        min-width: 200px;
+    }
+
+    .enrollment-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid #e2e8f0;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #1a202c;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: #64748b;
+    }
+
+    .enrollment-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .enrollment-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .available-courses {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .courses-header {
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .courses-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1a202c;
+        margin: 0;
+    }
+
+    .course-list {
+        padding: 1rem;
+    }
+
+    .course-card {
+        padding: 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+        transition: all 0.2s;
+    }
+
+    .course-card:last-child {
+        border-bottom: none;
+    }
+
+    .course-card:hover {
+        background: #f8fafc;
+    }
+
+    .course-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    .course-info {
+        flex: 1;
+    }
+
+    .course-code {
+        font-size: 0.9rem;
+        color: #4299e1;
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+
+    .course-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1a202c;
+        margin-bottom: 0.5rem;
+    }
+
+    .course-meta {
+        display: flex;
+        gap: 2rem;
+        font-size: 0.9rem;
+        color: #64748b;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .enroll-btn {
+        padding: 0.5rem 1rem;
+        background: #4299e1;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .enroll-btn:hover {
+        background: #3182ce;
+    }
+
+    .enrolled-btn {
+        padding: 0.5rem 1rem;
+        background: #dcfce7;
+        color: #059669;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        cursor: not-allowed;
+    }
+
+    .current-enrollments {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .enrolled-list {
+        padding: 1rem;
+    }
+
+    .enrolled-course {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .enrolled-course:last-child {
+        border-bottom: none;
+    }
+
+    .course-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        font-size: 1.2rem;
+        background: #e0f2fe;
+        color: #0284c7;
+    }
+
+    .enrolled-info {
+        flex: 1;
+    }
+
+    .enrolled-name {
+        font-weight: 500;
+        color: #1a202c;
+        margin-bottom: 0.25rem;
+    }
+
+    .enrolled-details {
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+
+    .course-status {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .status-active {
+        background: #dcfce7;
+        color: #059669;
+    }
+
+    .status-pending {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+    .drop-btn {
+        padding: 0.25rem 0.75rem;
+        background: #fee2e2;
+        color: #dc2626;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .drop-btn:hover {
+        background: #fecaca;
+    }
+
+    .course-schedule {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e2e8f0;
+        font-size: 0.9rem;
+        color: #4b5563;
+    }
+
+    .schedule-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="enrollment-section">
+        <div class="enrollment-header">
+            <h3 class="enrollment-title">Course Enrollment</h3>
+            <div class="enrollment-filters">
+                <select class="filter-select">
+                    <option>Spring 2024</option>
+                    <option>Fall 2023</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="enrollment-stats">
+            <div class="stat-card">
+                <div class="stat-value">5</div>
+                <div class="stat-label">Enrolled Courses</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">20</div>
+                <div class="stat-label">Total Credits</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">2</div>
+                <div class="stat-label">Available Slots</div>
+            </div>
+        </div>
+
+        <div class="enrollment-grid">
+            <div class="available-courses">
+                <div class="courses-header">
+                    <h4 class="courses-title">Available Courses</h4>
+                </div>
+                <div class="course-list">
+                    <div class="course-card">
+                        <div class="course-header">
+                            <div class="course-info">
+                                <div class="course-code">CS301</div>
+                                <div class="course-name">Advanced Python Programming</div>
+                                <div class="course-meta">
+                                    <span class="meta-item">
+                                        <i class="fas fa-clock"></i>
+                                        4 Credits
+                                    </span>
+                                    <span class="meta-item">
+                                        <i class="fas fa-users"></i>
+                                        30 Seats
+                                    </span>
+                                </div>
+                            </div>
+                            <button class="enroll-btn">Enroll Now</button>
+                        </div>
+                        <div class="course-schedule">
+                            <div class="schedule-item">
+                                <i class="fas fa-calendar"></i>
+                                Monday, Wednesday (10:00 AM - 11:30 AM)
+                            </div>
+                            <div class="schedule-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Room 301, Block A
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="course-card">
+                        <div class="course-header">
+                            <div class="course-info">
+                                <div class="course-code">CS302</div>
+                                <div class="course-name">Data Structures and Algorithms</div>
+                                <div class="course-meta">
+                                    <span class="meta-item">
+                                        <i class="fas fa-clock"></i>
+                                        4 Credits
+                                    </span>
+                                    <span class="meta-item">
+                                        <i class="fas fa-users"></i>
+                                        25 Seats
+                                    </span>
+                                </div>
+                            </div>
+                            <button class="enrolled-btn">Enrolled</button>
+                        </div>
+                        <div class="course-schedule">
+                            <div class="schedule-item">
+                                <i class="fas fa-calendar"></i>
+                                Tuesday, Thursday (2:00 PM - 3:30 PM)
+                            </div>
+                            <div class="schedule-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Room 302, Block A
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="current-enrollments">
+                <div class="courses-header">
+                    <h4 class="courses-title">Current Enrollments</h4>
+                </div>
+                <div class="enrolled-list">
+                    <div class="enrolled-course">
+                        <div class="course-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="enrolled-info">
+                            <div class="enrolled-name">Data Structures (CS302)</div>
+                            <div class="enrolled-details">Prof. Michael Chen • 4 Credits</div>
+                            <div style="margin-top: 0.5rem;">
+                                <span class="course-status status-active">Active</span>
+                                <button class="drop-btn">Drop Course</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="enrolled-course">
+                        <div class="course-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="enrolled-info">
+                            <div class="enrolled-name">Database Management (CS303)</div>
+                            <div class="enrolled-details">Dr. Emily Brown • 4 Credits</div>
+                            <div style="margin-top: 0.5rem;">
+                                <span class="course-status status-pending">Pending</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="enrolled-course">
+                        <div class="course-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div class="enrolled-info">
+                            <div class="enrolled-name">Web Development (CS304)</div>
+                            <div class="enrolled-details">Prof. David Wilson • 4 Credits</div>
+                            <div style="margin-top: 0.5rem;">
+                                <span class="course-status status-active">Active</span>
+                                <button class="drop-btn">Drop Course</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

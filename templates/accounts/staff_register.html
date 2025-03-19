@@ -1,0 +1,485 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Staff Registration{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .registration-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(10px);
+    }
+
+    .form-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .form-section:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-title {
+        color: #2d3748;
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e2e8f0;
+        position: relative;
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -2px;
+        width: 50px;
+        height: 2px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #4a5568;
+        margin-bottom: 0.5rem;
+        display: block;
+        transition: color 0.3s ease;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        border: 2px solid #e2e8f0;
+        padding: 0.75rem;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+        width: 100%;
+        background: #f8fafc;
+    }
+
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        background: white;
+    }
+
+    .form-control:hover {
+        border-color: #cbd5e0;
+    }
+
+    .help-text {
+        font-size: 0.875rem;
+        color: #718096;
+        margin-top: 0.25rem;
+        transition: color 0.3s ease;
+    }
+
+    .form-group:hover .help-text {
+        color: #4a5568;
+    }
+
+    .submit-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 10px;
+        border: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        width: 100%;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .submit-btn:active {
+        transform: translateY(0);
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 1rem;
+    }
+
+    .form-header .icon-container {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 1.5rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
+        }
+        70% {
+            box-shadow: 0 0 0 15px rgba(102, 126, 234, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+        }
+    }
+
+    .form-header i {
+        font-size: 3rem;
+        color: white;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-header h1 {
+        color: #1a202c;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .form-header p {
+        color: #4a5568;
+        font-size: 1.2rem;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .required-field::after {
+        content: "*";
+        color: #e53e3e;
+        margin-left: 4px;
+        font-size: 1.2em;
+    }
+
+    .text-danger {
+        color: #e53e3e;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    .text-primary {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+
+    .text-primary:hover {
+        color: #764ba2;
+    }
+
+    /* Custom select styling */
+    select.form-control {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%234a5568' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        padding-right: 2.5rem;
+    }
+
+    /* Custom file input styling */
+    input[type="file"] {
+        border: 2px dashed #e2e8f0;
+        padding: 2rem 1rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    input[type="file"]:hover {
+        border-color: #667eea;
+        background: rgba(102, 126, 234, 0.05);
+    }
+
+    /* Date input styling */
+    input[type="date"] {
+        position: relative;
+        padding-right: 2.5rem;
+    }
+
+    @media (max-width: 768px) {
+        body {
+            padding: 1rem;
+        }
+
+        .registration-container {
+            padding: 1.5rem;
+            margin: 0 1rem;
+        }
+
+        .form-section {
+            padding: 1.5rem;
+        }
+
+        .form-header h1 {
+            font-size: 2rem;
+        }
+
+        .form-header p {
+            font-size: 1rem;
+        }
+
+        .form-header .icon-container {
+            width: 80px;
+            height: 80px;
+        }
+
+        .form-header i {
+            font-size: 2.5rem;
+        }
+    }
+
+    /* Add subtle animation for form sections */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .form-section {
+        animation: fadeInUp 0.5s ease forwards;
+        opacity: 0;
+    }
+
+    .form-section:nth-child(1) { animation-delay: 0.1s; }
+    .form-section:nth-child(2) { animation-delay: 0.2s; }
+    .form-section:nth-child(3) { animation-delay: 0.3s; }
+    .form-section:nth-child(4) { animation-delay: 0.4s; }
+    .form-section:nth-child(5) { animation-delay: 0.5s; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="registration-container">
+    <div class="form-header">
+        <div class="icon-container">
+            <i class="fas fa-chalkboard-teacher"></i>
+        </div>
+        <h1>Staff Registration</h1>
+        <p>Please fill in your details to create an account</p>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+
+        <!-- Personal Information -->
+        <div class="form-section">
+            <h2 class="section-title">Personal Information</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">First Name</label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
+                            <div class="text-danger">{{ form.first_name.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">Last Name</label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}
+                            <div class="text-danger">{{ form.last_name.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">Username</label>
+                        {{ form.username }}
+                        <div class="help-text">This will be used to log in to your account</div>
+                        {% if form.username.errors %}
+                            <div class="text-danger">{{ form.username.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">Email</label>
+                        {{ form.email }}
+                        <div class="help-text">Please use your institutional email</div>
+                        {% if form.email.errors %}
+                            <div class="text-danger">{{ form.email.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">Phone Number</label>
+                        {{ form.phone_number }}
+                        {% if form.phone_number.errors %}
+                            <div class="text-danger">{{ form.phone_number.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label">Profile Picture</label>
+                        {{ form.profile_picture }}
+                        <div class="help-text">Upload a professional photo</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Professional Details -->
+        <div class="form-section">
+            <h2 class="section-title">Professional Details</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">Staff ID</label>
+                        {{ form.staff_id }}
+                        <div class="help-text">Your unique staff identification number</div>
+                        {% if form.staff_id.errors %}
+                            <div class="text-danger">{{ form.staff_id.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">Department</label>
+                        {{ form.department }}
+                        {% if form.department.errors %}
+                            <div class="text-danger">{{ form.department.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">Designation</label>
+                        {{ form.designation }}
+                        {% if form.designation.errors %}
+                            <div class="text-danger">{{ form.designation.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">Date of Joining</label>
+                        {{ form.date_of_joining }}
+                        {% if form.date_of_joining.errors %}
+                            <div class="text-danger">{{ form.date_of_joining.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Qualifications -->
+        <div class="form-section">
+            <h2 class="section-title">Qualifications</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">Qualification</label>
+                        {{ form.qualification }}
+                        {% if form.qualification.errors %}
+                            <div class="text-danger">{{ form.qualification.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label">Specialization</label>
+                        {{ form.specialization }}
+                        <div class="help-text">Your area of expertise</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Office Details -->
+        <div class="form-section">
+            <h2 class="section-title">Office Details</h2>
+            <div class="form-group">
+                <label class="form-label required-field">Office Location</label>
+                {{ form.office_location }}
+                <div class="help-text">Building and room number</div>
+                {% if form.office_location.errors %}
+                    <div class="text-danger">{{ form.office_location.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Security -->
+        <div class="form-section">
+            <h2 class="section-title">Security</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">Password</label>
+                        {{ form.password1 }}
+                        <div class="help-text">{{ form.password1.help_text }}</div>
+                        {% if form.password1.errors %}
+                            <div class="text-danger">{{ form.password1.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label required-field">Confirm Password</label>
+                        {{ form.password2 }}
+                        {% if form.password2.errors %}
+                            <div class="text-danger">{{ form.password2.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="submit-btn">Register</button>
+
+        <div class="text-center mt-4">
+            <p>Already have an account? <a href="{% url 'login' %}?role=staff" class="text-primary">Login here</a></p>
+        </div>
+    </form>
+</div>
+{% endblock %} 

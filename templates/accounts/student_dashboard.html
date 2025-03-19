@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Student Dashboard - {{ user.get_full_name }}{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/chart.js" rel="stylesheet">
+<style>
+    .attendance-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .attendance-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .attendance-title {
+        color: #1a202c;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+    
+    .semester-select {
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        color: #4a5568;
+        background-color: white;
+        min-width: 200px;
+    }
+    
+    .chart-wrapper {
+        height: 400px;
+        width: 100%;
+    }
+
+    @media (max-width: 768px) {
+        .attendance-section {
+            padding: 1rem;
+        }
+        
+        .attendance-header {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .semester-select {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Attendance Section -->
+    <div class="attendance-section">
+        <div class="attendance-header">
+            <h3 class="attendance-title">Attendance % / 2024-2025</h3>
+            <select class="semester-select">
+                <option>2024-2025, , EVEN, CSE-IBM</option>
+            </select>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="attendanceChart"></canvas>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var ctx = document.getElementById('attendanceChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{ chart_labels|safe }},
+                datasets: [{
+                    label: 'Attendance %',
+                    data: {{ chart_data|safe }},
+                    backgroundColor: [
+                        '#FF8C00',  // Orange
+                        '#FF6B6B',  // Red
+                        '#9F7AEA',  // Purple
+                        '#FFE066'   // Yellow
+                    ],
+                    borderWidth: 0,
+                    borderRadius: {
+                        topLeft: 4,
+                        topRight: 4
+                    },
+                    barThickness: 60,
+                    maxBarThickness: 80
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: {
+                            display: true,
+                            color: '#E2E8F0',
+                            drawBorder: false,
+                            drawTicks: false
+                        },
+                        border: {
+                            display: false
+                        },
+                        ticks: {
+                            padding: 10,
+                            font: {
+                                size: 12
+                            },
+                            stepSize: 20
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        border: {
+                            display: false
+                        },
+                        ticks: {
+                            padding: 10,
+                            font: {
+                                size: 12,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                },
+                layout: {
+                    padding: {
+                        left: 10,
+                        right: 10,
+                        top: 10,
+                        bottom: 10
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %} 

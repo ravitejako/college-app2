@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login - College Attendance System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    {% if not role %}
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h1 class="display-4 mb-4">Welcome to College Attendance System</h1>
+            <p class="lead mb-5">Choose your role to continue</p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center g-4">
+        <!-- Student Card -->
+        <div class="col-md-4">
+            <div class="card role-card h-100">
+                <div class="card-body text-center d-flex flex-column">
+                    <div class="icon-wrapper mb-3">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <h5 class="card-title">Student</h5>
+                    <p class="card-text flex-grow-1">Access your attendance records, view schedules, and manage your academic profile</p>
+                    <div class="mt-3">
+                        <a href="{% url 'login' %}?role=student" class="btn btn-primary btn-lg w-100">Student Login</a>
+                        <a href="{% url 'student_register' %}" class="btn btn-outline-primary btn-sm w-100 mt-2">Register as Student</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Staff Card -->
+        <div class="col-md-4">
+            <div class="card role-card h-100">
+                <div class="card-body text-center d-flex flex-column">
+                    <div class="icon-wrapper mb-3">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <h5 class="card-title">Staff</h5>
+                    <p class="card-text flex-grow-1">Manage attendance, view class schedules, and track student performance</p>
+                    <div class="mt-3">
+                        <a href="{% url 'login' %}?role=staff" class="btn btn-success btn-lg w-100">Staff Login</a>
+                        <a href="{% url 'staff_register' %}" class="btn btn-outline-success btn-sm w-100 mt-2">Register as Staff</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HOD Card -->
+        <div class="col-md-4">
+            <div class="card role-card h-100">
+                <div class="card-body text-center d-flex flex-column">
+                    <div class="icon-wrapper mb-3">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h5 class="card-title">HOD</h5>
+                    <p class="card-text flex-grow-1">Manage department, assign staff to subjects, and oversee academic operations</p>
+                    <div class="mt-3">
+                        <a href="{% url 'login' %}?role=hod" class="btn btn-info btn-lg w-100 text-white">HOD Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <h2 class="text-center mb-4">{{ role|title }} Login</h2>
+                    
+                    {% if messages %}
+                    <div class="messages mb-4">
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        {% for field in form %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ field.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">Login</button>
+                            <a href="{% url 'login' %}" class="btn btn-outline-secondary">Back to Role Selection</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% block extra_css %}
+<style>
+    .role-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .role-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .icon-wrapper {
+        font-size: 3rem;
+        height: 100px;
+        width: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        border-radius: 50%;
+        background-color: #f8f9fa;
+        margin-bottom: 1.5rem;
+    }
+
+    .role-card:nth-child(1) .icon-wrapper i {
+        color: #0d6efd;
+    }
+
+    .role-card:nth-child(2) .icon-wrapper i {
+        color: #198754;
+    }
+
+    .role-card:nth-child(3) .icon-wrapper i {
+        color: #0dcaf0;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .card-text {
+        color: #6c757d;
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        border-radius: 10px;
+    }
+
+    .form-control {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border-radius: 10px;
+    }
+
+    .form-label {
+        font-weight: 500;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    @media (max-width: 768px) {
+        .col-md-4 {
+            margin-bottom: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+{% endblock %} 

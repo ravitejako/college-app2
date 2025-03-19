@@ -1,0 +1,394 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Attendance - {{ user.get_full_name }}{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/chart.js" rel="stylesheet">
+<style>
+    .attendance-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .attendance-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .attendance-title {
+        color: #1a202c;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+    
+    .semester-select {
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        color: #4a5568;
+        background-color: white;
+        min-width: 200px;
+    }
+    
+    .chart-wrapper {
+        height: 400px;
+        width: 100%;
+        margin-bottom: 2rem;
+    }
+    
+    .attendance-details {
+        margin-top: 2rem;
+    }
+    
+    .attendance-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .attendance-table th {
+        background-color: #f8fafc;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        color: #4a5568;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .attendance-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+        color: #4a5568;
+    }
+    
+    .attendance-table tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .attendance-status {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .status-present {
+        background-color: #C6F6D5;
+        color: #22543D;
+    }
+    
+    .status-absent {
+        background-color: #FED7D7;
+        color: #822727;
+    }
+    
+    .attendance-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .summary-card {
+        background-color: #f8fafc;
+        border-radius: 10px;
+        padding: 1.5rem;
+        text-align: center;
+    }
+    
+    .summary-value {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: #1a202c;
+    }
+    
+    .summary-label {
+        font-size: 0.875rem;
+        color: #718096;
+    }
+    
+    .summary-percentage {
+        color: #3182CE;
+    }
+    
+    .summary-classes {
+        color: #805AD5;
+    }
+    
+    .summary-present {
+        color: #38A169;
+    }
+    
+    .summary-absent {
+        color: #E53E3E;
+    }
+    
+    .date-filter {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .date-filter select, .date-filter input {
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        color: #4a5568;
+    }
+
+    @media (max-width: 768px) {
+        .attendance-section {
+            padding: 1rem;
+        }
+        
+        .attendance-header {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .semester-select {
+            width: 100%;
+        }
+        
+        .attendance-summary {
+            grid-template-columns: 1fr;
+        }
+        
+        .date-filter {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Attendance Summary Section -->
+    <div class="attendance-section">
+        <div class="attendance-header">
+            <h3 class="attendance-title">Attendance Summary</h3>
+            <select class="semester-select" disabled>
+                <option>{{ semester_display }}</option>
+            </select>
+        </div>
+        
+        <div class="attendance-summary">
+            <div class="summary-card">
+                <div class="summary-value summary-percentage">{{ overall_percentage }}%</div>
+                <div class="summary-label">Overall Attendance</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-value summary-classes">{{ total_classes }}</div>
+                <div class="summary-label">Total Classes</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-value summary-present">{{ classes_present }}</div>
+                <div class="summary-label">Classes Present</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-value summary-absent">{{ classes_absent }}</div>
+                <div class="summary-label">Classes Absent</div>
+            </div>
+        </div>
+        
+        <div class="chart-wrapper">
+            <canvas id="attendanceChart"></canvas>
+        </div>
+    </div>
+    
+    <!-- Attendance Details Section -->
+    <div class="attendance-section">
+        <div class="attendance-header">
+            <h3 class="attendance-title">Attendance Details</h3>
+            <div class="date-filter">
+                <select id="subjectFilter" class="form-select">
+                    <option value="all">All Subjects</option>
+                    {% for subject in subjects %}
+                    <option value="{{ subject.id }}" {% if current_filters.subject == subject.id|stringformat:"s" %}selected{% endif %}>
+                        {{ subject.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <input type="date" id="startDate" class="form-control" value="{{ current_filters.start_date|default:'' }}">
+                <input type="date" id="endDate" class="form-control" value="{{ current_filters.end_date|default:'' }}">
+                <button class="btn btn-primary" id="filterBtn">Filter</button>
+            </div>
+        </div>
+        
+        <div class="attendance-details">
+            <table class="attendance-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Subject</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in attendance_records %}
+                    <tr>
+                        <td>{{ record.class_session.date|date:"d M, Y" }}</td>
+                        <td>{{ record.class_session.subject.name }}</td>
+                        <td>{{ record.class_session.start_time|time:"g:i A" }} - {{ record.class_session.end_time|time:"g:i A" }}</td>
+                        <td>
+                            {% if record.is_present %}
+                            <span class="attendance-status status-present">Present</span>
+                            {% else %}
+                            <span class="attendance-status status-absent">Absent</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ record.remarks|default:"-" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4">No attendance records found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var ctx = document.getElementById('attendanceChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [{{ chart_labels|join:',' }}],
+                datasets: [{
+                    label: 'Attendance %',
+                    data: {{ chart_data|safe }},
+                    backgroundColor: [
+                        '#4299E1',  // Blue
+                        '#48BB78',  // Green
+                        '#9F7AEA',  // Purple
+                        '#F6AD55',  // Orange
+                        '#FC8181',  // Red
+                        '#4FD1C5',  // Teal
+                        '#667EEA',  // Indigo
+                        '#F687B3',  // Pink
+                    ],
+                    borderWidth: 0,
+                    borderRadius: {
+                        topLeft: 4,
+                        topRight: 4
+                    },
+                    barThickness: 40,
+                    maxBarThickness: 60
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.raw + '%';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: {
+                            display: true,
+                            color: '#E2E8F0',
+                            drawBorder: false,
+                            drawTicks: false
+                        },
+                        border: {
+                            display: false
+                        },
+                        ticks: {
+                            padding: 10,
+                            font: {
+                                size: 12
+                            },
+                            stepSize: 20,
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        border: {
+                            display: false
+                        },
+                        ticks: {
+                            padding: 10,
+                            font: {
+                                size: 12,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                },
+                layout: {
+                    padding: {
+                        left: 10,
+                        right: 10,
+                        top: 10,
+                        bottom: 10
+                    }
+                }
+            }
+        });
+        
+        // Filter functionality
+        const filterBtn = document.getElementById('filterBtn');
+        const subjectFilter = document.getElementById('subjectFilter');
+        const startDate = document.getElementById('startDate');
+        const endDate = document.getElementById('endDate');
+        
+        filterBtn.addEventListener('click', function() {
+            const url = new URL(window.location.href);
+            
+            if (subjectFilter.value !== 'all') {
+                url.searchParams.set('subject', subjectFilter.value);
+            } else {
+                url.searchParams.delete('subject');
+            }
+            
+            if (startDate.value) {
+                url.searchParams.set('start_date', startDate.value);
+            } else {
+                url.searchParams.delete('start_date');
+            }
+            
+            if (endDate.value) {
+                url.searchParams.set('end_date', endDate.value);
+            } else {
+                url.searchParams.delete('end_date');
+            }
+            
+            window.location.href = url.toString();
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %} 

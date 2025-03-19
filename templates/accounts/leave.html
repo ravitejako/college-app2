@@ -1,0 +1,351 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Leave Applications - {{ user.get_full_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .leave-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .leave-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .leave-title {
+        color: #1a202c;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .leave-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid #e2e8f0;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #1a202c;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: #64748b;
+    }
+
+    .leave-grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .leave-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .leave-form {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .form-header {
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .form-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1a202c;
+        margin: 0;
+    }
+
+    .form-body {
+        padding: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #4b5563;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        color: #1a202c;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .submit-btn {
+        background: #4299e1;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .submit-btn:hover {
+        background: #3182ce;
+    }
+
+    .leave-history {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .history-header {
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .history-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1a202c;
+        margin: 0;
+    }
+
+    .history-filter {
+        padding: 0.5rem 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background: white;
+        color: #4a5568;
+        font-size: 0.9rem;
+    }
+
+    .leave-list {
+        padding: 1rem;
+    }
+
+    .leave-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .leave-item:last-child {
+        border-bottom: none;
+    }
+
+    .leave-date {
+        min-width: 48px;
+        text-align: center;
+    }
+
+    .leave-day {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #4299e1;
+        line-height: 1;
+    }
+
+    .leave-month {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin-top: 0.25rem;
+    }
+
+    .leave-details {
+        flex: 1;
+    }
+
+    .leave-type {
+        font-weight: 500;
+        color: #1a202c;
+        margin-bottom: 0.25rem;
+    }
+
+    .leave-duration {
+        font-size: 0.9rem;
+        color: #64748b;
+        margin-bottom: 0.5rem;
+    }
+
+    .leave-status {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .status-approved {
+        background: #dcfce7;
+        color: #059669;
+    }
+
+    .status-pending {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+    .status-rejected {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="leave-section">
+        <div class="leave-header">
+            <h3 class="leave-title">Leave Applications</h3>
+        </div>
+
+        <div class="leave-stats">
+            <div class="stat-card">
+                <div class="stat-value">8</div>
+                <div class="stat-label">Total Leaves</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">5</div>
+                <div class="stat-label">Leaves Taken</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">3</div>
+                <div class="stat-label">Leaves Remaining</div>
+            </div>
+        </div>
+
+        <div class="leave-grid">
+            <div class="leave-form">
+                <div class="form-header">
+                    <h4 class="form-title">Apply for Leave</h4>
+                </div>
+                <div class="form-body">
+                    <form>
+                        <div class="form-group">
+                            <label class="form-label">Leave Type</label>
+                            <select class="form-control">
+                                <option>Medical Leave</option>
+                                <option>Personal Leave</option>
+                                <option>Family Emergency</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">From Date</label>
+                            <input type="date" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">To Date</label>
+                            <input type="date" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Reason</label>
+                            <textarea class="form-control" placeholder="Enter your reason for leave"></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">Submit Application</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="leave-history">
+                <div class="history-header">
+                    <h4 class="history-title">Leave History</h4>
+                    <select class="history-filter">
+                        <option>All Applications</option>
+                        <option>Approved</option>
+                        <option>Pending</option>
+                        <option>Rejected</option>
+                    </select>
+                </div>
+                <div class="leave-list">
+                    <div class="leave-item">
+                        <div class="leave-date">
+                            <div class="leave-day">15</div>
+                            <div class="leave-month">MAR</div>
+                        </div>
+                        <div class="leave-details">
+                            <div class="leave-type">Medical Leave</div>
+                            <div class="leave-duration">15 Mar - 17 Mar (3 days)</div>
+                            <span class="leave-status status-approved">Approved</span>
+                        </div>
+                    </div>
+
+                    <div class="leave-item">
+                        <div class="leave-date">
+                            <div class="leave-day">10</div>
+                            <div class="leave-month">MAR</div>
+                        </div>
+                        <div class="leave-details">
+                            <div class="leave-type">Personal Leave</div>
+                            <div class="leave-duration">10 Mar (1 day)</div>
+                            <span class="leave-status status-pending">Pending</span>
+                        </div>
+                    </div>
+
+                    <div class="leave-item">
+                        <div class="leave-date">
+                            <div class="leave-day">5</div>
+                            <div class="leave-month">MAR</div>
+                        </div>
+                        <div class="leave-details">
+                            <div class="leave-type">Family Emergency</div>
+                            <div class="leave-duration">5 Mar - 6 Mar (2 days)</div>
+                            <span class="leave-status status-rejected">Rejected</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,284 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Student Services - {{ user.get_full_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .services-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .services-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .services-title {
+        color: #1a202c;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .services-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .service-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.2s;
+    }
+
+    .service-card:hover {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transform: translateY(-2px);
+    }
+
+    .service-icon {
+        width: 100%;
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: #4299e1;
+        background: #f8fafc;
+    }
+
+    .service-content {
+        padding: 1.5rem;
+    }
+
+    .service-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1a202c;
+        margin-bottom: 0.5rem;
+    }
+
+    .service-description {
+        font-size: 0.9rem;
+        color: #64748b;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+    }
+
+    .service-action {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .request-btn {
+        padding: 0.5rem 1rem;
+        background: #4299e1;
+        color: white;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .request-btn:hover {
+        background: #3182ce;
+    }
+
+    .service-status {
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+
+    .requests-section {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .requests-header {
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .requests-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1a202c;
+        margin: 0;
+    }
+
+    .request-list {
+        padding: 1rem;
+    }
+
+    .request-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .request-item:last-child {
+        border-bottom: none;
+    }
+
+    .request-info {
+        flex: 1;
+    }
+
+    .request-name {
+        font-weight: 500;
+        color: #1a202c;
+        margin-bottom: 0.25rem;
+    }
+
+    .request-date {
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+
+    .request-status {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .status-processing {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+    .status-completed {
+        background: #dcfce7;
+        color: #059669;
+    }
+
+    .status-cancelled {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="services-section">
+        <div class="services-header">
+            <h3 class="services-title">Student Services</h3>
+        </div>
+
+        <div class="services-grid">
+            <!-- Certificate Request -->
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-certificate"></i>
+                </div>
+                <div class="service-content">
+                    <h4 class="service-title">Certificate Request</h4>
+                    <p class="service-description">Request various certificates including bonafide, course completion, and transcripts.</p>
+                    <div class="service-action">
+                        <a href="#" class="request-btn">Request Certificate</a>
+                        <span class="service-status">2-3 days</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ID Card Replacement -->
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-id-card"></i>
+                </div>
+                <div class="service-content">
+                    <h4 class="service-title">ID Card Replacement</h4>
+                    <p class="service-description">Request a replacement for lost or damaged student ID cards.</p>
+                    <div class="service-action">
+                        <a href="#" class="request-btn">Request Card</a>
+                        <span class="service-status">3-4 days</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Library Services -->
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-book-reader"></i>
+                </div>
+                <div class="service-content">
+                    <h4 class="service-title">Library Services</h4>
+                    <p class="service-description">Access library resources, request books, and manage borrowings.</p>
+                    <div class="service-action">
+                        <a href="#" class="request-btn">Access Library</a>
+                        <span class="service-status">Available</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technical Support -->
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <div class="service-content">
+                    <h4 class="service-title">Technical Support</h4>
+                    <p class="service-description">Get help with technical issues related to student portal and online resources.</p>
+                    <div class="service-action">
+                        <a href="#" class="request-btn">Get Support</a>
+                        <span class="service-status">24/7</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="requests-section">
+            <div class="requests-header">
+                <h4 class="requests-title">Recent Requests</h4>
+            </div>
+            <div class="request-list">
+                <div class="request-item">
+                    <div class="request-info">
+                        <div class="request-name">Bonafide Certificate</div>
+                        <div class="request-date">Requested on Mar 15, 2024</div>
+                    </div>
+                    <span class="request-status status-processing">Processing</span>
+                </div>
+
+                <div class="request-item">
+                    <div class="request-info">
+                        <div class="request-name">ID Card Replacement</div>
+                        <div class="request-date">Requested on Mar 10, 2024</div>
+                    </div>
+                    <span class="request-status status-completed">Completed</span>
+                </div>
+
+                <div class="request-item">
+                    <div class="request-info">
+                        <div class="request-name">Library Card Renewal</div>
+                        <div class="request-date">Requested on Mar 5, 2024</div>
+                    </div>
+                    <span class="request-status status-cancelled">Cancelled</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

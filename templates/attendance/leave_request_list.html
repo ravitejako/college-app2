@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block title %}Leave Requests{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Leave Requests</h2>
+            <p class="text-muted">
+                {% if user.user_type == 'staff' %}
+                    Manage leave requests from your students
+                {% else %}
+                    Track your leave requests
+                {% endif %}
+            </p>
+        </div>
+        {% if user.user_type == 'student' %}
+            <div class="col-auto">
+                <a href="{% url 'leave_request_create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i> New Request
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    {% if leave_requests %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Subject</th>
+                                        <th>Type</th>
+                                        <th>Duration</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for request in leave_requests %}
+                                        <tr>
+                                            <td>{{ request.student.get_full_name|default:request.student.username }}</td>
+                                            <td>{{ request.subject.name }}</td>
+                                            <td>
+                                                <span class="badge bg-info">
+                                                    {{ request.get_leave_type_display }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {{ request.start_date|date:"M d" }} - {{ request.end_date|date:"M d" }}
+                                            </td>
+                                            <td>
+                                                {% if request.status == 'approved' %}
+                                                    <span class="badge bg-success">Approved</span>
+                                                {% elif request.status == 'rejected' %}
+                                                    <span class="badge bg-danger">Rejected</span>
+                                                {% else %}
+                                                    <span class="badge bg-warning">Pending</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <button type="button" 
+                                                        class="btn btn-sm btn-info" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#requestModal{{ request.id }}">
+                                                    <i class="fas fa-eye me-1"></i> View
+                                                </button>
+                                                {% if user.user_type == 'staff' and request.status == 'pending' %}
+                                                    <button type="button" 
+                                                            class="btn btn-sm btn-success" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#approveModal{{ request.id }}">
+                                                        <i class="fas fa-check me-1"></i> Approve
+                                                    </button>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        
+                                        <!-- View Request Modal -->
+                                        <div class="modal fade" id="requestModal{{ request.id }}" tabindex="-1">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Leave Request Details</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <dl class="row">
+                                                            <dt class="col-sm-4">Student</dt>
+                                                            <dd class="col-sm-8">{{ request.student.get_full_name|default:request.student.username }}</dd>
+                                                            
+                                                            <dt class="col-sm-4">Subject</dt>
+                                                            <dd class="col-sm-8">{{ request.subject.name }}</dd>
+                                                            
+                                                            <dt class="col-sm-4">Type</dt>
+                                                            <dd class="col-sm-8">{{ request.get_leave_type_display }}</dd>
+                                                            
+                                                            <dt class="col-sm-4">Duration</dt>
+                                                            <dd class="col-sm-8">{{ request.start_date|date:"M d, Y" }} - {{ request.end_date|date:"M d, Y" }}</dd>
+                                                            
+                                                            <dt class="col-sm-4">Status</dt>
+                                                            <dd class="col-sm-8">
+                                                                {% if request.status == 'approved' %}
+                                                                    <span class="badge bg-success">Approved</span>
+                                                                {% elif request.status == 'rejected' %}
+                                                                    <span class="badge bg-danger">Rejected</span>
+                                                                {% else %}
+                                                                    <span class="badge bg-warning">Pending</span>
+                                                                {% endif %}
+                                                            </dd>
+                                                            
+                                                            <dt class="col-sm-4">Reason</dt>
+                                                            <dd class="col-sm-8">{{ request.reason }}</dd>
+                                                            
+                                                            {% if request.status != 'pending' %}
+                                                                <dt class="col-sm-4">Processed By</dt>
+                                                                <dd class="col-sm-8">{{ request.approved_by.get_full_name|default:request.approved_by.username }}</dd>
+                                                                
+                                                                <dt class="col-sm-4">Processed On</dt>
+                                                                <dd class="col-sm-8">{{ request.approved_at|date:"M d, Y H:i" }}</dd>
+                                                            {% endif %}
+                                                        </dl>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Approve Request Modal -->
+                                        {% if user.user_type == 'staff' and request.status == 'pending' %}
+                                            <div class="modal fade" id="approveModal{{ request.id }}" tabindex="-1">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Process Leave Request</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                        </div>
+                                                        <form method="post" action="{% url 'approve_leave' request.id %}">
+                                                            {% csrf_token %}
+                                                            <div class="modal-body">
+                                                                <p>Are you sure you want to approve this leave request?</p>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                                <button type="submit" name="action" value="approve" class="btn btn-success">
+                                                                    <i class="fas fa-check me-1"></i> Approve
+                                                                </button>
+                                                                <button type="submit" name="action" value="reject" class="btn btn-danger">
+                                                                    <i class="fas fa-times me-1"></i> Reject
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">No leave requests found.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

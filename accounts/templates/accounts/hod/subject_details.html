@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Subject Details - {{ subject.name }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Subject Details</h1>
+        <a href="{% url 'hod_manage_subjects' %}" class="btn btn-secondary">Back to Subjects</a>
+    </div>
+
+    <!-- Subject Information Card -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">{{ subject.name }}</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Subject Code:</strong> {{ subject.code }}</p>
+                    <p><strong>Department:</strong> {{ subject.department.name }}</p>
+                    <p><strong>Semester:</strong> {{ subject.semester }}</p>
+                    <p><strong>Credits:</strong> {{ subject.credits }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Assigned Staff:</strong> 
+                        {% if assigned_staff %}
+                            {{ assigned_staff.get_full_name }}
+                        {% else %}
+                            <span class="text-muted">Not Assigned</span>
+                        {% endif %}
+                    </p>
+                    <p><strong>Created At:</strong> {{ subject.created_at|date:"F d, Y" }}</p>
+                </div>
+            </div>
+            {% if subject.description %}
+            <div class="mt-3">
+                <h6>Description:</h6>
+                <p>{{ subject.description }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Assign Staff Section -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Assign Staff</h5>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="assign_staff">
+                <input type="hidden" name="subject_id" value="{{ subject.id }}">
+                <div class="row">
+                    <div class="col-md-8">
+                        <select name="staff_id" class="form-select" required>
+                            <option value="">Select Staff Member</option>
+                            {% for staff in staff_members %}
+                            <option value="{{ staff.id }}" {% if staff.id == assigned_staff.id %}selected{% endif %}>
+                                {{ staff.get_full_name }} - {{ staff.designation }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-primary">Assign Staff</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Subject Statistics -->
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Enrolled Students</h5>
+                    <h2 class="card-text">{{ enrolled_students_count|default:"0" }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Average Attendance</h5>
+                    <h2 class="card-text">{{ average_attendance|default:"0" }}%</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Assignments</h5>
+                    <h2 class="card-text">{{ assignments_count|default:"0" }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %} 

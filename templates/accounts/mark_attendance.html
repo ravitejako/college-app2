@@ -1,0 +1,307 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mark Attendance - Staff Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    .attendance-container {
+        padding: 2rem;
+    }
+    
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .page-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: #2d3748;
+    }
+    
+    .card {
+        border-radius: 10px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .card-header {
+        background-color: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+        color: #4a5568;
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        font-weight: 500;
+        color: #4a5568;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-control {
+        border-radius: 0.5rem;
+        border: 1px solid #e2e8f0;
+        padding: 0.75rem 1rem;
+        width: 100%;
+    }
+    
+    .form-control:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .btn-primary {
+        background-color: #3b82f6;
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-primary:hover {
+        background-color: #2563eb;
+    }
+    
+    .btn-secondary {
+        background-color: #e2e8f0;
+        color: #4a5568;
+        border: none;
+        border-radius: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-secondary:hover {
+        background-color: #cbd5e0;
+    }
+    
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .table th {
+        background-color: #f8fafc;
+        color: #4a5568;
+        font-weight: 600;
+        text-align: left;
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .table td {
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+        color: #2d3748;
+    }
+    
+    .table tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    
+    .badge-success {
+        background-color: #c6f6d5;
+        color: #22543d;
+    }
+    
+    .badge-danger {
+        background-color: #fed7d7;
+        color: #822727;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+    }
+    
+    .empty-icon {
+        font-size: 3rem;
+        color: #a0aec0;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #4a5568;
+        margin-bottom: 0.5rem;
+    }
+    
+    .empty-description {
+        color: #718096;
+        margin-bottom: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="attendance-container">
+    <div class="page-header">
+        <h1 class="page-title">Mark Attendance</h1>
+    </div>
+    
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    Select Class
+                </div>
+                <div class="card-body">
+                    {% if subjects %}
+                        <form method="get" action="{% url 'mark_attendance' %}" id="findClassForm">
+                            <div class="form-group">
+                                <label for="subject" class="form-label">Subject</label>
+                                <select name="subject" id="subject" class="form-control" required>
+                                    <option value="">Select Subject</option>
+                                    {% for subject in subjects %}
+                                        <option value="{{ subject.id }}" {% if request.GET.subject|add:"0" == subject.id %}selected{% endif %}>{{ subject.name }} ({{ subject.code }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="date" class="form-label">Date</label>
+                                <input type="date" name="date" id="date" class="form-control" value="{{ request.GET.date|default:today|date:'Y-m-d' }}" required>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary" id="findClassBtn">
+                                <i class="fas fa-search"></i>
+                                Find Class
+                            </button>
+                        </form>
+                        
+                        {% if request.GET.subject and request.GET.date and available_classes %}
+                        <div class="form-group mt-4">
+                            <label for="class_select" class="form-label">Available Classes</label>
+                            <select name="class_select" id="class_select" class="form-control">
+                                <option value="">Select a Class</option>
+                                {% for class in available_classes %}
+                                    <option value="{{ class.id }}">{{ class.start_time|time:"g:i A" }} - {{ class.end_time|time:"g:i A" }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <h2 class="empty-title">No Subjects Found</h2>
+                            <p class="empty-description">You don't have any subjects assigned to you.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    Today's Classes
+                </div>
+                <div class="card-body">
+                    {% if classes %}
+                        <div class="list-group">
+                            {% for class in classes %}
+                                <a href="{% url 'take_attendance' class.subject.id %}?date={{ class.date|date:'Y-m-d' }}&class_id={{ class.id }}" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">{{ class.subject.name }}</h5>
+                                        <small>{{ class.start_time|time:"g:i A" }} - {{ class.end_time|time:"g:i A" }}</small>
+                                    </div>
+                                    <p class="mb-1">{{ class.subject.code }}</p>
+                                    <small>{{ class.subject.semester }} Semester</small>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No classes scheduled for today.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    Recent Attendance Records
+                </div>
+                <div class="card-body">
+                    {% if request.GET.subject %}
+                        <div class="text-center mb-4">
+                            <a href="{% url 'take_attendance' request.GET.subject %}{% if request.GET.date %}?date={{ request.GET.date }}{% endif %}{% if request.GET.class_id %}&class_id={{ request.GET.class_id }}{% endif %}" class="btn btn-primary" id="takeAttendanceBtn">
+                                <i class="fas fa-clipboard-check"></i>
+                                Take Attendance
+                            </a>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="empty-state" id="selectClassMessage">
+                        <div class="empty-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <h2 class="empty-title">Select a Class</h2>
+                        <p class="empty-description">Please select a subject and date to take attendance.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const classSelect = document.getElementById('class_select');
+        const takeAttendanceBtn = document.getElementById('takeAttendanceBtn');
+        
+        if (classSelect && takeAttendanceBtn) {
+            classSelect.addEventListener('change', function() {
+                const classId = this.value;
+                if (classId) {
+                    // Update the Take Attendance button URL to include the class_id
+                    const currentHref = takeAttendanceBtn.getAttribute('href');
+                    const baseUrl = currentHref.split('?')[0];
+                    const urlParams = new URLSearchParams(currentHref.split('?')[1] || '');
+                    
+                    urlParams.set('class_id', classId);
+                    takeAttendanceBtn.setAttribute('href', `${baseUrl}?${urlParams.toString()}`);
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %} 

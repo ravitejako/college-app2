@@ -1,0 +1,409 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Student Portal{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Shared CSS -->
+    <link href="{% static 'css/shared.css' %}" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="{% static 'css/custom.css' %}" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #1a202c;
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        .dashboard-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .nav-container {
+            width: 280px;
+            background: white;
+            min-height: 100vh;
+            padding: 1.5rem 1rem;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            box-shadow: 1px 0 3px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        .nav-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            height: 100%;
+            position: relative;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            color: #4a5568;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .nav-item:hover {
+            background-color: #f7fafc;
+            color: #2b6cb0;
+        }
+
+        .nav-item.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .nav-item i {
+            font-size: 1.2rem;
+            margin-right: 1rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .nav-item.enrollment {
+            background-color: #3b82f6;
+            color: white;
+            margin-top: 0.5rem;
+        }
+
+        .nav-item.enrollment:hover {
+            background-color: #2563eb;
+        }
+
+        .nav-item.profile {
+            background-color: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 1rem;
+        }
+
+        .nav-item.profile:hover {
+            background-color: #e5e7eb;
+            color: #1f2937;
+        }
+
+        .nav-item.logout {
+            margin-top: auto;
+            background-color: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .nav-item.logout:hover {
+            background-color: #fecaca;
+            color: #b91c1c;
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                width: 100%;
+                height: auto;
+                position: relative;
+                min-height: auto;
+                margin-bottom: 1rem;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .dashboard-layout {
+                flex-direction: column;
+            }
+
+            .nav-item {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% if messages %}
+    <div class="message-container position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050;">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="{% if user.is_authenticated and request.resolver_match.url_name not in 'index,login,student_register,staff_register' %}dashboard-layout{% else %}container py-4{% endif %}">
+        {% if user.is_authenticated and user.user_type == 'student' and request.resolver_match.url_name not in 'index,login,student_register,staff_register' %}
+        <div class="nav-container">
+            <nav class="nav-grid">
+                <a href="{% url 'profile' %}" class="nav-item profile">
+                    <i class="fas fa-user-circle"></i>
+                    Profile
+                </a>
+                <a href="{% url 'institution' %}" class="nav-item">
+                    <i class="fas fa-university"></i>
+                    My Institution
+                </a>
+                <a href="{% url 'messages' %}" class="nav-item">
+                    <i class="fas fa-envelope"></i>
+                    Messages
+                </a>
+                <a href="{% url 'attendance' %}" class="nav-item">
+                    <i class="fas fa-calendar-check"></i>
+                    Attendance
+                </a>
+                <a href="{% url 'assignments' %}" class="nav-item">
+                    <i class="fas fa-tasks"></i>
+                    Assignments
+                </a>
+                <a href="{% url 'exam_schedules' %}" class="nav-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    Exam Schedules
+                </a>
+                <a href="{% url 'reports' %}" class="nav-item">
+                    <i class="fas fa-chart-bar"></i>
+                    Reports
+                </a>
+                <a href="{% url 'assessments' %}" class="nav-item">
+                    <i class="fas fa-clipboard-check"></i>
+                    Assessments
+                </a>
+                <a href="{% url 'holidays' %}" class="nav-item">
+                    <i class="fas fa-umbrella-beach"></i>
+                    Holidays
+                </a>
+                <a href="{% url 'timetable' %}" class="nav-item">
+                    <i class="fas fa-clock"></i>
+                    Timetable
+                </a>
+                <a href="{% url 'teaching_content' %}" class="nav-item">
+                    <i class="fas fa-book"></i>
+                    Teaching Content
+                </a>
+                <a href="{% url 'leave' %}" class="nav-item">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Leave
+                </a>
+                <a href="{% url 'services' %}" class="nav-item">
+                    <i class="fas fa-cogs"></i>
+                    Services
+                </a>
+                <a href="{% url 'billing' %}" class="nav-item">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    Billing
+                </a>
+                <a href="{% url 'enrollment' %}" class="nav-item enrollment">
+                    <i class="fas fa-user-graduate"></i>
+                    Enrollment
+                </a>
+                <a href="{% url 'logout' %}" class="nav-item logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </nav>
+        </div>
+        <div class="main-content">
+        {% elif user.is_authenticated and user.user_type == 'staff' and request.resolver_match.url_name not in 'index,login,student_register,staff_register' %}
+        <div class="nav-container">
+            <nav class="nav-grid">
+                <a href="{% url 'profile' %}" class="nav-item profile">
+                    <i class="fas fa-user-circle"></i>
+                    Profile
+                </a>
+                <a href="{% url 'staff_dashboard' %}" class="nav-item">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Dashboard
+                </a>
+                <a href="{% url 'staff_assignments' %}" class="nav-item">
+                    <i class="fas fa-tasks"></i>
+                    Assignments
+                </a>
+                <a href="{% url 'mark_attendance' %}" class="nav-item">
+                    <i class="fas fa-calendar-check"></i>
+                    Attendance
+                </a>
+                <a href="{% url 'logout' %}" class="nav-item logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </nav>
+        </div>
+        <div class="main-content">
+        {% elif user.is_authenticated and user.user_type == 'hod' and request.resolver_match.url_name not in 'index,login,student_register,staff_register' %}
+        <div class="nav-container">
+            <nav class="nav-grid">
+                <a href="{% url 'profile' %}" class="nav-item profile">
+                    <i class="fas fa-user-circle"></i>
+                    Profile
+                </a>
+                <a href="{% url 'hod_dashboard' %}" class="nav-item">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Dashboard
+                </a>
+                <a href="{% url 'hod_manage_staff' %}" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    Manage Staff
+                </a>
+                <a href="{% url 'hod_manage_subjects' %}" class="nav-item">
+                    <i class="fas fa-book"></i>
+                    Manage Subjects
+                </a>
+                <a href="{% url 'mark_attendance' %}" class="nav-item">
+                    <i class="fas fa-calendar-check"></i>
+                    Mark Attendance
+                </a>
+                <a href="{% url 'logout' %}" class="nav-item logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </nav>
+        </div>
+        {% endif %}
+            {% block content %}{% endblock %}
+        {% if user.is_authenticated and request.resolver_match.url_name not in 'index,login,student_register,staff_register' %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Theme Toggle Button -->
+    <div class="theme-toggle" id="themeToggle" data-bs-toggle="tooltip" data-bs-placement="left" title="Toggle Light/Dark Mode">
+        <i class="fas fa-moon" id="themeIcon"></i>
+    </div>
+    
+    <!-- Auto Theme Button -->
+    <div class="theme-toggle auto-theme" id="autoTheme" style="bottom: 80px; background-color: #6c757d;" data-bs-toggle="tooltip" data-bs-placement="left" title="Use System Theme">
+        <i class="fas fa-magic"></i>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Theme Toggle Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+            
+            // Theme toggle functionality
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const autoTheme = document.getElementById('autoTheme');
+            const body = document.body;
+            
+            // Check for saved theme preference or auto mode
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            // Function to apply theme based on system preference
+            function applySystemTheme() {
+                if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    body.classList.add('dark-theme');
+                    themeIcon.classList.replace('fa-moon', 'fa-sun');
+                } else {
+                    body.classList.remove('dark-theme');
+                    themeIcon.classList.replace('fa-sun', 'fa-moon');
+                }
+            }
+            
+            // Apply theme based on saved preference or system preference
+            if (savedTheme === 'auto') {
+                autoTheme.classList.add('active');
+                applySystemTheme();
+            } else if (savedTheme === 'dark') {
+                body.classList.add('dark-theme');
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+            }
+            
+            // Toggle theme when button is clicked
+            themeToggle.addEventListener('click', function() {
+                if (localStorage.getItem('theme') === 'auto') {
+                    localStorage.setItem('theme', body.classList.contains('dark-theme') ? 'light' : 'dark');
+                    autoTheme.classList.remove('active');
+                }
+                
+                body.classList.toggle('dark-theme');
+                
+                if (body.classList.contains('dark-theme')) {
+                    localStorage.setItem('theme', 'dark');
+                    themeIcon.classList.replace('fa-moon', 'fa-sun');
+                } else {
+                    localStorage.setItem('theme', 'light');
+                    themeIcon.classList.replace('fa-sun', 'fa-moon');
+                }
+            });
+            
+            // Auto theme button handler
+            autoTheme.addEventListener('click', function() {
+                autoTheme.classList.toggle('active');
+                
+                if (autoTheme.classList.contains('active')) {
+                    localStorage.setItem('theme', 'auto');
+                    applySystemTheme();
+                } else {
+                    // If turning off auto, set to current state
+                    localStorage.setItem('theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
+                }
+            });
+            
+            // Listen for system theme changes when in auto mode
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
+                if (localStorage.getItem('theme') === 'auto') {
+                    applySystemTheme();
+                }
+            });
+            
+            // Auto-dismiss alerts after 5 seconds
+            setTimeout(function() {
+                var alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function(alert) {
+                    var bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                });
+            }, 5000);
+        });
+    </script>
+    
+    <!-- jQuery (if needed) -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html> 

@@ -1,0 +1,492 @@
+/* Additional custom styles for the college attendance system */
+
+body {
+  padding-top: 60px; /* Adjust this value based on your navbar height */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navbar {
+  z-index: 1030; /* Ensure navbar stays above other content */
+}
+
+.content-wrapper {
+  margin-top: 20px; /* Add additional space between navbar and content */
+  overflow-x: hidden; /* Prevent horizontal overflow */
+}
+
+/* ==== LAYOUT FIXES FOR HOD TEMPLATES ==== */
+
+/* Fix container layout */
+.container-fluid, .container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  padding: 0 15px;
+  box-sizing: border-box;
+}
+
+/* Row and column fixes */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
+.row > [class*="col-"] {
+  padding-left: 15px;
+  padding-right: 15px;
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Card fixes */
+.card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.card-body {
+  flex: 1 1 auto;
+}
+
+/* Table container fixes */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  display: block;
+}
+
+.table {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 1rem;
+}
+
+/* Fix for action buttons */
+td [class*="btn"] {
+  flex-shrink: 0;
+  margin: 2px;
+  white-space: nowrap;
+}
+
+.d-flex {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.d-flex.justify-content-end {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Fix overflow on specific elements */
+.dashboard-card, .list-card, .stat-card {
+  overflow: hidden;
+  width: 100%;
+}
+
+/* Responsive fixes for specific screen sizes */
+@media (max-width: 1200px) {
+  .container-fluid {
+    padding: 0 10px;
+  }
+}
+
+@media (max-width: 992px) {
+  .dashboard-card, .list-card, .stat-card {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .d-flex.justify-content-between {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .d-flex.justify-content-between > div {
+    margin-top: 10px;
+    width: 100%;
+  }
+  
+  td [class*="btn"] {
+    padding: 6px 8px;
+  }
+  
+  .btn {
+    margin-bottom: 5px;
+  }
+}
+
+@media (max-width: 576px) {
+  .row {
+    margin-left: -5px;
+    margin-right: -5px;
+  }
+  
+  .row > [class*="col-"] {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+  
+  td [class*="btn"] {
+    padding: 4px 6px;
+    font-size: 12px;
+  }
+  
+  td {
+    padding: 8px 4px !important;
+  }
+}
+
+/* Table responsiveness - ensure tables don't overflow */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Adjust action buttons in tables for smaller screens */
+@media (max-width: 767px) {
+  td [class*="btn"] {
+    margin-bottom: 5px !important;
+    display: inline-block;
+  }
+  
+  /* Stack action buttons vertically on very small screens */
+  @media (max-width: 480px) {
+    td [class*="btn"] {
+      display: block;
+      width: 100% !important;
+      margin: 2px 0 !important;
+    }
+  }
+}
+
+/* Adjust card layout for better stacking */
+.row > [class*="col-"] {
+  margin-bottom: 15px; /* Add space between stacked cards */
+}
+
+/* Prevent flex overflow issues */
+.d-flex {
+  flex-wrap: wrap;
+}
+
+/* Fix for action buttons alignment */
+td[style="text-align: right;"] {
+  white-space: nowrap;
+}
+
+/* Ensure modals don't overflow on small screens */
+.modal-dialog {
+  max-width: 95%;
+  margin: 1.75rem auto;
+}
+
+@media (min-width: 576px) {
+  .modal-dialog {
+    max-width: 500px;
+  }
+  
+  .modal-dialog.modal-lg {
+    max-width: 800px;
+  }
+}
+
+/* Dark Theme Styles */
+body.dark-theme {
+  background-color: #121212 !important;
+  color: #f8f9fa !important;
+}
+
+/* Nav container */
+body.dark-theme .nav-container {
+  background-color: #1e1e1e !important;
+  box-shadow: 1px 0 3px rgba(0, 0, 0, 0.5) !important;
+}
+
+body.dark-theme .nav-item {
+  color: #e2e2e2 !important;
+}
+
+body.dark-theme .nav-item:hover {
+  background-color: #2a2a2a !important;
+  color: #ffffff !important;
+}
+
+body.dark-theme .nav-item.active {
+  background-color: #3b82f6 !important;
+  color: white !important;
+}
+
+/* Cards */
+body.dark-theme .card {
+  background-color: #1e1e1e !important;
+  color: #f8f9fa !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.dark-theme .card-header {
+  background-color: #1e1e1e !important;
+  border-color: #333 !important;
+}
+
+/* Tables */
+body.dark-theme .table {
+  color: #f8f9fa !important;
+}
+
+body.dark-theme .table th {
+  background-color: #2a2a2a !important;
+  color: #f8f9fa !important;
+  border-color: #333 !important;
+}
+
+body.dark-theme .table td {
+  color: #f8f9fa !important;
+  border-color: #333 !important;
+}
+
+body.dark-theme .table-hover tbody tr:hover {
+  background-color: #2a2a2a !important;
+}
+
+/* Form controls */
+body.dark-theme input,
+body.dark-theme select,
+body.dark-theme textarea,
+body.dark-theme .form-control,
+body.dark-theme .form-select {
+  background-color: #2a2a2a !important;
+  color: #f8f9fa !important;
+  border-color: #444 !important;
+}
+
+body.dark-theme .form-label {
+  color: #f8f9fa !important;
+}
+
+/* Buttons */
+body.dark-theme .btn-primary {
+  background-color: #3b82f6 !important;
+  border-color: #2563eb !important;
+}
+
+body.dark-theme .btn-secondary {
+  background-color: #4b5563 !important;
+  border-color: #374151 !important;
+}
+
+body.dark-theme .btn-success {
+  background-color: #10b981 !important;
+  border-color: #059669 !important;
+}
+
+body.dark-theme .btn-danger {
+  background-color: #ef4444 !important;
+  border-color: #dc2626 !important;
+}
+
+body.dark-theme .btn-warning {
+  background-color: #f59e0b !important;
+  border-color: #d97706 !important;
+  color: #000 !important;
+}
+
+body.dark-theme .btn-info {
+  background-color: #3b82f6 !important;
+  border-color: #2563eb !important;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1040;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #3b82f6;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1);
+  background-color: #2563eb;
+}
+
+.theme-toggle i {
+  font-size: 1.5rem;
+}
+
+/* Auto Theme Button */
+.auto-theme {
+  background-color: #6c757d;
+}
+
+.auto-theme:hover {
+  background-color: #5a6268;
+}
+
+.auto-theme.active {
+  background-color: #28a745;
+}
+
+.auto-theme.active:hover {
+  background-color: #218838;
+}
+
+/* More Dark Theme Styles */
+
+/* Alerts */
+body.dark-theme .alert {
+  border-color: #333 !important;
+}
+
+body.dark-theme .alert-primary {
+  background-color: #1e3a8a !important;
+  color: #f8f9fa !important;
+}
+
+body.dark-theme .alert-secondary {
+  background-color: #374151 !important;
+  color: #f8f9fa !important;
+}
+
+body.dark-theme .alert-success {
+  background-color: #065f46 !important;
+  color: #f8f9fa !important;
+}
+
+body.dark-theme .alert-danger {
+  background-color: #7f1d1d !important;
+  color: #f8f9fa !important;
+}
+
+body.dark-theme .alert-warning {
+  background-color: #78350f !important;
+  color: #f8f9fa !important;
+}
+
+body.dark-theme .alert-info {
+  background-color: #1e40af !important;
+  color: #f8f9fa !important;
+}
+
+/* List groups */
+body.dark-theme .list-group-item {
+  background-color: #1e1e1e !important;
+  color: #f8f9fa !important;
+  border-color: #333 !important;
+}
+
+body.dark-theme .list-group-item.active {
+  background-color: #3b82f6 !important;
+  border-color: #2563eb !important;
+}
+
+body.dark-theme .list-group-item.disabled {
+  background-color: #2a2a2a !important;
+  color: #6c757d !important;
+}
+
+body.dark-theme .list-group-item-primary {
+  background-color: #1e3a8a !important;
+  color: #f8f9fa !important;
+}
+
+body.dark-theme .list-group-item-success {
+  background-color: #065f46 !important;
+  color: #f8f9fa !important;
+}
+
+/* Progress bars */
+body.dark-theme .progress {
+  background-color: #2a2a2a !important;
+}
+
+/* Typography */
+body.dark-theme a {
+  color: #60a5fa !important;
+}
+
+body.dark-theme a:hover {
+  color: #93c5fd !important;
+}
+
+body.dark-theme mark {
+  background-color: #78350f !important;
+  color: #f8f9fa !important;
+}
+
+body.dark-theme code {
+  background-color: #2a2a2a !important;
+  color: #e879f9 !important;
+}
+
+body.dark-theme blockquote {
+  border-left: 0.25rem solid #444 !important;
+}
+
+body.dark-theme .blockquote-footer {
+  color: #9ca3af !important;
+}
+
+/* Add these specific rules for action button columns */
+
+/* Special handling for action button columns */
+td.p-2[style="text-align: right;"] {
+  min-width: 160px; /* Ensure minimum width for action columns */
+  padding-right: 10px !important;
+}
+
+/* For action button groups */
+.action-buttons-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+/* Action buttons should maintain their size */
+a.btn[style*="width: 36px"] {
+  flex: 0 0 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+}
+
+/* Extra fixes for tables with many columns */
+@media (max-width: 992px) {
+  .table-responsive table {
+    min-width: 800px; /* Ensure horizontal scrolling works properly */
+  }
+}
+
+/* Improve mobile layouts */
+@media (max-width: 576px) {
+  .table-responsive {
+    margin-left: -15px;
+    margin-right: -15px;
+    padding-left: 15px;
+    padding-right: 15px;
+    width: calc(100% + 30px);
+  }
+} 

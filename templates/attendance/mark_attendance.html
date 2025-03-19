@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mark Attendance{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">Mark Attendance - {{ today_date }}</h2>
+    
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    {% if not class_id %}
+        <!-- Class Selection -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Today's Classes</h5>
+            </div>
+            <div class="card-body">
+                {% if classes %}
+                    <div class="list-group">
+                        {% for class in classes %}
+                        <a href="{% url 'mark_attendance' class.id %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{ class.subject.name }} ({{ class.subject.code }})</h5>
+                                <small>{{ class.start_time|time:"g:i A" }} - {{ class.end_time|time:"g:i A" }}</small>
+                            </div>
+                            <p class="mb-1">Room: {{ class.room_number|default:"Not specified" }}</p>
+                            <small>Semester {{ class.subject.semester }}</small>
+                        </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No classes scheduled for today.</p>
+                {% endif %}
+            </div>
+        </div>
+    {% else %}
+        <!-- Attendance Form -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    {{ selected_class.subject.name }} ({{ selected_class.subject.code }})
+                </h5>
+                <div>
+                    <span class="badge bg-primary">{{ selected_class.start_time|time:"g:i A" }} - {{ selected_class.end_time|time:"g:i A" }}</span>
+                    <span class="badge bg-secondary">Room {{ selected_class.room_number|default:"TBD" }}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <form method="post" id="attendanceForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="class_id" value="{{ selected_class.id }}">
+                    
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <button type="button" class="btn btn-success btn-sm me-2" onclick="markAllPresent()">Mark All Present</button>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="markAllAbsent()">Mark All Absent</button>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="autoSubmit">
+                                <label class="form-check-label" for="autoSubmit">Auto-submit on change</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Roll Number</th>
+                                    <th>Student Name</th>
+                                    <th>Status</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for student in students %}
+                                <tr>
+                                    <td>{{ student.roll_number }}</td>
+                                    <td>{{ student.get_full_name }}</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <input type="radio" 
+                                                   class="btn-check attendance-radio" 
+                                                   name="attendance[]" 
+                                                   value="{{ student.id }}_present"
+                                                   id="present_{{ student.id }}"
+                                                   {% if existing_attendance.student.id.is_present %}checked{% endif %}
+                                                   autocomplete="off">
+                                            <label class="btn btn-outline-success" for="present_{{ student.id }}">Present</label>
+                                            
+                                            <input type="radio" 
+                                                   class="btn-check attendance-radio" 
+                                                   name="attendance[]" 
+                                                   value="{{ student.id }}_absent"
+                                                   id="absent_{{ student.id }}"
+                                                   {% if existing_attendance.student.id and not existing_attendance.student.id.is_present %}checked{% endif %}
+                                                   autocomplete="off">
+                                            <label class="btn btn-outline-danger" for="absent_{{ student.id }}">Absent</label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <input type="text" 
+                                               class="form-control form-control-sm" 
+                                               name="remarks[]" 
+                                               value="{{ existing_attendance.student.id.remarks|default:'' }}"
+                                               placeholder="Optional remarks">
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="text-end mt-3">
+                        <a href="{% url 'mark_attendance' %}" class="btn btn-secondary">Back to Classes</a>
+                        <button type="submit" class="btn btn-primary">Submit Attendance</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('attendanceForm');
+    const autoSubmit = document.getElementById('autoSubmit');
+    const radios = document.querySelectorAll('.attendance-radio');
+    
+    // Auto-submit functionality
+    radios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (autoSubmit.checked) {
+                form.submit();
+            }
+        });
+    });
+    
+    // Form validation
+    form.addEventListener('submit', function(e) {
+        const unmarkedStudents = [];
+        const students = document.querySelectorAll('tbody tr');
+        
+        students.forEach(row => {
+            const studentName = row.querySelector('td:nth-child(2)').textContent;
+            const radios = row.querySelectorAll('input[type="radio"]');
+            const isMarked = Array.from(radios).some(r => r.checked);
+            
+            if (!isMarked) {
+                unmarkedStudents.push(studentName);
+            }
+        });
+        
+        if (unmarkedStudents.length > 0) {
+            e.preventDefault();
+            alert(`Please mark attendance for the following students:\n${unmarkedStudents.join('\n')}`);
+        }
+    });
+});
+
+function markAllPresent() {
+    document.querySelectorAll('input[id^="present_"]').forEach(radio => {
+        radio.checked = true;
+    });
+}
+
+function markAllAbsent() {
+    document.querySelectorAll('input[id^="absent_"]').forEach(radio => {
+        radio.checked = true;
+    });
+}
+</script>
+{% endblock %}
+{% endblock %} 

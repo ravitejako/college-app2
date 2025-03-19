@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+{% load attendance_tags %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2>Welcome back, {{ user.get_full_name|default:user.username }}</h2>
+                <p>Here's your attendance overview for today</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <span class="badge bg-light text-dark">
+                    <i class="fas fa-calendar-day me-2"></i>
+                    {{ today|date:"F d, Y" }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Today's Classes -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calendar-check me-2"></i>
+                        Today's Classes
+                    </h5>
+                    <span class="badge bg-primary">{{ today_classes.count }}</span>
+                </div>
+                <div class="card-body">
+                    {% if today_classes %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Subject</th>
+                                        <th>Time</th>
+                                        <th>Room</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for class in today_classes %}
+                                        <tr>
+                                            <td>
+                                                <i class="fas fa-book me-2 text-primary"></i>
+                                                {{ class.subject.name }}
+                                            </td>
+                                            <td>
+                                                <i class="far fa-clock me-2 text-info"></i>
+                                                {{ class.start_time|time:"H:i" }} - {{ class.end_time|time:"H:i" }}
+                                            </td>
+                                            <td>
+                                                <i class="fas fa-door-open me-2 text-success"></i>
+                                                {{ class.room_number|default:"Not specified" }}
+                                            </td>
+                                            <td>
+                                                {% with attendance=class.attendances.first %}
+                                                    {% if attendance %}
+                                                        {% if attendance.is_present %}
+                                                            <span class="badge bg-success">
+                                                                <i class="fas fa-check-circle me-1"></i>
+                                                                Present
+                                                            </span>
+                                                        {% else %}
+                                                            <span class="badge bg-danger">
+                                                                <i class="fas fa-times-circle me-1"></i>
+                                                                Absent
+                                                            </span>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <span class="badge bg-warning">
+                                                            <i class="fas fa-clock me-1"></i>
+                                                            Not Marked
+                                                        </span>
+                                                    {% endif %}
+                                                {% endwith %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                            <p class="text-muted mb-0">No classes scheduled for today.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Classes -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calendar-alt me-2"></i>
+                        Upcoming Classes
+                    </h5>
+                    <span class="badge bg-primary">{{ upcoming_classes.count }}</span>
+                </div>
+                <div class="card-body">
+                    {% if upcoming_classes %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Subject</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Room</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for class in upcoming_classes %}
+                                        <tr>
+                                            <td>
+                                                <i class="fas fa-book me-2 text-primary"></i>
+                                                {{ class.subject.name }}
+                                            </td>
+                                            <td>
+                                                <i class="far fa-calendar me-2 text-info"></i>
+                                                {{ class.date|date:"M d, Y" }}
+                                            </td>
+                                            <td>
+                                                <i class="far fa-clock me-2 text-success"></i>
+                                                {{ class.start_time|time:"H:i" }} - {{ class.end_time|time:"H:i" }}
+                                            </td>
+                                            <td>
+                                                <i class="fas fa-door-open me-2 text-warning"></i>
+                                                {{ class.room_number|default:"Not specified" }}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-calendar-check fa-3x text-muted mb-3"></i>
+                            <p class="text-muted mb-0">No upcoming classes scheduled.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attendance Summary -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>
+                        Attendance Summary (Last 30 Days)
+                    </h5>
+                    <span class="badge bg-primary">{{ attendance_summary|length }} Subjects</span>
+                </div>
+                <div class="card-body">
+                    {% if attendance_summary %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Subject</th>
+                                        <th>Total Classes</th>
+                                        <th>Present</th>
+                                        <th>Percentage</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for summary in attendance_summary %}
+                                        <tr>
+                                            <td>
+                                                <i class="fas fa-book me-2 text-primary"></i>
+                                                {{ summary.class_session__subject__name }}
+                                            </td>
+                                            <td>
+                                                <i class="fas fa-calendar-check me-2 text-info"></i>
+                                                {{ summary.total_classes }}
+                                            </td>
+                                            <td>
+                                                <i class="fas fa-user-check me-2 text-success"></i>
+                                                {{ summary.present_classes }}
+                                            </td>
+                                            <td>
+                                                {% with percentage=summary.present_classes|div:summary.total_classes|mul:100 %}
+                                                    {% if percentage >= 75 %}
+                                                        <span class="badge bg-success">
+                                                            <i class="fas fa-chart-line me-1"></i>
+                                                            {{ percentage|floatformat:1 }}%
+                                                        </span>
+                                                    {% elif percentage >= 60 %}
+                                                        <span class="badge bg-warning">
+                                                            <i class="fas fa-chart-line me-1"></i>
+                                                            {{ percentage|floatformat:1 }}%
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="badge bg-danger">
+                                                            <i class="fas fa-chart-line me-1"></i>
+                                                            {{ percentage|floatformat:1 }}%
+                                                        </span>
+                                                    {% endif %}
+                                                {% endwith %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+                            <p class="text-muted mb-0">No attendance records found for the last 30 days.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

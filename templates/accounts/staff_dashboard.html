@@ -1,0 +1,413 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Staff Dashboard - {{ user.get_full_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-container {
+        padding: 2rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stat-title {
+        color: #4a5568;
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-value {
+        color: #2d3748;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+    
+    .attendance-section {
+        background: white;
+        border-radius: 10px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .section-title {
+        color: #2d3748;
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+    }
+    
+    .attendance-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .attendance-card {
+        background: #f7fafc;
+        border-radius: 8px;
+        padding: 1.5rem;
+    }
+    
+    .subject-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 1rem;
+    }
+    
+    .subject-code {
+        color: #718096;
+        font-size: 0.875rem;
+    }
+    
+    .attendance-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .attendance-stat {
+        text-align: center;
+    }
+    
+    .stat-label {
+        color: #718096;
+        font-size: 0.75rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .percentage {
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+    
+    .percentage-high {
+        color: #38a169;
+    }
+    
+    .percentage-medium {
+        color: #d69e2e;
+    }
+    
+    .percentage-low {
+        color: #e53e3e;
+    }
+    
+    .recent-activity {
+        margin-top: 2rem;
+    }
+    
+    .activity-list {
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+    }
+    
+    .activity-item {
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+    
+    .activity-info {
+        flex: 1;
+    }
+    
+    .activity-subject {
+        font-weight: 500;
+        color: #2d3748;
+    }
+    
+    .activity-time {
+        color: #718096;
+        font-size: 0.875rem;
+    }
+    
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    
+    .status-present {
+        background-color: #c6f6d5;
+        color: #22543d;
+    }
+    
+    .status-absent {
+        background-color: #fed7d7;
+        color: #822727;
+    }
+    
+    .quick-actions {
+        display: flex;
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+    
+    .quick-action-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        flex: 1;
+        text-align: center;
+    }
+    
+    .quick-action-icon {
+        font-size: 2rem;
+        color: #4a5568;
+        margin-bottom: 1rem;
+    }
+    
+    .quick-action-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+    }
+    
+    .quick-action-description {
+        font-size: 0.875rem;
+        color: #718096;
+    }
+    
+    @media (max-width: 768px) {
+        .dashboard-container {
+            padding: 1rem;
+        }
+        
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .attendance-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .quick-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-title">Total Subjects</div>
+            <div class="stat-value">{{ subjects_count }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Today's Classes</div>
+            <div class="stat-value">{{ todays_classes.count }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Date</div>
+            <div class="stat-value">{{ today_date }}</div>
+        </div>
+    </div>
+    
+    <div class="attendance-section">
+        <h2 class="section-title">Subject-wise Attendance</h2>
+        <div class="attendance-grid">
+            {% for stat in attendance_stats %}
+            <div class="attendance-card">
+                <div class="subject-name">{{ stat.subject }}</div>
+                <div class="subject-code">{{ stat.code }}</div>
+                <div class="attendance-stats">
+                    <div class="attendance-stat">
+                        <div class="stat-label">Total Classes</div>
+                        <div class="stat-value">{{ stat.total_classes }}</div>
+                    </div>
+                    <div class="attendance-stat">
+                        <div class="stat-label">Students</div>
+                        <div class="stat-value">{{ stat.total_students }}</div>
+                    </div>
+                    <div class="attendance-stat">
+                        <div class="stat-label">Attendance</div>
+                        <div class="percentage {% if stat.attendance_percentage >= 75 %}percentage-high{% elif stat.attendance_percentage >= 60 %}percentage-medium{% else %}percentage-low{% endif %}">
+                            {{ stat.attendance_percentage }}%
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="chart-wrapper" style="height: 400px;">
+            <canvas id="attendanceChart"></canvas>
+        </div>
+    </div>
+    
+    <div class="attendance-section">
+        <h2 class="section-title">Recent Attendance Records</h2>
+        <div class="activity-list">
+            {% for record in recent_attendance %}
+            <div class="activity-item">
+                <div class="activity-info">
+                    <div class="activity-subject">{{ record.student.get_full_name }} - {{ record.class_session.subject.name }}</div>
+                    <div class="activity-time">{{ record.class_session.date|date:"M d, Y" }} at {{ record.class_session.start_time|time:"g:i A" }}</div>
+                </div>
+                <span class="status-badge {% if record.is_present %}status-present{% else %}status-absent{% endif %}">
+                    {% if record.is_present %}Present{% else %}Absent{% endif %}
+                </span>
+            </div>
+            {% empty %}
+            <div class="activity-item">
+                <div class="activity-info">No recent attendance records found.</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="quick-actions">
+        <a href="{% url 'profile' %}" class="quick-action-card">
+            <div class="quick-action-icon">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <h3>My Profile</h3>
+            <p>View and update your profile</p>
+        </a>
+        
+        <a href="{% url 'mark_attendance' %}" class="quick-action-card">
+            <div class="quick-action-icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <h3>Attendance</h3>
+            <p>Manage student attendance</p>
+        </a>
+        
+        <a href="{% url 'staff_assignments' %}" class="quick-action-card">
+            <div class="quick-action-icon">
+                <i class="fas fa-book"></i>
+            </div>
+            <h3>Assignments</h3>
+            <p>Create and manage assignments</p>
+        </a>
+    </div>
+</div>
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var ctx = document.getElementById('attendanceChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [{{ chart_labels|join:',' }}],
+                datasets: [{
+                    label: 'Attendance %',
+                    data: {{ chart_data|safe }},
+                    backgroundColor: [
+                        '#4299E1',  // Blue
+                        '#48BB78',  // Green
+                        '#9F7AEA',  // Purple
+                        '#F6AD55',  // Orange
+                        '#FC8181',  // Red
+                        '#4FD1C5',  // Teal
+                        '#667EEA',  // Indigo
+                        '#F687B3',  // Pink
+                    ],
+                    borderWidth: 0,
+                    borderRadius: {
+                        topLeft: 4,
+                        topRight: 4
+                    },
+                    barThickness: 40,
+                    maxBarThickness: 60
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.raw + '% Attendance';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: {
+                            display: true,
+                            color: '#E2E8F0',
+                            drawBorder: false,
+                            drawTicks: false
+                        },
+                        border: {
+                            display: false
+                        },
+                        ticks: {
+                            padding: 10,
+                            font: {
+                                size: 12
+                            },
+                            stepSize: 20,
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        border: {
+                            display: false
+                        },
+                        ticks: {
+                            padding: 10,
+                            font: {
+                                size: 12,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                },
+                layout: {
+                    padding: {
+                        left: 10,
+                        right: 10,
+                        top: 10,
+                        bottom: 10
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %} 

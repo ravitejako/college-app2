@@ -1,0 +1,350 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Timetable - {{ user.get_full_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .timetable-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .timetable-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .timetable-title {
+        color: #1a202c;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .timetable-filters {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .filter-select {
+        padding: 0.5rem 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background: white;
+        color: #4a5568;
+        min-width: 200px;
+    }
+
+    .timetable-grid {
+        display: grid;
+        grid-template-columns: auto repeat(5, 1fr);
+        gap: 1px;
+        background: #e2e8f0;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .timetable-cell {
+        background: white;
+        padding: 1rem;
+        min-height: 100px;
+    }
+
+    .time-slot {
+        background: #f8fafc;
+        font-size: 0.9rem;
+        color: #64748b;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        min-height: 100px;
+    }
+
+    .weekday-header {
+        background: #f8fafc;
+        padding: 1rem;
+        text-align: center;
+        font-weight: 600;
+        color: #1a202c;
+    }
+
+    .class-block {
+        background: #e0f2fe;
+        border-radius: 8px;
+        padding: 0.75rem;
+        height: 100%;
+    }
+
+    .class-block.lab {
+        background: #fae8ff;
+    }
+
+    .class-block.break {
+        background: #f1f5f9;
+    }
+
+    .class-subject {
+        font-weight: 600;
+        color: #0284c7;
+        margin-bottom: 0.25rem;
+        font-size: 0.9rem;
+    }
+
+    .class-block.lab .class-subject {
+        color: #a21caf;
+    }
+
+    .class-info {
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+
+    .class-room {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        margin-top: 0.5rem;
+        color: #4b5563;
+        font-size: 0.8rem;
+    }
+
+    .break-text {
+        text-align: center;
+        color: #64748b;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .today-indicator {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        background: #22c55e;
+        color: white;
+        border-radius: 9999px;
+        font-size: 0.7rem;
+        font-weight: 500;
+        margin-left: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="timetable-section">
+        <div class="timetable-header">
+            <h3 class="timetable-title">Class Schedule</h3>
+            <div class="timetable-filters">
+                <select class="filter-select">
+                    <option>CSE-IBM Semester 4</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="timetable-grid">
+            <!-- Time slots -->
+            <div class="timetable-cell"></div>
+            <div class="weekday-header">Monday</div>
+            <div class="weekday-header">Tuesday</div>
+            <div class="weekday-header">Wednesday</div>
+            <div class="weekday-header">Thursday <span class="today-indicator">Today</span></div>
+            <div class="weekday-header">Friday</div>
+
+            <!-- 9:00 AM -->
+            <div class="time-slot">9:00 AM<br>10:00 AM</div>
+            <div class="timetable-cell">
+                <div class="class-block">
+                    <div class="class-subject">Python Programming</div>
+                    <div class="class-info">Dr. Sarah Johnson</div>
+                    <div class="class-room">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Room 301
+                    </div>
+                </div>
+            </div>
+            <div class="timetable-cell">
+                <div class="class-block">
+                    <div class="class-subject">Data Structures</div>
+                    <div class="class-info">Prof. Michael Chen</div>
+                    <div class="class-room">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Room 302
+                    </div>
+                </div>
+            </div>
+            <div class="timetable-cell">
+                <div class="class-block">
+                    <div class="class-subject">Database Management</div>
+                    <div class="class-info">Dr. Emily Brown</div>
+                    <div class="class-room">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Room 303
+                    </div>
+                </div>
+            </div>
+            <div class="timetable-cell">
+                <div class="class-block">
+                    <div class="class-subject">Web Development</div>
+                    <div class="class-info">Prof. David Wilson</div>
+                    <div class="class-room">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Room 304
+                    </div>
+                </div>
+            </div>
+            <div class="timetable-cell">
+                <div class="class-block lab">
+                    <div class="class-subject">Python Lab</div>
+                    <div class="class-info">Dr. Sarah Johnson</div>
+                    <div class="class-room">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Lab 101
+                    </div>
+                </div>
+            </div>
+
+            <!-- 10:00 AM -->
+            <div class="time-slot">10:00 AM<br>11:00 AM</div>
+            <div class="timetable-cell">
+                <div class="class-block">
+                    <div class="class-subject">Data Structures</div>
+                    <div class="class-info">Prof. Michael Chen</div>
+                    <div class="class-room">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Room 302
+                    </div>
+                </div>
+            </div>
+            <div class="timetable-cell">
+                <div class="class-block">
+                    <div class="class-subject">Database Management</div>
+                    <div class="class-info">Dr. Emily Brown</div>
+                    <div class="class-room">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Room 303
+                    </div>
+                </div>
+            </div>
+            <div class="timetable-cell">
+                <div class="class-block">
+                    <div class="class-subject">Web Development</div>
+                    <div class="class-info">Prof. David Wilson</div>
+                    <div class="class-room">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Room 304
+                    </div>
+                </div>
+            </div>
+            <div class="timetable-cell">
+                <div class="class-block">
+                    <div class="class-subject">Python Programming</div>
+                    <div class="class-info">Dr. Sarah Johnson</div>
+                    <div class="class-room">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Room 301
+                    </div>
+                </div>
+            </div>
+            <div class="timetable-cell">
+                <div class="class-block lab">
+                    <div class="class-subject">Python Lab</div>
+                    <div class="class-info">Dr. Sarah Johnson</div>
+                    <div class="class-room">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Lab 101
+                    </div>
+                </div>
+            </div>
+
+            <!-- Break -->
+            <div class="time-slot">11:00 AM<br>11:15 AM</div>
+            <div class="timetable-cell">
+                <div class="class-block break">
+                    <div class="break-text">Morning Break</div>
+                </div>
+            </div>
+            <div class="timetable-cell">
+                <div class="class-block break">
+                    <div class="break-text">Morning Break</div>
+                </div>
+            </div>
+            <div class="timetable-cell">
+                <div class="class-block break">
+                    <div class="break-text">Morning Break</div>
+                </div>
+            </div>
+            <div class="timetable-cell">
+                <div class="class-block break">
+                    <div class="break-text">Morning Break</div>
+                </div>
+            </div>
+            <div class="timetable-cell">
+                <div class="class-block break">
+                    <div class="break-text">Morning Break</div>
+                </div>
+            </div>
+
+            <!-- 11:15 AM -->
+            <div class="time-slot">11:15 AM<br>12:15 PM</div>
+            <div class="timetable-cell">
+                <div class="class-block lab">
+                    <div class="class-subject">DS Lab</div>
+                    <div class="class-info">Prof. Michael Chen</div>
+                    <div class="class-room">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Lab 102
+                    </div>
+                </div>
+            </div>
+            <div class="timetable-cell">
+                <div class="class-block">
+                    <div class="class-subject">Web Development</div>
+                    <div class="class-info">Prof. David Wilson</div>
+                    <div class="class-room">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Room 304
+                    </div>
+                </div>
+            </div>
+            <div class="timetable-cell">
+                <div class="class-block">
+                    <div class="class-subject">Python Programming</div>
+                    <div class="class-info">Dr. Sarah Johnson</div>
+                    <div class="class-room">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Room 301
+                    </div>
+                </div>
+            </div>
+            <div class="timetable-cell">
+                <div class="class-block">
+                    <div class="class-subject">Data Structures</div>
+                    <div class="class-info">Prof. Michael Chen</div>
+                    <div class="class-room">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Room 302
+                    </div>
+                </div>
+            </div>
+            <div class="timetable-cell">
+                <div class="class-block">
+                    <div class="class-subject">Database Management</div>
+                    <div class="class-info">Dr. Emily Brown</div>
+                    <div class="class-room">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Room 303
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

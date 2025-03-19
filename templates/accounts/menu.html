@@ -1,0 +1,287 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Menu - College Attendance System{% endblock %}
+
+{% block content %}
+<div class="menu-wrapper">
+    <div class="particles"></div>
+    <div class="container d-flex flex-column justify-content-center align-items-center min-vh-100">
+        <div class="menu-card">
+            <div class="text-center mb-4">
+                <div class="icon-circle mb-4">
+                    <i class="fas fa-university"></i>
+                </div>
+                <h1 class="menu-title">College Attendance System</h1>
+                {% if user.is_authenticated %}
+                    <p class="menu-subtitle">Welcome, {{ user.get_full_name|default:user.username }}</p>
+                {% else %}
+                    <p class="menu-subtitle">Please select an option to continue</p>
+                {% endif %}
+            </div>
+
+            <div class="menu-options">
+                {% if user.is_authenticated %}
+                    {% if user.user_type == 'student' %}
+                        <a href="{% url 'profile' %}" class="menu-item">
+                            <div class="menu-icon">
+                                <i class="fas fa-user-circle"></i>
+                            </div>
+                            <div class="menu-text">
+                                <h3>My Profile</h3>
+                                <p>View and update your profile information</p>
+                            </div>
+                        </a>
+                        <a href="#" class="menu-item">
+                            <div class="menu-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="menu-text">
+                                <h3>My Attendance</h3>
+                                <p>Check your attendance records</p>
+                            </div>
+                        </a>
+                    {% elif user.user_type == 'staff' %}
+                        <a href="{% url 'profile' %}" class="menu-item">
+                            <div class="menu-icon">
+                                <i class="fas fa-user-circle"></i>
+                            </div>
+                            <div class="menu-text">Profile</div>
+                        </a>
+                        <a href="#" class="menu-item">
+                            <div class="menu-icon">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <div class="menu-text">
+                                <h3>Take Attendance</h3>
+                                <p>Mark attendance for your classes</p>
+                            </div>
+                        </a>
+                        <a href="#" class="menu-item">
+                            <div class="menu-icon">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <div class="menu-text">
+                                <h3>Reports</h3>
+                                <p>View attendance reports and analytics</p>
+                            </div>
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'logout' %}" class="menu-item menu-item-danger">
+                        <div class="menu-icon">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </div>
+                        <div class="menu-text">
+                            <h3>Logout</h3>
+                            <p>Sign out from your account</p>
+                        </div>
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="menu-item">
+                        <div class="menu-icon">
+                            <i class="fas fa-sign-in-alt"></i>
+                        </div>
+                        <div class="menu-text">
+                            <h3>Login</h3>
+                            <p>Sign in to your account</p>
+                        </div>
+                    </a>
+                    <a href="{% url 'student_register' %}" class="menu-item">
+                        <div class="menu-icon">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <div class="menu-text">
+                            <h3>Student Registration</h3>
+                            <p>Register as a new student</p>
+                        </div>
+                    </a>
+                    <a href="{% url 'staff_register' %}" class="menu-item">
+                        <div class="menu-icon">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div class="menu-text">
+                            <h3>Staff Registration</h3>
+                            <p>Register as a staff member</p>
+                        </div>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .menu-wrapper {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .particles {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        background: 
+            radial-gradient(circle at 20% 20%, rgba(255,255,255,0.1) 0%, transparent 20%),
+            radial-gradient(circle at 80% 80%, rgba(255,255,255,0.1) 0%, transparent 20%),
+            radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05) 0%, transparent 50%);
+        animation: particles 20s linear infinite;
+    }
+    
+    .menu-card {
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 24px;
+        padding: 3rem;
+        width: 100%;
+        max-width: 800px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        animation: slideUp 0.5s ease-out;
+    }
+    
+    .icon-circle {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        position: relative;
+    }
+    
+    .icon-circle i {
+        font-size: 2.5rem;
+        color: white;
+    }
+    
+    .menu-title {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+    }
+    
+    .menu-subtitle {
+        font-size: 1.1rem;
+        color: #6b7280;
+        margin-bottom: 2rem;
+    }
+    
+    .menu-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .menu-item {
+        display: flex;
+        align-items: center;
+        padding: 1.5rem;
+        background: white;
+        border-radius: 16px;
+        border: 1px solid #e5e7eb;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.3s ease;
+    }
+    
+    .menu-item:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        border-color: #3b82f6;
+    }
+    
+    .menu-icon {
+        width: 48px;
+        height: 48px;
+        background: #ebf5ff;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+    }
+    
+    .menu-icon i {
+        font-size: 1.5rem;
+        color: #3b82f6;
+    }
+    
+    .menu-text h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin: 0 0 0.25rem 0;
+    }
+    
+    .menu-text p {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin: 0;
+    }
+    
+    .menu-item-danger {
+        border-color: #fee2e2;
+    }
+    
+    .menu-item-danger .menu-icon {
+        background: #fee2e2;
+    }
+    
+    .menu-item-danger .menu-icon i {
+        color: #ef4444;
+    }
+    
+    .menu-item-danger:hover {
+        border-color: #ef4444;
+        background: #fef2f2;
+    }
+    
+    @keyframes particles {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+    
+    @keyframes slideUp {
+        from {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .menu-card {
+            margin: 1rem;
+            padding: 2rem;
+        }
+        
+        .menu-options {
+            grid-template-columns: 1fr;
+        }
+        
+        .menu-title {
+            font-size: 1.75rem;
+        }
+    }
+</style>
+{% endblock %} 

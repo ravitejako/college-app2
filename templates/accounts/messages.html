@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Messages - {{ user.get_full_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .messages-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .messages-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .messages-title {
+        color: #1a202c;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .message-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .message-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 1.5rem;
+        transition: all 0.2s;
+    }
+
+    .message-card:hover {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .message-meta {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+
+    .message-sender {
+        color: #4a5568;
+        font-weight: 500;
+    }
+
+    .message-date {
+        color: #718096;
+        font-size: 0.9rem;
+    }
+
+    .message-subject {
+        color: #1a202c;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .message-preview {
+        color: #4a5568;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    .unread {
+        background: #f7fafc;
+        border-left: 3px solid #4299e1;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="messages-section">
+        <div class="messages-header">
+            <h3 class="messages-title">Messages</h3>
+        </div>
+        <div class="message-list">
+            <div class="message-card unread">
+                <div class="message-meta">
+                    <span class="message-sender">Prof. Sarah Johnson</span>
+                    <span class="message-date">Today, 10:30 AM</span>
+                </div>
+                <div class="message-subject">Assignment Submission Deadline Extended</div>
+                <div class="message-preview">
+                    Dear students, Due to technical issues, the deadline for the Python Programming assignment has been extended to March 20th, 2024...
+                </div>
+            </div>
+            <div class="message-card">
+                <div class="message-meta">
+                    <span class="message-sender">Department of CSE</span>
+                    <span class="message-date">Yesterday</span>
+                </div>
+                <div class="message-subject">Mid-Semester Exam Schedule</div>
+                <div class="message-preview">
+                    The mid-semester examinations for Even Semester 2024 will commence from April 1st, 2024. The detailed schedule...
+                </div>
+            </div>
+            <div class="message-card">
+                <div class="message-meta">
+                    <span class="message-sender">Library Department</span>
+                    <span class="message-date">Mar 13, 2024</span>
+                </div>
+                <div class="message-subject">New Books Available</div>
+                <div class="message-preview">
+                    New reference books for Data Structures and Algorithms have been added to the library collection...
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

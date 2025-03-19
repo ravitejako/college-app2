@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Staff{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">Manage Staff Members</h1>
+
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Staff Members Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Staff ID</th>
+                            <th>Name</th>
+                            <th>Designation</th>
+                            <th>Qualification</th>
+                            <th>Specialization</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for staff in staff_members %}
+                        <tr>
+                            <td>{{ staff.staff_id }}</td>
+                            <td>{{ staff.get_full_name }}</td>
+                            <td>{{ staff.designation|default:"-" }}</td>
+                            <td>{{ staff.qualification|default:"-" }}</td>
+                            <td>{{ staff.specialization|default:"-" }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#updateStaffModal"
+                                        data-staff-id="{{ staff.id }}"
+                                        data-staff-name="{{ staff.get_full_name }}"
+                                        data-staff-designation="{{ staff.designation }}"
+                                        data-staff-qualification="{{ staff.qualification }}"
+                                        data-staff-specialization="{{ staff.specialization }}"
+                                        data-staff-office="{{ staff.office_location }}">
+                                    Update
+                                </button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No staff members found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update Staff Modal -->
+<div class="modal fade" id="updateStaffModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Staff Member</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <input type="hidden" name="action" value="update_staff">
+                    <input type="hidden" name="staff_id" id="updateStaffId">
+                    <p>Updating details for: <span id="updateStaffName"></span></p>
+                    
+                    <div class="mb-3">
+                        <label for="designation" class="form-label">Designation</label>
+                        <input type="text" class="form-control" id="designation" name="designation">
+                    </div>
+                    <div class="mb-3">
+                        <label for="qualification" class="form-label">Qualification</label>
+                        <input type="text" class="form-control" id="qualification" name="qualification">
+                    </div>
+                    <div class="mb-3">
+                        <label for="specialization" class="form-label">Specialization</label>
+                        <input type="text" class="form-control" id="specialization" name="specialization">
+                    </div>
+                    <div class="mb-3">
+                        <label for="office_location" class="form-label">Office Location</label>
+                        <input type="text" class="form-control" id="office_location" name="office_location">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Update Staff</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const updateStaffModal = document.getElementById('updateStaffModal');
+        updateStaffModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const staffId = button.getAttribute('data-staff-id');
+            const staffName = button.getAttribute('data-staff-name');
+            const designation = button.getAttribute('data-staff-designation');
+            const qualification = button.getAttribute('data-staff-qualification');
+            const specialization = button.getAttribute('data-staff-specialization');
+            const office = button.getAttribute('data-staff-office');
+            
+            document.getElementById('updateStaffId').value = staffId;
+            document.getElementById('updateStaffName').textContent = staffName;
+            document.getElementById('designation').value = designation || '';
+            document.getElementById('qualification').value = qualification || '';
+            document.getElementById('specialization').value = specialization || '';
+            document.getElementById('office_location').value = office || '';
+        });
+    });
+</script>
+{% endblock %}
+{% endblock content %} 

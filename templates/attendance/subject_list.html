@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Subjects - College Attendance System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h2>Subjects</h2>
+    </div>
+    {% if user.user_type == 'staff' %}
+        <div class="col-md-6 text-end">
+            <a href="{% url 'subject_create' %}" class="btn btn-primary">Create New Subject</a>
+        </div>
+    {% endif %}
+</div>
+
+<div class="row">
+    {% for subject in subjects %}
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3>{{ subject.name }} ({{ subject.code }})</h3>
+                    {% if user.user_type == 'staff' and user == subject.staff %}
+                        <small>Instructor: You</small>
+                    {% else %}
+                        <small>Instructor: {{ subject.staff.get_full_name|default:subject.staff.username }}</small>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <h4>Classes</h4>
+                    {% if subject.classes.all %}
+                        <div class="list-group">
+                            {% for class in subject.classes.all %}
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5 class="mb-1">{{ class.date|date:"F d, Y" }}</h5>
+                                            <p class="mb-1">{{ class.start_time|time:"H:i" }} - {{ class.end_time|time:"H:i" }}</p>
+                                        </div>
+                                        <div>
+                                            {% if user.user_type == 'staff' and user == subject.staff or user.user_type == 'hod' and subject.department == user.department_managed %}
+                                                <a href="{% url 'take_attendance' class.id %}" class="btn btn-sm btn-primary">Take Attendance</a>
+                                            {% endif %}
+                                            {% if user.user_type == 'student' %}
+                                                {% with attendance=class.attendances.filter.first %}
+                                                    {% if attendance %}
+                                                        <span class="badge {% if attendance.is_present %}bg-success{% else %}bg-danger{% endif %}">
+                                                            {% if attendance.is_present %}Present{% else %}Absent{% endif %}
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="badge bg-secondary">Not Marked</span>
+                                                    {% endif %}
+                                                {% endwith %}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p>No classes scheduled yet.</p>
+                        {% if user.user_type == 'staff' and user == subject.staff %}
+                            <a href="{% url 'class_create' %}?subject={{ subject.id }}" class="btn btn-primary">Schedule Class</a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-md-12">
+            <div class="alert alert-info">
+                No subjects available at the moment.
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %} 

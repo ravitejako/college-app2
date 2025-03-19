@@ -1,0 +1,379 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Professional Profile - College Portal{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+    
+    .profile-header {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        padding: 2rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .profile-image {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #f3f4f6;
+    }
+    
+    .profile-info {
+        flex: 1;
+    }
+    
+    .profile-name {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+    }
+    
+    .profile-title {
+        font-size: 1.25rem;
+        color: #4b5563;
+        margin-bottom: 1rem;
+    }
+    
+    .profile-contact {
+        display: flex;
+        gap: 1.5rem;
+        margin-top: 1rem;
+    }
+    
+    .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #6b7280;
+    }
+    
+    .profile-tabs {
+        display: flex;
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 2rem;
+    }
+    
+    .profile-tab {
+        padding: 1rem 1.5rem;
+        font-weight: 500;
+        color: #6b7280;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s;
+    }
+    
+    .profile-tab.active {
+        color: #2563eb;
+        border-bottom: 2px solid #2563eb;
+    }
+    
+    .profile-tab:hover {
+        color: #4b5563;
+    }
+    
+    .profile-section {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .section-title i {
+        color: #2563eb;
+    }
+    
+    .experience-item, .education-item, .certification-item {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .experience-item:last-child, .education-item:last-child, .certification-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+    
+    .item-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+    
+    .item-title {
+        font-weight: 600;
+        color: #1f2937;
+        font-size: 1.1rem;
+    }
+    
+    .item-date {
+        color: #6b7280;
+        font-size: 0.9rem;
+    }
+    
+    .item-subtitle {
+        color: #4b5563;
+        margin-bottom: 0.75rem;
+    }
+    
+    .item-description {
+        color: #6b7280;
+        line-height: 1.5;
+    }
+    
+    .skills-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+    
+    .skill-tag {
+        background: #f3f4f6;
+        color: #4b5563;
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        font-size: 0.9rem;
+    }
+    
+    .publications-list {
+        list-style-type: none;
+        padding: 0;
+    }
+    
+    .publication-item {
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .publication-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+    
+    .publication-title {
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+    }
+    
+    .publication-authors {
+        color: #4b5563;
+        font-style: italic;
+        margin-bottom: 0.5rem;
+    }
+    
+    .publication-journal {
+        color: #6b7280;
+    }
+    
+    .edit-profile-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #2563eb;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s;
+        margin-top: 1rem;
+    }
+    
+    .edit-profile-btn:hover {
+        background: #1d4ed8;
+    }
+    
+    @media (max-width: 768px) {
+        .profile-header {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .profile-contact {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        {% if user.profile_picture %}
+            <img src="{{ user.profile_picture.url }}" alt="{{ user.get_full_name }}" class="profile-image">
+        {% else %}
+            <img src="{% static 'images/default-profile.jpg' %}" alt="{{ user.get_full_name }}" class="profile-image">
+        {% endif %}
+        
+        <div class="profile-info">
+            <h1 class="profile-name">{{ user.get_full_name }}</h1>
+            <h2 class="profile-title">{{ user.designation }} - {{ user.department }}</h2>
+            
+            <div class="profile-contact">
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>{{ user.email }}</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-phone"></i>
+                    <span>{{ user.phone_number }}</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>{{ user.office_location }}</span>
+                </div>
+            </div>
+            
+            {% if user == request.user %}
+            <a href="{% url 'edit_profile' %}" class="edit-profile-btn">
+                <i class="fas fa-edit"></i>
+                Edit Profile
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="profile-tabs">
+        <div class="profile-tab active" data-tab="about">About</div>
+        <div class="profile-tab" data-tab="experience">Experience</div>
+        <div class="profile-tab" data-tab="education">Education</div>
+        <div class="profile-tab" data-tab="publications">Publications</div>
+    </div>
+    
+    <div class="profile-section" id="about-section">
+        <h3 class="section-title"><i class="fas fa-user"></i> About</h3>
+        <p>{{ user.bio|default:"No bio information available." }}</p>
+        
+        <h3 class="section-title mt-4"><i class="fas fa-graduation-cap"></i> Specialization</h3>
+        <p>{{ user.specialization|default:"No specialization information available." }}</p>
+        
+        <h3 class="section-title mt-4"><i class="fas fa-tools"></i> Skills</h3>
+        <div class="skills-container">
+            {% if user.skills %}
+                {% for skill in user.skills.split(',') %}
+                    <span class="skill-tag">{{ skill.strip }}</span>
+                {% endfor %}
+            {% else %}
+                <p>No skills listed.</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="profile-section" id="experience-section" style="display: none;">
+        <h3 class="section-title"><i class="fas fa-briefcase"></i> Professional Experience</h3>
+        
+        {% if user.experience_set.all %}
+            {% for experience in user.experience_set.all %}
+                <div class="experience-item">
+                    <div class="item-header">
+                        <h4 class="item-title">{{ experience.position }}</h4>
+                        <span class="item-date">{{ experience.start_date|date:"M Y" }} - {% if experience.current %}Present{% else %}{{ experience.end_date|date:"M Y" }}{% endif %}</span>
+                    </div>
+                    <div class="item-subtitle">{{ experience.organization }}</div>
+                    <p class="item-description">{{ experience.description }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No professional experience listed.</p>
+        {% endif %}
+    </div>
+    
+    <div class="profile-section" id="education-section" style="display: none;">
+        <h3 class="section-title"><i class="fas fa-university"></i> Education</h3>
+        
+        {% if user.education_set.all %}
+            {% for education in user.education_set.all %}
+                <div class="education-item">
+                    <div class="item-header">
+                        <h4 class="item-title">{{ education.degree }}</h4>
+                        <span class="item-date">{{ education.start_year }} - {{ education.end_year }}</span>
+                    </div>
+                    <div class="item-subtitle">{{ education.institution }}</div>
+                    <p class="item-description">{{ education.description }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="education-item">
+                <div class="item-header">
+                    <h4 class="item-title">{{ user.qualification }}</h4>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="profile-section" id="publications-section" style="display: none;">
+        <h3 class="section-title"><i class="fas fa-book"></i> Publications</h3>
+        
+        {% if user.publication_set.all %}
+            <ul class="publications-list">
+                {% for publication in user.publication_set.all %}
+                    <li class="publication-item">
+                        <h4 class="publication-title">{{ publication.title }}</h4>
+                        <div class="publication-authors">{{ publication.authors }}</div>
+                        <div class="publication-journal">{{ publication.journal }}, {{ publication.year }}</div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No publications listed.</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabs = document.querySelectorAll('.profile-tab');
+        const sections = {
+            'about': document.getElementById('about-section'),
+            'experience': document.getElementById('experience-section'),
+            'education': document.getElementById('education-section'),
+            'publications': document.getElementById('publications-section')
+        };
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs
+                tabs.forEach(t => t.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                this.classList.add('active');
+                
+                // Hide all sections
+                Object.values(sections).forEach(section => {
+                    section.style.display = 'none';
+                });
+                
+                // Show the selected section
+                const tabName = this.getAttribute('data-tab');
+                sections[tabName].style.display = 'block';
+            });
+        });
+    });
+</script>
+{% endblock %} 

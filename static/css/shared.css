@@ -1,0 +1,47 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.dashboard-container {
+    padding: 2rem 0;
+}
+
+.nav-pills {
+    background: white;
+    border-radius: 15px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.nav-pills .nav-link {
+    padding: 0.75rem 1.5rem;
+    color: #4a5568;
+    font-weight: 500;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-pills .nav-link.active {
+    background-color: #4299e1;
+    color: white;
+}
+
+.nav-pills .nav-link i {
+    font-size: 1.25rem;
+}
+
+@media (max-width: 768px) {
+    .nav-pills {
+        overflow-x: auto;
+        white-space: nowrap;
+        flex-wrap: nowrap;
+        padding: 0.75rem;
+    }
+    
+    .nav-pills .nav-link {
+        padding: 0.5rem 1rem;
+    }
+} 

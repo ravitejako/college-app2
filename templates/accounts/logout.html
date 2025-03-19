@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Logout - Student Portal{% endblock %}
+
+{% block extra_css %}
+<style>
+    .logout-container {
+        max-width: 400px;
+        margin: 4rem auto;
+        padding: 2rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .logout-icon {
+        font-size: 3rem;
+        color: #dc2626;
+        margin-bottom: 1.5rem;
+    }
+
+    .logout-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #1a202c;
+        margin-bottom: 1rem;
+    }
+
+    .logout-message {
+        color: #4a5568;
+        margin-bottom: 2rem;
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .btn-logout {
+        padding: 0.75rem 2rem;
+        background: #dc2626;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .btn-logout:hover {
+        background: #b91c1c;
+        color: white;
+    }
+
+    .btn-cancel {
+        padding: 0.75rem 2rem;
+        background: #e5e7eb;
+        color: #4b5563;
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .btn-cancel:hover {
+        background: #d1d5db;
+        color: #374151;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="logout-container">
+    <div class="logout-icon">
+        <i class="fas fa-sign-out-alt"></i>
+    </div>
+    <h2 class="logout-title">Logout Confirmation</h2>
+    <p class="logout-message">Are you sure you want to logout from your account?</p>
+    <div class="btn-group">
+        <a href="{% url 'student_dashboard' %}" class="btn-cancel">Cancel</a>
+        <form method="post" action="{% url 'logout' %}" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn-logout">Logout</button>
+        </form>
+    </div>
+</div>
+{% endblock %} 

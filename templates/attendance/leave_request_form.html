@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Request Leave{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Request Leave</h2>
+            <p class="text-muted">Submit a leave request for your classes</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-1"></i> Submit Request
+                            </button>
+                            <a href="{% url 'student_dashboard' %}" class="btn btn-secondary">
+                                <i class="fas fa-times me-1"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Leave Guidelines</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-info-circle text-info me-2"></i>
+                            Submit requests at least 24 hours in advance
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                            Medical leave requires documentation
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-clock text-primary me-2"></i>
+                            Maximum leave duration: 5 consecutive days
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Leave requests are subject to faculty approval
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Your Leave History</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for request in user.leave_requests.all|slice:":5" %}
+                                    <tr>
+                                        <td>{{ request.get_leave_type_display }}</td>
+                                        <td>
+                                            {% if request.status == 'approved' %}
+                                                <span class="badge bg-success">Approved</span>
+                                            {% elif request.status == 'rejected' %}
+                                                <span class="badge bg-danger">Rejected</span>
+                                            {% else %}
+                                                <span class="badge bg-warning">Pending</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ request.start_date|date:"M d" }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted">
+                                            No leave requests found
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add date validation
+        const startDate = document.getElementById('id_start_date');
+        const endDate = document.getElementById('id_end_date');
+        
+        startDate.addEventListener('change', function() {
+            endDate.min = startDate.value;
+            if (endDate.value && endDate.value < startDate.value) {
+                endDate.value = startDate.value;
+            }
+        });
+        
+        endDate.addEventListener('change', function() {
+            if (this.value < startDate.value) {
+                this.value = startDate.value;
+            }
+        });
+    });
+</script>
+{% endblock %} 

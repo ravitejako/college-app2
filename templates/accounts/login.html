@@ -1,0 +1,344 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    {% if role == 'staff' %}
+        Staff Login
+    {% elif role == 'student' %}
+        Student Login
+    {% elif role == 'hod' %}
+        HOD Login
+    {% else %}
+        Login
+    {% endif %}
+    - College Attendance System
+{% endblock %}
+
+{% block content %}
+<div class="login-wrapper">
+    <div class="particles"></div>
+    <div class="container d-flex flex-column justify-content-center align-items-center min-vh-100">
+        <div class="login-card">
+            <div class="text-center mb-4">
+                <div class="icon-circle mb-4">
+                    {% if role == 'staff' %}
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    {% elif role == 'student' %}
+                        <i class="fas fa-user-graduate"></i>
+                    {% elif role == 'hod' %}
+                        <i class="fas fa-user-tie"></i>
+                    {% else %}
+                        <i class="fas fa-graduation-cap"></i>
+                    {% endif %}
+                </div>
+                <h1 class="login-title">
+                    {% if role == 'staff' %}
+                        Staff Login
+                    {% elif role == 'student' %}
+                        Student Login
+                    {% elif role == 'hod' %}
+                        HOD Login
+                    {% else %}
+                        Welcome Back
+                    {% endif %}
+                </h1>
+                <p class="login-subtitle">Sign in to continue to your dashboard</p>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if not role %}
+                <div class="role-selection mb-4">
+                    <h5 class="text-center mb-3">Choose your role to continue</h5>
+                    <div class="d-grid gap-3">
+                        <a href="{% url 'login' %}?role=student" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-user-graduate me-2"></i>Login as Student
+                        </a>
+                        <a href="{% url 'login' %}?role=staff" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-chalkboard-teacher me-2"></i>Login as Staff
+                        </a>
+                        <a href="{% url 'login' %}?role=hod" class="btn btn-outline-info btn-lg">
+                            <i class="fas fa-user-tie me-2"></i>Login as HOD
+                        </a>
+                    </div>
+                </div>
+            {% else %}
+                <form method="post" class="login-form">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                        </button>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <p class="mb-2">Don't have an account?</p>
+                        <div class="register-options">
+                            {% if role == 'student' %}
+                                <a href="{% url 'student_register' %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-user-graduate me-2"></i>Register as Student
+                                </a>
+                            {% elif role == 'staff' %}
+                                <a href="{% url 'staff_register' %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-chalkboard-teacher me-2"></i>Register as Staff
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </form>
+            {% endif %}
+
+            {% if role %}
+                <div class="text-center mt-3">
+                    <a href="{% url 'login' %}" class="text-muted">
+                        <i class="fas fa-arrow-left me-1"></i>Back to role selection
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .login-wrapper {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .particles {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        background: 
+            radial-gradient(circle at 20% 20%, rgba(255,255,255,0.1) 0%, transparent 20%),
+            radial-gradient(circle at 80% 80%, rgba(255,255,255,0.1) 0%, transparent 20%),
+            radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05) 0%, transparent 50%);
+        animation: particles 20s linear infinite;
+    }
+    
+    .login-card {
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 24px;
+        padding: 3rem;
+        width: 100%;
+        max-width: 500px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        animation: slideUp 0.5s ease-out;
+    }
+    
+    .icon-circle {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        position: relative;
+    }
+    
+    .icon-circle i {
+        font-size: 2.5rem;
+        color: white;
+    }
+    
+    .icon-circle::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: inherit;
+        opacity: 0.6;
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    
+    .login-title {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+    }
+    
+    .login-subtitle {
+        font-size: 1.1rem;
+        color: #6b7280;
+        margin-bottom: 2rem;
+    }
+    
+    .login-form {
+        margin-top: 1rem;
+    }
+    
+    .form-control {
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e5e7eb;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        border: none;
+        border-radius: 12px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+    
+    .btn-outline-primary {
+        border: 2px solid #3b82f6;
+        color: #3b82f6;
+        border-radius: 12px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-primary:hover {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        border-color: transparent;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        color: white;
+    }
+    
+    .register-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+    }
+    
+    .role-selection {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+            opacity: 0.6;
+        }
+        50% {
+            transform: scale(1.2);
+            opacity: 0;
+        }
+    }
+    
+    @keyframes particles {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+    
+    @keyframes slideUp {
+        from {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .login-card {
+            margin: 1rem;
+            padding: 2rem;
+        }
+        
+        .register-options {
+            flex-direction: column;
+        }
+        
+        .btn-outline-primary {
+            width: 100%;
+        }
+        
+        .login-title {
+            font-size: 1.75rem;
+        }
+    }
+    
+    .alert {
+        border-radius: 12px;
+        border: none;
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        animation: slideIn 0.3s ease-out;
+    }
+    
+    .alert-success {
+        border-left: 4px solid #10b981;
+    }
+    
+    .alert-danger {
+        border-left: 4px solid #ef4444;
+    }
+    
+    .alert-warning {
+        border-left: 4px solid #f59e0b;
+    }
+    
+    .alert-info {
+        border-left: 4px solid #3b82f6;
+    }
+    
+    @keyframes slideIn {
+        from {
+            transform: translateX(-10px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+</style>
+{% endblock %} 

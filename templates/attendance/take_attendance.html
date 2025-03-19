@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Take Attendance - College Attendance System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h2>Take Attendance</h2>
+                <p class="mb-0">{{ class_session.subject.name }} - {{ class_session.date|date:"F d, Y" }}</p>
+                <p class="mb-0">{{ class_session.start_time|time:"H:i" }} - {{ class_session.end_time|time:"H:i" }}</p>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Save Attendance</button>
+                        <a href="{% url 'subject_list' %}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

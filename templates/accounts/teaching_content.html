@@ -1,0 +1,381 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Teaching Content - {{ user.get_full_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .content-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .content-title {
+        color: #1a202c;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .content-filters {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .filter-select {
+        padding: 0.5rem 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background: white;
+        color: #4a5568;
+        min-width: 200px;
+    }
+
+    .content-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .subject-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.2s;
+    }
+
+    .subject-card:hover {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .subject-header {
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .subject-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1a202c;
+        margin-bottom: 0.5rem;
+    }
+
+    .subject-info {
+        font-size: 0.9rem;
+        color: #64748b;
+    }
+
+    .content-list {
+        padding: 1rem;
+    }
+
+    .content-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+        transition: all 0.2s;
+    }
+
+    .content-item:last-child {
+        border-bottom: none;
+    }
+
+    .content-item:hover {
+        background: #f8fafc;
+    }
+
+    .content-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        font-size: 1.2rem;
+    }
+
+    .icon-pdf {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .icon-video {
+        background: #e0f2fe;
+        color: #0284c7;
+    }
+
+    .icon-doc {
+        background: #dbeafe;
+        color: #2563eb;
+    }
+
+    .icon-link {
+        background: #f3e8ff;
+        color: #7c3aed;
+    }
+
+    .content-details {
+        flex: 1;
+    }
+
+    .content-name {
+        font-weight: 500;
+        color: #1a202c;
+        margin-bottom: 0.25rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .content-meta {
+        font-size: 0.8rem;
+        color: #64748b;
+        display: flex;
+        gap: 1rem;
+    }
+
+    .content-date {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .content-size {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .download-btn {
+        padding: 0.25rem 0.5rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        text-decoration: none;
+        color: #4b5563;
+        transition: all 0.2s;
+    }
+
+    .download-btn:hover {
+        background: #e2e8f0;
+    }
+
+    .progress-section {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .progress-title {
+        font-size: 0.9rem;
+        color: #4b5563;
+        margin-bottom: 0.5rem;
+    }
+
+    .progress-bar {
+        height: 6px;
+        background: #e2e8f0;
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: #4299e1;
+        border-radius: 3px;
+        transition: width 0.3s ease;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="content-section">
+        <div class="content-header">
+            <h3 class="content-title">Course Materials</h3>
+            <div class="content-filters">
+                <select class="filter-select">
+                    <option>All Subjects</option>
+                    <option>Python Programming</option>
+                    <option>Data Structures</option>
+                    <option>Database Management</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <!-- Python Programming -->
+            <div class="subject-card">
+                <div class="subject-header">
+                    <div class="subject-name">Python Programming</div>
+                    <div class="subject-info">Dr. Sarah Johnson</div>
+                </div>
+                <div class="content-list">
+                    <div class="content-item">
+                        <div class="content-icon icon-pdf">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <div class="content-details">
+                            <div class="content-name">
+                                <span>Introduction to Python</span>
+                                <a href="#" class="download-btn">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                            </div>
+                            <div class="content-meta">
+                                <span class="content-date">
+                                    <i class="fas fa-calendar"></i>
+                                    Mar 15, 2024
+                                </span>
+                                <span class="content-size">
+                                    <i class="fas fa-file"></i>
+                                    2.5 MB
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content-item">
+                        <div class="content-icon icon-video">
+                            <i class="fas fa-play"></i>
+                        </div>
+                        <div class="content-details">
+                            <div class="content-name">
+                                <span>OOP Concepts Tutorial</span>
+                                <a href="#" class="download-btn">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </a>
+                            </div>
+                            <div class="content-meta">
+                                <span class="content-date">
+                                    <i class="fas fa-calendar"></i>
+                                    Mar 16, 2024
+                                </span>
+                                <span class="content-size">
+                                    <i class="fas fa-clock"></i>
+                                    45 min
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="progress-section">
+                    <div class="progress-title">Course Progress: 65%</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 65%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Structures -->
+            <div class="subject-card">
+                <div class="subject-header">
+                    <div class="subject-name">Data Structures</div>
+                    <div class="subject-info">Prof. Michael Chen</div>
+                </div>
+                <div class="content-list">
+                    <div class="content-item">
+                        <div class="content-icon icon-doc">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="content-details">
+                            <div class="content-name">
+                                <span>Arrays and Linked Lists</span>
+                                <a href="#" class="download-btn">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                            </div>
+                            <div class="content-meta">
+                                <span class="content-date">
+                                    <i class="fas fa-calendar"></i>
+                                    Mar 14, 2024
+                                </span>
+                                <span class="content-size">
+                                    <i class="fas fa-file"></i>
+                                    1.8 MB
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content-item">
+                        <div class="content-icon icon-link">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <div class="content-details">
+                            <div class="content-name">
+                                <span>Practice Problems</span>
+                                <a href="#" class="download-btn">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </a>
+                            </div>
+                            <div class="content-meta">
+                                <span class="content-date">
+                                    <i class="fas fa-calendar"></i>
+                                    Mar 17, 2024
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="progress-section">
+                    <div class="progress-title">Course Progress: 45%</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 45%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Database Management -->
+            <div class="subject-card">
+                <div class="subject-header">
+                    <div class="subject-name">Database Management</div>
+                    <div class="subject-info">Dr. Emily Brown</div>
+                </div>
+                <div class="content-list">
+                    <div class="content-item">
+                        <div class="content-icon icon-pdf">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <div class="content-details">
+                            <div class="content-name">
+                                <span>SQL Fundamentals</span>
+                                <a href="#" class="download-btn">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                            </div>
+                            <div class="content-meta">
+                                <span class="content-date">
+                                    <i class="fas fa-calendar"></i>
+                                    Mar 18, 2024
+                                </span>
+                                <span class="content-size">
+                                    <i class="fas fa-file"></i>
+                                    3.2 MB
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="progress-section">
+                    <div class="progress-title">Course Progress: 30%</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 30%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

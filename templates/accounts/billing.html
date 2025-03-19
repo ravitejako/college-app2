@@ -1,0 +1,353 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Billing & Payments - {{ user.get_full_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .billing-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .billing-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .billing-title {
+        color: #1a202c;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .billing-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .billing-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .fee-details {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .fee-header {
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .fee-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1a202c;
+        margin: 0;
+    }
+
+    .fee-summary {
+        padding: 1.5rem;
+    }
+
+    .fee-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .fee-item:last-child {
+        border-bottom: none;
+    }
+
+    .fee-label {
+        color: #4a5568;
+        font-size: 0.9rem;
+    }
+
+    .fee-value {
+        font-weight: 600;
+        color: #1a202c;
+    }
+
+    .fee-total {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 2px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .total-label {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1a202c;
+    }
+
+    .total-value {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1a202c;
+    }
+
+    .payment-actions {
+        padding: 1.5rem;
+        background: #f8fafc;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .pay-btn {
+        width: 100%;
+        padding: 0.75rem;
+        background: #4299e1;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .pay-btn:hover {
+        background: #3182ce;
+    }
+
+    .payment-history {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .history-header {
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .history-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1a202c;
+        margin: 0;
+    }
+
+    .transaction-list {
+        padding: 1rem;
+    }
+
+    .transaction-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .transaction-item:last-child {
+        border-bottom: none;
+    }
+
+    .transaction-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        font-size: 1.2rem;
+    }
+
+    .icon-success {
+        background: #dcfce7;
+        color: #059669;
+    }
+
+    .icon-pending {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+    .transaction-details {
+        flex: 1;
+    }
+
+    .transaction-title {
+        font-weight: 500;
+        color: #1a202c;
+        margin-bottom: 0.25rem;
+    }
+
+    .transaction-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .transaction-date {
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+
+    .transaction-amount {
+        font-weight: 600;
+        color: #1a202c;
+    }
+
+    .payment-status {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .status-paid {
+        background: #dcfce7;
+        color: #059669;
+    }
+
+    .status-pending {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+    .download-receipt {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        font-size: 0.8rem;
+        color: #4b5563;
+        text-decoration: none;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+
+    .download-receipt:hover {
+        background: #f1f5f9;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="billing-section">
+        <div class="billing-header">
+            <h3 class="billing-title">Billing & Payments</h3>
+        </div>
+
+        <div class="billing-grid">
+            <div class="fee-details">
+                <div class="fee-header">
+                    <h4 class="fee-title">Fee Details - Spring 2024</h4>
+                </div>
+                <div class="fee-summary">
+                    <div class="fee-item">
+                        <span class="fee-label">Tuition Fee</span>
+                        <span class="fee-value">₹45,000</span>
+                    </div>
+                    <div class="fee-item">
+                        <span class="fee-label">Development Fee</span>
+                        <span class="fee-value">₹15,000</span>
+                    </div>
+                    <div class="fee-item">
+                        <span class="fee-label">Library Fee</span>
+                        <span class="fee-value">₹5,000</span>
+                    </div>
+                    <div class="fee-item">
+                        <span class="fee-label">Laboratory Fee</span>
+                        <span class="fee-value">₹10,000</span>
+                    </div>
+                    <div class="fee-total">
+                        <span class="total-label">Total Amount</span>
+                        <span class="total-value">₹75,000</span>
+                    </div>
+                </div>
+                <div class="payment-actions">
+                    <button class="pay-btn">Pay Now</button>
+                </div>
+            </div>
+
+            <div class="payment-history">
+                <div class="history-header">
+                    <h4 class="history-title">Payment History</h4>
+                </div>
+                <div class="transaction-list">
+                    <div class="transaction-item">
+                        <div class="transaction-icon icon-success">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="transaction-details">
+                            <div class="transaction-title">Fall 2023 Semester Fee</div>
+                            <div class="transaction-meta">
+                                <span class="transaction-date">Paid on Dec 15, 2023</span>
+                                <span class="transaction-amount">₹75,000</span>
+                            </div>
+                            <div style="margin-top: 0.5rem;">
+                                <span class="payment-status status-paid">Paid</span>
+                                <a href="#" class="download-receipt">
+                                    <i class="fas fa-download"></i>
+                                    Receipt
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="transaction-item">
+                        <div class="transaction-icon icon-pending">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="transaction-details">
+                            <div class="transaction-title">Library Fine</div>
+                            <div class="transaction-meta">
+                                <span class="transaction-date">Due by Mar 25, 2024</span>
+                                <span class="transaction-amount">₹500</span>
+                            </div>
+                            <div style="margin-top: 0.5rem;">
+                                <span class="payment-status status-pending">Pending</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="transaction-item">
+                        <div class="transaction-icon icon-success">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="transaction-details">
+                            <div class="transaction-title">Spring 2023 Semester Fee</div>
+                            <div class="transaction-meta">
+                                <span class="transaction-date">Paid on Jun 15, 2023</span>
+                                <span class="transaction-amount">₹75,000</span>
+                            </div>
+                            <div style="margin-top: 0.5rem;">
+                                <span class="payment-status status-paid">Paid</span>
+                                <a href="#" class="download-receipt">
+                                    <i class="fas fa-download"></i>
+                                    Receipt
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

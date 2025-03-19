@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Institution - {{ user.get_full_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .institution-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .institution-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .institution-title {
+        color: #1a202c;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .institution-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .info-card {
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-radius: 10px;
+    }
+
+    .info-card h4 {
+        color: #4a5568;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .info-card p {
+        color: #1a202c;
+        font-size: 1rem;
+        margin: 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="institution-section">
+        <div class="institution-header">
+            <h3 class="institution-title">Bharath Institute of Science and Technology</h3>
+        </div>
+        <div class="institution-info">
+            <div class="info-card">
+                <h4>Department</h4>
+                <p>{{ user.department }}</p>
+            </div>
+            <div class="info-card">
+                <h4>Current Semester</h4>
+                <p>{{ user.semester }}</p>
+            </div>
+            <div class="info-card">
+                <h4>Academic Year</h4>
+                <p>2024-2025</p>
+            </div>
+            <div class="info-card">
+                <h4>Student ID</h4>
+                <p>{{ user.student_id }}</p>
+            </div>
+            <div class="info-card">
+                <h4>Course</h4>
+                <p>B.Tech - Computer Science and Engineering</p>
+            </div>
+            <div class="info-card">
+                <h4>Section</h4>
+                <p>CSE-IBM</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

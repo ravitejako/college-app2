@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Submit Assignment - {{ assignment.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-header {
+        margin-bottom: 2rem;
+    }
+    
+    .form-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-subtitle {
+        color: #718096;
+    }
+    
+    .assignment-details {
+        background: #f8fafc;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .assignment-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+    }
+    
+    .assignment-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+        color: #718096;
+        font-size: 0.875rem;
+    }
+    
+    .assignment-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .assignment-description {
+        margin-top: 1rem;
+        color: #4a5568;
+    }
+    
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e2e8f0;
+    }
+    
+    .btn-cancel {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #e2e8f0;
+        color: #4a5568;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    
+    .btn-cancel:hover {
+        background: #cbd5e0;
+    }
+    
+    .btn-submit {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #3b82f6;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-submit:hover {
+        background: #2563eb;
+    }
+    
+    .deadline-warning {
+        background: #feebc8;
+        color: #744210;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .deadline-passed {
+        background: #fed7d7;
+        color: #822727;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-header">
+        <h1 class="form-title">Submit Assignment</h1>
+        <p class="form-subtitle">Complete and submit your assignment before the deadline.</p>
+    </div>
+    
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <div class="assignment-details">
+        <h2 class="assignment-title">{{ assignment.title }}</h2>
+        <div class="assignment-meta">
+            <div class="assignment-meta-item">
+                <i class="fas fa-book"></i>
+                <span>{{ assignment.subject.name }}</span>
+            </div>
+            <div class="assignment-meta-item">
+                <i class="fas fa-calendar"></i>
+                <span>Due: {{ assignment.due_date|date:"M d, Y h:i A" }}</span>
+            </div>
+            <div class="assignment-meta-item">
+                <i class="fas fa-star"></i>
+                <span>Max Marks: {{ assignment.max_marks }}</span>
+            </div>
+        </div>
+        
+        {% if assignment.file_attachment %}
+        <div class="assignment-meta-item">
+            <i class="fas fa-paperclip"></i>
+            <a href="{{ assignment.file_attachment.url }}" target="_blank">Download Assignment File</a>
+        </div>
+        {% endif %}
+        
+        <div class="assignment-description">
+            {{ assignment.description|linebreaks }}
+        </div>
+    </div>
+    
+    {% if assignment.due_date < now %}
+        <div class="deadline-passed">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>The deadline for this assignment has passed. Your submission will be marked as late.</span>
+        </div>
+    {% elif assignment.due_date|timeuntil:now < '24 hours' %}
+        <div class="deadline-warning">
+            <i class="fas fa-clock"></i>
+            <span>The deadline for this assignment is approaching. You have {{ assignment.due_date|timeuntil }} left to submit.</span>
+        </div>
+    {% endif %}
+    
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="row">
+            <div class="col-md-12">
+                {{ form.submission_text|as_crispy_field }}
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12">
+                {{ form.submission_file|as_crispy_field }}
+                {% if submission.submission_file %}
+                <p class="text-muted mt-2">
+                    Current file: <a href="{{ submission.submission_file.url }}" target="_blank">{{ submission.submission_file.name }}</a>
+                </p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <a href="{% url 'assignments' %}" class="btn-cancel">
+                <i class="fas fa-times"></i>
+                Cancel
+            </a>
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-paper-plane"></i>
+                Submit Assignment
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %} 

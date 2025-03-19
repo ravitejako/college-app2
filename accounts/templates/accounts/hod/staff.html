@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Staff Members{% endblock %}
+
+{% block extra_css %}
+<style>
+    .staff-table-container {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        overflow: hidden;
+        margin: 20px auto;
+        max-width: 1200px;
+    }
+    
+    .staff-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .staff-table th,
+    .staff-table td {
+        padding: 15px 20px;
+        text-align: left;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .staff-table th {
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .staff-table tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .update-btn {
+        background-color: #4361ee;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 8px 16px;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .update-btn:hover {
+        background-color: #3a56d4;
+        color: white;
+        text-decoration: none;
+    }
+    
+    .page-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 0 20px;
+    }
+    
+    @media (max-width: 768px) {
+        .staff-table-container {
+            overflow-x: auto;
+            margin: 15px auto;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-content">
+    <h1 class="mb-4">Staff Members</h1>
+
+    <div class="staff-table-container">
+        <table class="staff-table">
+            <thead>
+                <tr>
+                    <th>Staff ID</th>
+                    <th>Name</th>
+                    <th>Designation</th>
+                    <th>Qualification</th>
+                    <th>Specialization</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for staff in staff_members %}
+                <tr>
+                    <td>{{ staff.staff_id|default:"CS00"|add:staff.id|stringformat:"d" }}</td>
+                    <td>{{ staff.get_full_name }}</td>
+                    <td>{{ staff.designation }}</td>
+                    <td>{{ staff.qualification|default:"Ph.D." }}</td>
+                    <td>{{ staff.specialization|default:"" }}</td>
+                    <td>
+                        <a href="{% url 'hod_update_staff' staff.id %}" class="update-btn">Update</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-3">No staff members found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %} 

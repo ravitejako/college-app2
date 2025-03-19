@@ -1,0 +1,341 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Holidays - {{ user.get_full_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .holidays-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .holidays-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .holidays-title {
+        color: #1a202c;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .holiday-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .holiday-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .calendar {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid #e2e8f0;
+    }
+
+    .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .calendar-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1a202c;
+    }
+
+    .calendar-nav {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .nav-btn {
+        padding: 0.5rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        background: white;
+        color: #4a5568;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .nav-btn:hover {
+        background: #f1f5f9;
+    }
+
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 0.5rem;
+    }
+
+    .calendar-weekday {
+        text-align: center;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #64748b;
+        padding: 0.5rem;
+    }
+
+    .calendar-day {
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        color: #1a202c;
+        cursor: pointer;
+        transition: all 0.2s;
+        position: relative;
+    }
+
+    .calendar-day:hover {
+        background: #e2e8f0;
+    }
+
+    .calendar-day.holiday {
+        background: #fee2e2;
+        color: #dc2626;
+        font-weight: 500;
+    }
+
+    .calendar-day.today {
+        background: #e0f2fe;
+        color: #0284c7;
+        font-weight: 500;
+    }
+
+    .upcoming-holidays {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .upcoming-header {
+        background: #f8fafc;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .upcoming-title {
+        color: #1a202c;
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .holiday-list {
+        padding: 1rem;
+    }
+
+    .holiday-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .holiday-item:last-child {
+        border-bottom: none;
+    }
+
+    .holiday-date {
+        min-width: 48px;
+        text-align: center;
+    }
+
+    .holiday-day {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #dc2626;
+        line-height: 1;
+    }
+
+    .holiday-month {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin-top: 0.25rem;
+    }
+
+    .holiday-info {
+        flex: 1;
+    }
+
+    .holiday-name {
+        font-weight: 500;
+        color: #1a202c;
+        margin-bottom: 0.25rem;
+    }
+
+    .holiday-type {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        background: #fee2e2;
+        color: #dc2626;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="holidays-section">
+        <div class="holidays-header">
+            <h3 class="holidays-title">Academic Calendar</h3>
+        </div>
+
+        <div class="holiday-grid">
+            <div class="calendar">
+                <div class="calendar-header">
+                    <h4 class="calendar-title">March 2024</h4>
+                    <div class="calendar-nav">
+                        <button class="nav-btn">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="nav-btn">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="calendar-grid">
+                    <div class="calendar-weekday">Sun</div>
+                    <div class="calendar-weekday">Mon</div>
+                    <div class="calendar-weekday">Tue</div>
+                    <div class="calendar-weekday">Wed</div>
+                    <div class="calendar-weekday">Thu</div>
+                    <div class="calendar-weekday">Fri</div>
+                    <div class="calendar-weekday">Sat</div>
+
+                    <!-- Calendar days -->
+                    <div class="calendar-day">25</div>
+                    <div class="calendar-day">26</div>
+                    <div class="calendar-day">27</div>
+                    <div class="calendar-day">28</div>
+                    <div class="calendar-day">29</div>
+                    <div class="calendar-day">1</div>
+                    <div class="calendar-day">2</div>
+                    <div class="calendar-day">3</div>
+                    <div class="calendar-day">4</div>
+                    <div class="calendar-day">5</div>
+                    <div class="calendar-day">6</div>
+                    <div class="calendar-day">7</div>
+                    <div class="calendar-day holiday">8</div>
+                    <div class="calendar-day">9</div>
+                    <div class="calendar-day">10</div>
+                    <div class="calendar-day">11</div>
+                    <div class="calendar-day">12</div>
+                    <div class="calendar-day">13</div>
+                    <div class="calendar-day">14</div>
+                    <div class="calendar-day">15</div>
+                    <div class="calendar-day today">16</div>
+                    <div class="calendar-day">17</div>
+                    <div class="calendar-day">18</div>
+                    <div class="calendar-day">19</div>
+                    <div class="calendar-day holiday">20</div>
+                    <div class="calendar-day">21</div>
+                    <div class="calendar-day">22</div>
+                    <div class="calendar-day">23</div>
+                    <div class="calendar-day">24</div>
+                    <div class="calendar-day">25</div>
+                    <div class="calendar-day">26</div>
+                    <div class="calendar-day holiday">27</div>
+                    <div class="calendar-day">28</div>
+                    <div class="calendar-day">29</div>
+                    <div class="calendar-day">30</div>
+                    <div class="calendar-day">31</div>
+                </div>
+            </div>
+
+            <div class="upcoming-holidays">
+                <div class="upcoming-header">
+                    <h4 class="upcoming-title">Upcoming Holidays</h4>
+                </div>
+                <div class="holiday-list">
+                    <div class="holiday-item">
+                        <div class="holiday-date">
+                            <div class="holiday-day">20</div>
+                            <div class="holiday-month">MAR</div>
+                        </div>
+                        <div class="holiday-info">
+                            <div class="holiday-name">Holi</div>
+                            <span class="holiday-type">National Holiday</span>
+                        </div>
+                    </div>
+                    <div class="holiday-item">
+                        <div class="holiday-date">
+                            <div class="holiday-day">27</div>
+                            <div class="holiday-month">MAR</div>
+                        </div>
+                        <div class="holiday-info">
+                            <div class="holiday-name">Ram Navami</div>
+                            <span class="holiday-type">Festival</span>
+                        </div>
+                    </div>
+                    <div class="holiday-item">
+                        <div class="holiday-date">
+                            <div class="holiday-day">14</div>
+                            <div class="holiday-month">APR</div>
+                        </div>
+                        <div class="holiday-info">
+                            <div class="holiday-name">Ambedkar Jayanti</div>
+                            <span class="holiday-type">National Holiday</span>
+                        </div>
+                    </div>
+                    <div class="holiday-item">
+                        <div class="holiday-date">
+                            <div class="holiday-day">1</div>
+                            <div class="holiday-month">MAY</div>
+                        </div>
+                        <div class="holiday-info">
+                            <div class="holiday-name">Labor Day</div>
+                            <span class="holiday-type">National Holiday</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add hover effect to calendar days
+        const calendarDays = document.querySelectorAll('.calendar-day');
+        calendarDays.forEach(day => {
+            day.addEventListener('mouseenter', () => {
+                if (!day.classList.contains('holiday') && !day.classList.contains('today')) {
+                    day.style.background = '#e2e8f0';
+                }
+            });
+            day.addEventListener('mouseleave', () => {
+                if (!day.classList.contains('holiday') && !day.classList.contains('today')) {
+                    day.style.background = 'transparent';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %} 
