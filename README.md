@@ -8,6 +8,8 @@ A Django-based web application for managing student attendance in a college sett
 - Students can view their attendance records
 - User authentication for both staff and students
 - Secure access control based on user roles
+- Dark/Light theme toggle with auto-detection
+- Responsive design for mobile and desktop
 
 ## Setup Instructions
 
@@ -45,3 +47,4 @@ python manage.py runserver
 - **Staff**: Can take attendance and view attendance records
 - **Students**: Can view their own attendance records
 - **Admin**: Full access to manage users and system settings 
+- **HOD (Head of Department)**: Can manage staff, subjects, and department settings
