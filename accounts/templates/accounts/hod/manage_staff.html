@@ -1,133 +1,440 @@
-{% extends 'base.html' %}
+{% extends 'accounts/hod/hod_base.html' %}
 {% load static %}
 
 {% block title %}Manage Staff{% endblock %}
 
-{% block content %}
-<div class="container py-4">
-    <h1 class="mb-4">Manage Staff Members</h1>
+{% block header_icon %}<i class="fas fa-users"></i>{% endblock %}
+{% block header_title %}Manage Staff{% endblock %}
 
-    {% if messages %}
-    <div class="messages mb-4">
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">
-            {{ message }}
+{% block header_actions %}
+<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStaffModal">
+  <i class="fas fa-user-plus me-2"></i> Add New Staff
+</button>
+<a href="{% url 'hod_staff_directory' %}" class="btn btn-info">
+  <i class="fas fa-address-book me-2"></i> Staff Directory
+</a>
+<a href="{% url 'hod_dashboard' %}" class="btn btn-secondary">
+  <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+</a>
+{% endblock %}
+
+{% block hod_content %}
+  <!-- Stats Overview -->
+  <div class="row mb-4">
+    <div class="col-md-4 mb-3">
+      <div class="stat-card blue">
+        <div class="stat-icon">
+          <i class="fas fa-users" style="color: #2563eb;"></i>
+        </div>
+        <div class="stat-value">{{ staff_list|length }}</div>
+        <div class="stat-label">Total Staff</div>
+      </div>
+    </div>
+    
+    <div class="col-md-4 mb-3">
+      <div class="stat-card green">
+        <div class="stat-icon">
+          <i class="fas fa-chalkboard-teacher" style="color: #059669;"></i>
+        </div>
+        <div class="stat-value">{{ professors_count|default:"0" }}</div>
+        <div class="stat-label">Professors</div>
+      </div>
+    </div>
+    
+    <div class="col-md-4 mb-3">
+      <div class="stat-card purple">
+        <div class="stat-icon">
+          <i class="fas fa-book-reader" style="color: #7c3aed;"></i>
+        </div>
+        <div class="stat-value">{{ lecturers_count|default:"0" }}</div>
+        <div class="stat-label">Lecturers</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search and Filter -->
+  <div class="filter-section mb-4">
+    <div class="filter-item">
+      <label for="designationFilter" class="form-label">Filter by Designation</label>
+      <select id="designationFilter" class="form-select">
+        <option value="all">All Designations</option>
+        <option value="Professor">Professor</option>
+        <option value="Associate Professor">Associate Professor</option>
+        <option value="Assistant Professor">Assistant Professor</option>
+        <option value="Lecturer">Lecturer</option>
+      </select>
+    </div>
+    
+    <div class="filter-item">
+      <label for="specializationFilter" class="form-label">Filter by Specialization</label>
+      <select id="specializationFilter" class="form-select">
+        <option value="all">All Specializations</option>
+        {% for specialization in specializations %}
+          {% if specialization %}
+            <option value="{{ specialization }}">{{ specialization }}</option>
+          {% endif %}
+        {% endfor %}
+      </select>
+    </div>
+    
+    <div class="filter-item">
+      <label for="searchStaff" class="form-label">Search</label>
+      <input type="text" id="searchStaff" class="form-control" placeholder="Search by name or ID...">
+    </div>
+    
+    <div class="filter-item d-flex align-items-end">
+      <button id="resetFiltersBtn" class="btn btn-secondary w-100">
+        <i class="fas fa-sync-alt me-2"></i> Reset
+      </button>
+    </div>
+  </div>
+
+  <!-- Staff List -->
+  <div class="table-container">
+    <table class="hod-table" id="staffTable">
+      <thead>
+        <tr>
+          <th width="5%">#</th>
+          <th width="15%">Staff ID</th>
+          <th width="20%">Name</th>
+          <th width="15%">Designation</th>
+          <th width="15%">Qualification</th>
+          <th width="15%">Specialization</th>
+          <th width="15%" class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for staff in staff_list %}
+        <tr data-id="{{ staff.id }}" data-designation="{{ staff.designation }}" data-specialization="{{ staff.specialization|default:'' }}">
+          <td>{{ forloop.counter }}</td>
+          <td>{{ staff.staff_id|default:"N/A" }}</td>
+          <td>
+            <div class="d-flex align-items-center">
+              <div class="avatar-circle bg-primary me-2">
+                {{ staff.first_name|slice:":1" }}{{ staff.last_name|slice:":1" }}
+              </div>
+              <div>
+                <div class="fw-semibold">{{ staff.get_full_name }}</div>
+                <div class="text-muted small">{{ staff.email }}</div>
+              </div>
+            </div>
+          </td>
+          <td>{{ staff.designation }}</td>
+          <td>{{ staff.qualification|default:"N/A" }}</td>
+          <td>{{ staff.specialization|default:"N/A" }}</td>
+          <td class="text-end">
+            <button class="action-btn action-btn-edit"
+                    data-bs-toggle="modal"
+                    data-bs-target="#updateStaffModal"
+                    data-staff-id="{{ staff.id }}"
+                    data-staff-name="{{ staff.get_full_name }}"
+                    data-staff-designation="{{ staff.designation }}"
+                    data-staff-qualification="{{ staff.qualification }}"
+                    data-staff-specialization="{{ staff.specialization }}"
+                    data-staff-office="{{ staff.office_location }}">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="action-btn action-btn-view" data-bs-toggle="modal" data-bs-target="#viewStaffModal{{ staff.id }}">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button class="action-btn action-btn-assign">
+              <i class="fas fa-book"></i>
+            </button>
+          </td>
+        </tr>
+        
+        <!-- View Staff Modal -->
+        <div class="modal fade" id="viewStaffModal{{ staff.id }}" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Staff Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="text-center mb-4">
+                  <div class="avatar-circle bg-primary mx-auto mb-3" style="width: 80px; height: 80px; font-size: 30px;">
+                    {{ staff.first_name|slice:":1" }}{{ staff.last_name|slice:":1" }}
+                  </div>
+                  <h4>{{ staff.get_full_name }}</h4>
+                  <p class="text-muted">{{ staff.staff_id|default:"" }}</p>
+                </div>
+                
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label text-muted small">Designation</label>
+                    <div class="fw-semibold">{{ staff.designation }}</div>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label text-muted small">Qualification</label>
+                    <div class="fw-semibold">{{ staff.qualification|default:"Not Specified" }}</div>
+                  </div>
+                </div>
+                
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label text-muted small">Specialization</label>
+                    <div class="fw-semibold">{{ staff.specialization|default:"Not Specified" }}</div>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label text-muted small">Office Location</label>
+                    <div class="fw-semibold">{{ staff.office_location|default:"Not Specified" }}</div>
+                  </div>
+                </div>
+                
+                <div class="mb-3">
+                  <label class="form-label text-muted small">Email</label>
+                  <div class="fw-semibold">{{ staff.email }}</div>
+                </div>
+                
+                <div class="mb-3">
+                  <label class="form-label text-muted small">Subjects</label>
+                  <div>
+                    {% with staff_subjects=staff.subject_set.all %}
+                      {% if staff_subjects %}
+                        <ul class="list-group list-group-flush">
+                          {% for subject in staff_subjects %}
+                            <li class="list-group-item px-0">
+                              <span class="badge bg-primary me-2">{{ subject.code }}</span>
+                              {{ subject.name }}
+                            </li>
+                          {% endfor %}
+                        </ul>
+                      {% else %}
+                        <div class="text-muted">No subjects assigned</div>
+                      {% endif %}
+                    {% endwith %}
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
         </div>
         {% endfor %}
-    </div>
-    {% endif %}
+      </tbody>
+    </table>
+  </div>
+  
+  <!-- No Results Message -->
+  <div id="noResults" class="text-center py-5 d-none">
+    <i class="fas fa-search text-muted mb-3" style="font-size: 3rem;"></i>
+    <h4 class="text-muted">No staff found</h4>
+    <p class="text-muted">Try adjusting your search or filters</p>
+    <button id="clearSearch" class="btn btn-outline-primary">Clear Search</button>
+  </div>
 
-    <!-- Staff Members Table -->
-    <div class="card">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Staff ID</th>
-                            <th>Name</th>
-                            <th>Designation</th>
-                            <th>Qualification</th>
-                            <th>Specialization</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for staff in staff_members %}
-                        <tr>
-                            <td>{{ staff.staff_id }}</td>
-                            <td>{{ staff.get_full_name }}</td>
-                            <td>{{ staff.designation|default:"-" }}</td>
-                            <td>{{ staff.qualification|default:"-" }}</td>
-                            <td>{{ staff.specialization|default:"-" }}</td>
-                            <td>
-                                <button class="btn btn-sm btn-primary"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#updateStaffModal"
-                                        data-staff-id="{{ staff.id }}"
-                                        data-staff-name="{{ staff.get_full_name }}"
-                                        data-staff-designation="{{ staff.designation }}"
-                                        data-staff-qualification="{{ staff.qualification }}"
-                                        data-staff-specialization="{{ staff.specialization }}"
-                                        data-staff-office="{{ staff.office_location }}">
-                                    Update
-                                </button>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="6" class="text-center">No staff members found.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Update Staff Modal -->
-<div class="modal fade" id="updateStaffModal" tabindex="-1">
+  <!-- Update Staff Modal -->
+  <div class="modal fade" id="updateStaffModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Update Staff Member</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form method="post">
-                {% csrf_token %}
-                <div class="modal-body">
-                    <input type="hidden" name="action" value="update_staff">
-                    <input type="hidden" name="staff_id" id="updateStaffId">
-                    <p>Updating details for: <span id="updateStaffName"></span></p>
-                    
-                    <div class="mb-3">
-                        <label for="designation" class="form-label">Designation</label>
-                        <input type="text" class="form-control" id="designation" name="designation">
-                    </div>
-                    <div class="mb-3">
-                        <label for="qualification" class="form-label">Qualification</label>
-                        <input type="text" class="form-control" id="qualification" name="qualification">
-                    </div>
-                    <div class="mb-3">
-                        <label for="specialization" class="form-label">Specialization</label>
-                        <input type="text" class="form-control" id="specialization" name="specialization">
-                    </div>
-                    <div class="mb-3">
-                        <label for="office_location" class="form-label">Office Location</label>
-                        <input type="text" class="form-control" id="office_location" name="office_location">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Update Staff</button>
-                </div>
-            </form>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Update Staff</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="update_staff">
+          <input type="hidden" id="staff_id" name="staff_id">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="designation" class="form-label">Designation*</label>
+              <select class="form-select" id="designation" name="designation" required>
+                <option value="">Select Designation</option>
+                <option value="Professor">Professor</option>
+                <option value="Associate Professor">Associate Professor</option>
+                <option value="Assistant Professor">Assistant Professor</option>
+                <option value="Lecturer">Lecturer</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="qualification" class="form-label">Qualification</label>
+              <input type="text" class="form-control" id="qualification" name="qualification">
+            </div>
+            <div class="mb-3">
+              <label for="specialization" class="form-label">Specialization</label>
+              <input type="text" class="form-control" id="specialization" name="specialization">
+            </div>
+            <div class="mb-3">
+              <label for="office_location" class="form-label">Office Location</label>
+              <input type="text" class="form-control" id="office_location" name="office_location">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Update</button>
+          </div>
+        </form>
+      </div>
     </div>
-</div>
+  </div>
+
+  <!-- Add Staff Modal -->
+  <div class="modal fade" id="addStaffModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add New Staff</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="add_staff">
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="first_name" class="form-label">First Name*</label>
+                <input type="text" class="form-control" id="first_name" name="first_name" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="last_name" class="form-label">Last Name*</label>
+                <input type="text" class="form-control" id="last_name" name="last_name" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email*</label>
+              <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3">
+              <label for="staff_id" class="form-label">Staff ID*</label>
+              <input type="text" class="form-control" id="staff_id" name="staff_id" required>
+            </div>
+            <div class="mb-3">
+              <label for="add_designation" class="form-label">Designation*</label>
+              <select class="form-select" id="add_designation" name="designation" required>
+                <option value="">Select Designation</option>
+                <option value="Professor">Professor</option>
+                <option value="Associate Professor">Associate Professor</option>
+                <option value="Assistant Professor">Assistant Professor</option>
+                <option value="Lecturer">Lecturer</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="add_qualification" class="form-label">Qualification</label>
+              <input type="text" class="form-control" id="add_qualification" name="qualification">
+            </div>
+            <div class="mb-3">
+              <label for="add_specialization" class="form-label">Specialization</label>
+              <input type="text" class="form-control" id="add_specialization" name="specialization">
+            </div>
+            <div class="mb-3">
+              <label for="add_office_location" class="form-label">Office Location</label>
+              <input type="text" class="form-control" id="add_office_location" name="office_location">
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Password*</label>
+              <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Add Staff</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
 
 {% block extra_js %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const updateStaffModal = document.getElementById('updateStaffModal');
-        updateStaffModal.addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;
-            const staffId = button.getAttribute('data-staff-id');
-            const staffName = button.getAttribute('data-staff-name');
-            const designation = button.getAttribute('data-staff-designation');
-            const qualification = button.getAttribute('data-staff-qualification');
-            const specialization = button.getAttribute('data-staff-specialization');
-            const office = button.getAttribute('data-staff-office');
-            
-            document.getElementById('updateStaffId').value = staffId;
-            document.getElementById('updateStaffName').textContent = staffName;
-            document.getElementById('designation').value = designation || '';
-            document.getElementById('qualification').value = qualification || '';
-            document.getElementById('specialization').value = specialization || '';
-            document.getElementById('office_location').value = office || '';
-        });
+  document.addEventListener('DOMContentLoaded', function() {
+    // Variables
+    const staffTable = document.getElementById('staffTable');
+    const tableRows = staffTable.querySelectorAll('tbody tr');
+    const noResults = document.getElementById('noResults');
+    
+    // Filters
+    const designationFilter = document.getElementById('designationFilter');
+    const specializationFilter = document.getElementById('specializationFilter');
+    const searchInput = document.getElementById('searchStaff');
+    const resetFiltersBtn = document.getElementById('resetFiltersBtn');
+    const clearSearchBtn = document.getElementById('clearSearch');
+    
+    // Update staff modal
+    const updateModal = document.getElementById('updateStaffModal');
+    if (updateModal) {
+      updateModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const staffId = button.getAttribute('data-staff-id');
+        const staffName = button.getAttribute('data-staff-name');
+        const designation = button.getAttribute('data-staff-designation');
+        const qualification = button.getAttribute('data-staff-qualification');
+        const specialization = button.getAttribute('data-staff-specialization');
+        const officeLocation = button.getAttribute('data-staff-office');
+        
+        // Update modal title
+        const modalTitle = updateModal.querySelector('.modal-title');
+        modalTitle.textContent = `Update ${staffName}`;
+        
+        // Set form values
+        document.getElementById('staff_id').value = staffId;
+        document.getElementById('designation').value = designation;
+        document.getElementById('qualification').value = qualification || '';
+        document.getElementById('specialization').value = specialization || '';
+        document.getElementById('office_location').value = officeLocation || '';
+      });
+    }
+    
+    // Apply filters
+    function applyFilters() {
+      const designationValue = designationFilter.value;
+      const specializationValue = specializationFilter.value;
+      const searchValue = searchInput.value.toLowerCase();
+      
+      let visibleCount = 0;
+      
+      tableRows.forEach(row => {
+        const designation = row.getAttribute('data-designation');
+        const specialization = row.getAttribute('data-specialization');
+        const name = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+        const staffId = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+        
+        const designationMatch = designationValue === 'all' || designation === designationValue;
+        const specializationMatch = specializationValue === 'all' || specialization === specializationValue;
+        const searchMatch = name.includes(searchValue) || staffId.includes(searchValue);
+        
+        const shouldShow = designationMatch && specializationMatch && searchMatch;
+        
+        row.style.display = shouldShow ? '' : 'none';
+        
+        if (shouldShow) {
+          visibleCount++;
+        }
+      });
+      
+      // Show/hide no results message
+      if (visibleCount === 0) {
+        noResults.classList.remove('d-none');
+        staffTable.classList.add('d-none');
+      } else {
+        noResults.classList.add('d-none');
+        staffTable.classList.remove('d-none');
+      }
+    }
+    
+    // Event listeners for filters
+    designationFilter.addEventListener('change', applyFilters);
+    specializationFilter.addEventListener('change', applyFilters);
+    searchInput.addEventListener('input', applyFilters);
+    
+    // Reset filters
+    resetFiltersBtn.addEventListener('click', function() {
+      designationFilter.value = 'all';
+      specializationFilter.value = 'all';
+      searchInput.value = '';
+      applyFilters();
     });
+    
+    clearSearchBtn.addEventListener('click', function() {
+      searchInput.value = '';
+      applyFilters();
+    });
+    
+    // Initialize
+    applyFilters();
+  });
 </script>
-{% endblock %}
-{% endblock content %} 
+{% endblock %} 

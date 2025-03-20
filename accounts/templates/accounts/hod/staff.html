@@ -1,108 +1,118 @@
-{% extends 'base.html' %}
+{% extends 'accounts/hod/hod_base.html' %}
 {% load static %}
 
-{% block title %}Manage Staff Members{% endblock %}
+{% block title %}Staff Directory{% endblock %}
 
-{% block extra_css %}
-<style>
-    .staff-table-container {
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        overflow: hidden;
-        margin: 20px auto;
-        max-width: 1200px;
-    }
-    
-    .staff-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    
-    .staff-table th,
-    .staff-table td {
-        padding: 15px 20px;
-        text-align: left;
-        border-bottom: 1px solid #e0e0e0;
-    }
-    
-    .staff-table th {
-        font-weight: 600;
-        color: #333;
-    }
-    
-    .staff-table tr:last-child td {
-        border-bottom: none;
-    }
-    
-    .update-btn {
-        background-color: #4361ee;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        padding: 8px 16px;
-        font-weight: 500;
-        text-decoration: none;
-        display: inline-block;
-    }
-    
-    .update-btn:hover {
-        background-color: #3a56d4;
-        color: white;
-        text-decoration: none;
-    }
-    
-    .page-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 0 20px;
-    }
-    
-    @media (max-width: 768px) {
-        .staff-table-container {
-            overflow-x: auto;
-            margin: 15px auto;
-        }
-    }
-</style>
+{% block header_icon %}<i class="fas fa-users"></i>{% endblock %}
+{% block header_title %}Staff Directory{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'hod_manage_staff' %}" class="btn btn-primary">
+  <i class="fas fa-cog me-2"></i> Manage Staff
+</a>
+<a href="{% url 'hod_dashboard' %}" class="btn btn-secondary">
+  <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+</a>
 {% endblock %}
 
-{% block content %}
-<div class="page-content">
-    <h1 class="mb-4">Staff Members</h1>
-
-    <div class="staff-table-container">
-        <table class="staff-table">
-            <thead>
-                <tr>
-                    <th>Staff ID</th>
-                    <th>Name</th>
-                    <th>Designation</th>
-                    <th>Qualification</th>
-                    <th>Specialization</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for staff in staff_members %}
-                <tr>
-                    <td>{{ staff.staff_id|default:"CS00"|add:staff.id|stringformat:"d" }}</td>
-                    <td>{{ staff.get_full_name }}</td>
-                    <td>{{ staff.designation }}</td>
-                    <td>{{ staff.qualification|default:"Ph.D." }}</td>
-                    <td>{{ staff.specialization|default:"" }}</td>
-                    <td>
-                        <a href="{% url 'hod_update_staff' staff.id %}" class="update-btn">Update</a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6" class="text-center py-3">No staff members found.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+{% block hod_content %}
+  <!-- Staff Directory Grid -->
+  <div class="row g-4">
+    {% for staff in staff_members %}
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="text-center mb-3">
+            <div class="avatar-circle bg-primary mx-auto mb-3" style="width: 80px; height: 80px; font-size: 30px;">
+              {{ staff.first_name|slice:":1" }}{{ staff.last_name|slice:":1" }}
+            </div>
+            <h5 class="card-title mb-0">{{ staff.get_full_name }}</h5>
+            <p class="text-muted small">{{ staff.designation }}</p>
+          </div>
+          
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <div class="text-muted small">Staff ID</div>
+              <div class="fw-semibold">{{ staff.staff_id|default:"N/A" }}</div>
+            </div>
+            <div class="col-6">
+              <div class="text-muted small">Qualification</div>
+              <div class="fw-semibold">{{ staff.qualification|default:"N/A" }}</div>
+            </div>
+          </div>
+          
+          <div class="row g-2 mb-3">
+            <div class="col-12">
+              <div class="text-muted small">Specialization</div>
+              <div class="fw-semibold">{{ staff.specialization|default:"N/A" }}</div>
+            </div>
+          </div>
+          
+          <div class="row g-2 mb-3">
+            <div class="col-12">
+              <div class="text-muted small">Email</div>
+              <div class="fw-semibold">{{ staff.email }}</div>
+            </div>
+          </div>
+          
+          {% with staff_subjects=staff.subject_set.all %}
+          <div class="text-muted small mb-2">Assigned Subjects ({{ staff_subjects.count }})</div>
+          {% if staff_subjects %}
+            <div class="d-flex flex-wrap gap-1 mb-3">
+              {% for subject in staff_subjects|slice:":3" %}
+                <span class="badge bg-primary">{{ subject.code }}</span>
+              {% endfor %}
+              {% if staff_subjects.count > 3 %}
+                <span class="badge bg-secondary">+{{ staff_subjects.count|add:"-3" }} more</span>
+              {% endif %}
+            </div>
+          {% else %}
+            <div class="text-muted small mb-3">No subjects assigned</div>
+          {% endif %}
+          {% endwith %}
+          
+          <div class="d-flex justify-content-between mt-auto">
+            <a href="#" class="btn btn-sm btn-outline-primary">
+              <i class="fas fa-eye me-1"></i> View Profile
+            </a>
+            <a href="mailto:{{ staff.email }}" class="btn btn-sm btn-outline-secondary">
+              <i class="fas fa-envelope me-1"></i> Contact
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
-{% endblock content %} 
+    {% empty %}
+    <div class="col-12">
+      <div class="text-center py-5">
+        <i class="fas fa-user-slash text-muted mb-3" style="font-size: 3rem;"></i>
+        <h4 class="text-muted">No staff members found</h4>
+        <p class="text-muted">There are no staff members in this department yet</p>
+        <a href="{% url 'hod_manage_staff' %}" class="btn btn-primary">
+          <i class="fas fa-user-plus me-2"></i> Add Staff
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Avatar styling
+    const style = document.createElement('style');
+    style.textContent = `
+      .avatar-circle {
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+      }
+    `;
+    document.head.appendChild(style);
+  });
+</script>
+{% endblock %} 

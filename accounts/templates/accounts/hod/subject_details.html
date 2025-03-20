@@ -1,103 +1,318 @@
-{% extends 'base.html' %}
+{% extends 'accounts/hod/hod_base.html' %}
 {% load static %}
 
 {% block title %}Subject Details - {{ subject.name }}{% endblock %}
 
-{% block content %}
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Subject Details</h1>
-        <a href="{% url 'hod_manage_subjects' %}" class="btn btn-secondary">Back to Subjects</a>
-    </div>
+{% block header_icon %}<i class="fas fa-book-open"></i>{% endblock %}
+{% block header_title %}Subject Details: {{ subject.name }}{% endblock %}
 
-    <!-- Subject Information Card -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5 class="mb-0">{{ subject.name }}</h5>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <p><strong>Subject Code:</strong> {{ subject.code }}</p>
-                    <p><strong>Department:</strong> {{ subject.department.name }}</p>
-                    <p><strong>Semester:</strong> {{ subject.semester }}</p>
-                    <p><strong>Credits:</strong> {{ subject.credits }}</p>
-                </div>
-                <div class="col-md-6">
-                    <p><strong>Assigned Staff:</strong> 
-                        {% if assigned_staff %}
-                            {{ assigned_staff.get_full_name }}
-                        {% else %}
-                            <span class="text-muted">Not Assigned</span>
-                        {% endif %}
-                    </p>
-                    <p><strong>Created At:</strong> {{ subject.created_at|date:"F d, Y" }}</p>
-                </div>
-            </div>
-            {% if subject.description %}
-            <div class="mt-3">
-                <h6>Description:</h6>
-                <p>{{ subject.description }}</p>
-            </div>
-            {% endif %}
-        </div>
-    </div>
+{% block header_actions %}
+<a href="{% url 'hod_manage_subjects' %}" class="btn btn-secondary">
+  <i class="fas fa-arrow-left me-2"></i> Back to Subjects
+</a>
+{% endblock %}
 
-    <!-- Assign Staff Section -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5 class="mb-0">Assign Staff</h5>
-        </div>
-        <div class="card-body">
-            <form method="post">
-                {% csrf_token %}
-                <input type="hidden" name="action" value="assign_staff">
-                <input type="hidden" name="subject_id" value="{{ subject.id }}">
-                <div class="row">
-                    <div class="col-md-8">
-                        <select name="staff_id" class="form-select" required>
-                            <option value="">Select Staff Member</option>
-                            {% for staff in staff_members %}
-                            <option value="{{ staff.id }}" {% if staff.id == assigned_staff.id %}selected{% endif %}>
-                                {{ staff.get_full_name }} - {{ staff.designation }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <button type="submit" class="btn btn-primary">Assign Staff</button>
-                    </div>
-                </div>
-            </form>
-        </div>
+{% block hod_content %}
+  <!-- Subject Information Card -->
+  <div class="card mb-4">
+    <div class="card-header bg-white">
+      <h5 class="card-title m-0 d-flex align-items-center">
+        <span class="badge bg-primary me-2">{{ subject.code }}</span> 
+        Subject Information
+      </h5>
     </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label text-muted small">Subject Code</label>
+              <div class="fw-semibold">{{ subject.code }}</div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label text-muted small">Department</label>
+              <div class="fw-semibold">{{ subject.department.name }}</div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label text-muted small">Semester</label>
+              <div class="fw-semibold">{{ subject.semester }}</div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label text-muted small">Credits</label>
+              <div class="fw-semibold">{{ subject.credits }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <div class="row">
+            <div class="col-12 mb-3">
+              <label class="form-label text-muted small">Assigned Staff</label>
+              <div>
+                {% if assigned_staff %}
+                <div class="d-flex align-items-center">
+                  <div class="avatar-circle bg-primary me-2">
+                    {{ assigned_staff.first_name|slice:":1" }}{{ assigned_staff.last_name|slice:":1" }}
+                  </div>
+                  <div>
+                    <div class="fw-semibold">{{ assigned_staff.get_full_name }}</div>
+                    <div class="text-muted small">{{ assigned_staff.designation }}</div>
+                  </div>
+                </div>
+                {% else %}
+                <span class="badge bg-warning text-dark">Not Assigned</span>
+                {% endif %}
+              </div>
+            </div>
+            <div class="col-12 mb-3">
+              <label class="form-label text-muted small">Created At</label>
+              <div class="fw-semibold">{{ subject.created_at|date:"F d, Y" }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% if subject.description %}
+      <div class="mb-3">
+        <label class="form-label text-muted small">Description</label>
+        <div class="p-3 bg-light rounded">
+          <p class="mb-0">{{ subject.description }}</p>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
 
-    <!-- Subject Statistics -->
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Enrolled Students</h5>
-                    <h2 class="card-text">{{ enrolled_students_count|default:"0" }}</h2>
-                </div>
-            </div>
+  <!-- Subject Statistics -->
+  <div class="row mb-4">
+    <div class="col-md-4 mb-3">
+      <div class="stat-card blue">
+        <div class="stat-icon">
+          <i class="fas fa-user-graduate" style="color: #2563eb;"></i>
         </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Average Attendance</h5>
-                    <h2 class="card-text">{{ average_attendance|default:"0" }}%</h2>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Assignments</h5>
-                    <h2 class="card-text">{{ assignments_count|default:"0" }}</h2>
-                </div>
-            </div>
-        </div>
+        <div class="stat-value">{{ enrolled_students_count|default:"0" }}</div>
+        <div class="stat-label">Enrolled Students</div>
+      </div>
     </div>
-</div>
-{% endblock content %} 
+    
+    <div class="col-md-4 mb-3">
+      <div class="stat-card green">
+        <div class="stat-icon">
+          <i class="fas fa-calendar-check" style="color: #059669;"></i>
+        </div>
+        <div class="stat-value">{{ average_attendance|default:"0" }}%</div>
+        <div class="stat-label">Average Attendance</div>
+      </div>
+    </div>
+    
+    <div class="col-md-4 mb-3">
+      <div class="stat-card yellow">
+        <div class="stat-icon">
+          <i class="fas fa-tasks" style="color: #d97706;"></i>
+        </div>
+        <div class="stat-value">{{ assignments_count|default:"0" }}</div>
+        <div class="stat-label">Assignments</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assign Staff Section -->
+  <div class="card mb-4">
+    <div class="card-header bg-white">
+      <h5 class="card-title m-0">Assign Staff</h5>
+    </div>
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="assign_staff">
+        <input type="hidden" name="subject_id" value="{{ subject.id }}">
+        <div class="row g-3 align-items-end">
+          <div class="col-md-8">
+            <label for="staff_select" class="form-label">Select Staff Member</label>
+            <select id="staff_select" name="staff_id" class="form-select" required>
+              <option value="">Select Staff Member</option>
+              {% for staff in staff_members %}
+              <option value="{{ staff.id }}" {% if staff.id == assigned_staff.id %}selected{% endif %}>
+                {{ staff.get_full_name }} ({{ staff.designation }})
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-4">
+            <button type="submit" class="btn btn-primary w-100">
+              <i class="fas fa-user-plus me-2"></i> Assign Staff
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Academic Schedule -->
+  <div class="card mb-4">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+      <h5 class="card-title m-0">Class Schedule</h5>
+      <button class="btn btn-sm btn-outline-primary">
+        <i class="fas fa-plus me-1"></i> Add Schedule
+      </button>
+    </div>
+    <div class="card-body p-0">
+      {% if schedule_items %}
+        <div class="table-container">
+          <table class="hod-table">
+            <thead>
+              <tr>
+                <th>Day</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Room</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in schedule_items %}
+                <tr>
+                  <td>{{ item.day_of_week }}</td>
+                  <td>{{ item.start_time }}</td>
+                  <td>{{ item.end_time }}</td>
+                  <td>{{ item.room }}</td>
+                  <td class="text-end">
+                    <button class="action-btn action-btn-edit">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-btn action-btn-delete">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="text-center py-4">
+          <i class="fas fa-calendar-alt text-muted mb-3" style="font-size: 2rem;"></i>
+          <p class="text-muted">No schedule has been set for this subject</p>
+          <button class="btn btn-outline-primary">
+            <i class="fas fa-plus me-1"></i> Create Schedule
+          </button>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Student Performance Section -->
+  <div class="card">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+      <h5 class="card-title m-0">Student Performance</h5>
+      <div>
+        <select class="form-select form-select-sm" style="width: auto; display: inline-block;">
+          <option>Current Semester</option>
+          <option>Last Semester</option>
+          <option>All Time</option>
+        </select>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-8">
+          <canvas id="performanceChart" style="width: 100%; height: 250px;"></canvas>
+        </div>
+        <div class="col-md-4">
+          <div class="d-flex flex-column h-100 justify-content-center">
+            <div class="mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span>Pass Rate</span>
+                <span class="fw-bold">85%</span>
+              </div>
+              <div class="progress" style="height: 8px;">
+                <div class="progress-bar bg-success" role="progressbar" style="width: 85%"></div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span>Average Score</span>
+                <span class="fw-bold">76/100</span>
+              </div>
+              <div class="progress" style="height: 8px;">
+                <div class="progress-bar bg-primary" role="progressbar" style="width: 76%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span>Completion Rate</span>
+                <span class="fw-bold">92%</span>
+              </div>
+              <div class="progress" style="height: 8px;">
+                <div class="progress-bar bg-info" role="progressbar" style="width: 92%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Sample chart for student performance
+    const ctx = document.getElementById('performanceChart').getContext('2d');
+    
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Assignments', 'Quizzes', 'Mid-term', 'Final Exam', 'Projects'],
+        datasets: [{
+          label: 'Average Score',
+          data: [75, 68, 82, 79, 85],
+          backgroundColor: [
+            'rgba(54, 162, 235, 0.7)',
+            'rgba(255, 206, 86, 0.7)',
+            'rgba(75, 192, 192, 0.7)',
+            'rgba(153, 102, 255, 0.7)',
+            'rgba(255, 159, 64, 0.7)'
+          ],
+          borderColor: [
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100
+          }
+        }
+      }
+    });
+    
+    // Avatar styling for staff avatar
+    const style = document.createElement('style');
+    style.textContent = `
+      .avatar-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 16px;
+      }
+    `;
+    document.head.appendChild(style);
+  });
+</script>
+{% endblock %} 

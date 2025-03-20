@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Staff Attendance{% endblock %}
+
+{% block staff_content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clipboard-check me-2"></i> Staff Attendance
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="lead">Track and manage your attendance records.</p>
+                    
+                    <!-- Calendar View Section -->
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card mb-3">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">Monthly Overview</h6>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="calendar-wrapper">
+                                        <div class="calendar-header bg-light p-3 d-flex justify-content-between align-items-center">
+                                            <button class="btn btn-sm btn-outline-secondary">
+                                                <i class="fas fa-chevron-left"></i>
+                                            </button>
+                                            <h6 class="mb-0">March 2025</h6>
+                                            <button class="btn btn-sm btn-outline-secondary">
+                                                <i class="fas fa-chevron-right"></i>
+                                            </button>
+                                        </div>
+                                        <table class="table table-bordered table-sm mb-0">
+                                            <thead>
+                                                <tr class="text-center">
+                                                    <th>Sun</th>
+                                                    <th>Mon</th>
+                                                    <th>Tue</th>
+                                                    <th>Wed</th>
+                                                    <th>Thu</th>
+                                                    <th>Fri</th>
+                                                    <th>Sat</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Sample calendar data -->
+                                                <tr class="text-center">
+                                                    <td class="text-muted">23</td>
+                                                    <td class="text-muted">24</td>
+                                                    <td class="text-muted">25</td>
+                                                    <td class="text-muted">26</td>
+                                                    <td class="text-muted">27</td>
+                                                    <td class="text-muted">28</td>
+                                                    <td>1</td>
+                                                </tr>
+                                                <tr class="text-center">
+                                                    <td>2</td>
+                                                    <td>3</td>
+                                                    <td>4</td>
+                                                    <td>5</td>
+                                                    <td class="bg-success text-white">6</td>
+                                                    <td class="bg-success text-white">7</td>
+                                                    <td>8</td>
+                                                </tr>
+                                                <tr class="text-center">
+                                                    <td>9</td>
+                                                    <td class="bg-success text-white">10</td>
+                                                    <td class="bg-success text-white">11</td>
+                                                    <td class="bg-success text-white">12</td>
+                                                    <td class="bg-success text-white">13</td>
+                                                    <td class="bg-success text-white">14</td>
+                                                    <td>15</td>
+                                                </tr>
+                                                <tr class="text-center">
+                                                    <td>16</td>
+                                                    <td class="bg-success text-white">17</td>
+                                                    <td class="bg-success text-white">18</td>
+                                                    <td class="bg-success text-white">19</td>
+                                                    <td class="bg-warning text-white">20</td>
+                                                    <td>21</td>
+                                                    <td>22</td>
+                                                </tr>
+                                                <tr class="text-center">
+                                                    <td>23</td>
+                                                    <td>24</td>
+                                                    <td>25</td>
+                                                    <td>26</td>
+                                                    <td>27</td>
+                                                    <td>28</td>
+                                                    <td>29</td>
+                                                </tr>
+                                                <tr class="text-center">
+                                                    <td>30</td>
+                                                    <td>31</td>
+                                                    <td class="text-muted">1</td>
+                                                    <td class="text-muted">2</td>
+                                                    <td class="text-muted">3</td>
+                                                    <td class="text-muted">4</td>
+                                                    <td class="text-muted">5</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="p-3">
+                                        <div class="d-flex mb-1">
+                                            <span class="badge bg-success me-2">&nbsp;</span>
+                                            <small>Present</small>
+                                        </div>
+                                        <div class="d-flex mb-1">
+                                            <span class="badge bg-danger me-2">&nbsp;</span>
+                                            <small>Absent</small>
+                                        </div>
+                                        <div class="d-flex">
+                                            <span class="badge bg-warning me-2">&nbsp;</span>
+                                            <small>Partial Day</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">Attendance Summary</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-4">
+                                        <div class="col-md-4">
+                                            <div class="text-center p-3 border rounded">
+                                                <h2 class="text-success">94%</h2>
+                                                <p class="mb-0">Present</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="text-center p-3 border rounded">
+                                                <h2 class="text-danger">4%</h2>
+                                                <p class="mb-0">Absent</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="text-center p-3 border rounded">
+                                                <h2 class="text-warning">2%</h2>
+                                                <p class="mb-0">Partial</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <h6>Recent Attendance</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Check In</th>
+                                                    <th>Check Out</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Mar 20, 2025</td>
+                                                    <td>08:45 AM</td>
+                                                    <td>04:30 PM</td>
+                                                    <td><span class="badge bg-warning">Partial</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Mar 19, 2025</td>
+                                                    <td>08:30 AM</td>
+                                                    <td>05:00 PM</td>
+                                                    <td><span class="badge bg-success">Present</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Mar 18, 2025</td>
+                                                    <td>08:30 AM</td>
+                                                    <td>05:00 PM</td>
+                                                    <td><span class="badge bg-success">Present</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Mar 17, 2025</td>
+                                                    <td>08:30 AM</td>
+                                                    <td>05:00 PM</td>
+                                                    <td><span class="badge bg-success">Present</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Mar 14, 2025</td>
+                                                    <td>08:30 AM</td>
+                                                    <td>05:00 PM</td>
+                                                    <td><span class="badge bg-success">Present</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

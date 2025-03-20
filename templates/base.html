@@ -34,14 +34,19 @@
             color: #1a202c;
             line-height: 1.5;
             min-height: 100vh;
+            padding-top: 0; /* Remove default padding to let our layout handle spacing */
+            overflow-x: hidden; /* Prevent horizontal scrolling */
         }
 
         .dashboard-layout {
             display: flex;
             min-height: 100vh;
+            position: relative; /* Position relative for proper stacking */
+            width: 100%;
+            overflow-x: hidden; /* Prevent horizontal overflow */
         }
 
-        .nav-container {
+        .sidebar {
             width: 280px;
             background: white;
             min-height: 100vh;
@@ -52,12 +57,32 @@
             bottom: 0;
             box-shadow: 1px 0 3px rgba(0, 0, 0, 0.1);
             overflow-y: auto;
+            z-index: 1030; /* Higher z-index but below modals/alerts */
+            transition: transform 0.3s ease; /* Smooth transition for mobile toggle */
         }
 
         .main-content {
             flex: 1;
-            margin-left: 280px;
-            padding: 2rem;
+            margin-left: 280px; /* Match sidebar width */
+            padding: 1.5rem;
+            min-height: 100vh; /* Ensure full height */
+            position: relative; /* For proper stacking */
+            background-color: #f8f9fa;
+            width: auto;
+            display: block !important;
+            overflow: visible !important;
+        }
+
+        /* Fix for HOD Dashboard specific pages */
+        .main-content .content-wrapper {
+            padding-top: 15px;
+            padding-bottom: 60px;
+        }
+
+        /* Make cards not overlap */
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
         .nav-grid {
@@ -129,33 +154,145 @@
             color: #b91c1c;
         }
 
+        /* Mobile navbar toggle */
+        .mobile-nav-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1040;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        /* Hide the vertical arrows that appear outside the dropdown menus */
+        body > svg, 
+        .dashboard-layout > svg,
+        svg.bi-chevron-down,
+        main ~ svg {
+            display: none !important;
+        }
+        
+        /* Staff Navigation Categories and Dropdown */
+        .nav-category {
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-item.dropdown-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 0.75rem 1rem;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+
+        .nav-item.dropdown-toggle:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+
+        .nav-item.dropdown-toggle span {
+            flex: 1;
+            margin-right: 8px;
+        }
+
+        .nav-item.dropdown-toggle i.fa-chevron-down {
+            transition: transform 0.3s;
+            font-size: 0.8rem;
+            margin-left: auto;
+        }
+        
+        /* Hide the float-end arrow since we're using the flexbox arrow */
+        .nav-item.dropdown-toggle i.float-end {
+            display: none;
+        }
+
+        .nav-category.open .nav-item.dropdown-toggle i.fa-chevron-down {
+            transform: rotate(180deg);
+        }
+
+        .nav-submenu {
+            display: none;
+            margin-left: 1rem;
+            padding-left: 1rem;
+            border-left: 1px solid #e5e7eb;
+        }
+
+        .nav-category.open .nav-submenu {
+            display: block;
+        }
+
+        .nav-subitem {
+            display: block;
+            padding: 0.5rem 1rem;
+            color: #4a5568;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .nav-subitem:hover {
+            color: #2b6cb0;
+            background-color: #f7fafc;
+            border-radius: 4px;
+        }
+
+        .nav-subitem.active {
+            color: #2b6cb0;
+            font-weight: 500;
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+
+        /* Mobile sidebar toggle */
         @media (max-width: 768px) {
-            .nav-container {
-                width: 100%;
-                height: auto;
-                position: relative;
-                min-height: auto;
-                margin-bottom: 1rem;
+            .mobile-nav-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                transform: translateX(-100%); /* Hide off-screen by default */
+                z-index: 1040; /* Higher z-index on mobile */
+                width: 250px; /* Slightly narrower on mobile */
+            }
+
+            .sidebar.show {
+                transform: translateX(0); /* Show when active */
             }
 
             .main-content {
                 margin-left: 0;
                 padding: 1rem;
+                width: 100%;
             }
+        }
 
-            .dashboard-layout {
-                flex-direction: column;
-            }
-
-            .nav-item {
-                padding: 0.5rem 0.75rem;
-                font-size: 0.9rem;
-            }
+        /* Mobile sidebar overlay */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1035;
+            display: none;
+        }
+        
+        body.sidebar-open .sidebar-overlay {
+            display: block;
         }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body{% if request.user.is_authenticated and request.user.dark_theme_enabled %} class="dark-theme"{% endif %}>
+    <!-- Add this overlay div right after the body opening tag -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
     {% if messages %}
     <div class="message-container position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050;">
         {% for message in messages %}
@@ -167,136 +304,255 @@
     </div>
     {% endif %}
 
+    <!-- Removing duplicate mobile toggle button -->
+    {% if user.is_authenticated and request.resolver_match.url_name not in 'index,login,student_register,staff_register' %}
+    <!-- We'll keep only one mobile navigation toggle to avoid duplicates -->
+    {% endif %}
+
     <div class="{% if user.is_authenticated and request.resolver_match.url_name not in 'index,login,student_register,staff_register' %}dashboard-layout{% else %}container py-4{% endif %}">
-        {% if user.is_authenticated and user.user_type == 'student' and request.resolver_match.url_name not in 'index,login,student_register,staff_register' %}
-        <div class="nav-container">
-            <nav class="nav-grid">
-                <a href="{% url 'profile' %}" class="nav-item profile">
-                    <i class="fas fa-user-circle"></i>
-                    Profile
-                </a>
-                <a href="{% url 'institution' %}" class="nav-item">
-                    <i class="fas fa-university"></i>
-                    My Institution
-                </a>
-                <a href="{% url 'messages' %}" class="nav-item">
-                    <i class="fas fa-envelope"></i>
-                    Messages
-                </a>
-                <a href="{% url 'attendance' %}" class="nav-item">
-                    <i class="fas fa-calendar-check"></i>
-                    Attendance
-                </a>
-                <a href="{% url 'assignments' %}" class="nav-item">
-                    <i class="fas fa-tasks"></i>
-                    Assignments
-                </a>
-                <a href="{% url 'exam_schedules' %}" class="nav-item">
-                    <i class="fas fa-calendar-alt"></i>
-                    Exam Schedules
-                </a>
-                <a href="{% url 'reports' %}" class="nav-item">
-                    <i class="fas fa-chart-bar"></i>
-                    Reports
-                </a>
-                <a href="{% url 'assessments' %}" class="nav-item">
-                    <i class="fas fa-clipboard-check"></i>
-                    Assessments
-                </a>
-                <a href="{% url 'holidays' %}" class="nav-item">
-                    <i class="fas fa-umbrella-beach"></i>
-                    Holidays
-                </a>
-                <a href="{% url 'timetable' %}" class="nav-item">
-                    <i class="fas fa-clock"></i>
-                    Timetable
-                </a>
-                <a href="{% url 'teaching_content' %}" class="nav-item">
-                    <i class="fas fa-book"></i>
-                    Teaching Content
-                </a>
-                <a href="{% url 'leave' %}" class="nav-item">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Leave
-                </a>
-                <a href="{% url 'services' %}" class="nav-item">
-                    <i class="fas fa-cogs"></i>
-                    Services
-                </a>
-                <a href="{% url 'billing' %}" class="nav-item">
-                    <i class="fas fa-file-invoice-dollar"></i>
-                    Billing
-                </a>
-                <a href="{% url 'enrollment' %}" class="nav-item enrollment">
-                    <i class="fas fa-user-graduate"></i>
-                    Enrollment
-                </a>
-                <a href="{% url 'logout' %}" class="nav-item logout">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Logout
-                </a>
-            </nav>
-        </div>
-        <div class="main-content">
-        {% elif user.is_authenticated and user.user_type == 'staff' and request.resolver_match.url_name not in 'index,login,student_register,staff_register' %}
-        <div class="nav-container">
-            <nav class="nav-grid">
-                <a href="{% url 'profile' %}" class="nav-item profile">
-                    <i class="fas fa-user-circle"></i>
-                    Profile
-                </a>
-                <a href="{% url 'staff_dashboard' %}" class="nav-item">
-                    <i class="fas fa-tachometer-alt"></i>
-                    Dashboard
-                </a>
-                <a href="{% url 'staff_assignments' %}" class="nav-item">
-                    <i class="fas fa-tasks"></i>
-                    Assignments
-                </a>
-                <a href="{% url 'mark_attendance' %}" class="nav-item">
-                    <i class="fas fa-calendar-check"></i>
-                    Attendance
-                </a>
-                <a href="{% url 'logout' %}" class="nav-item logout">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Logout
-                </a>
-            </nav>
-        </div>
-        <div class="main-content">
-        {% elif user.is_authenticated and user.user_type == 'hod' and request.resolver_match.url_name not in 'index,login,student_register,staff_register' %}
-        <div class="nav-container">
-            <nav class="nav-grid">
-                <a href="{% url 'profile' %}" class="nav-item profile">
-                    <i class="fas fa-user-circle"></i>
-                    Profile
-                </a>
-                <a href="{% url 'hod_dashboard' %}" class="nav-item">
-                    <i class="fas fa-tachometer-alt"></i>
-                    Dashboard
-                </a>
-                <a href="{% url 'hod_manage_staff' %}" class="nav-item">
-                    <i class="fas fa-users"></i>
-                    Manage Staff
-                </a>
-                <a href="{% url 'hod_manage_subjects' %}" class="nav-item">
-                    <i class="fas fa-book"></i>
-                    Manage Subjects
-                </a>
-                <a href="{% url 'mark_attendance' %}" class="nav-item">
-                    <i class="fas fa-calendar-check"></i>
-                    Mark Attendance
-                </a>
-                <a href="{% url 'logout' %}" class="nav-item logout">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Logout
-                </a>
-            </nav>
-        </div>
-        {% endif %}
-            {% block content %}{% endblock %}
         {% if user.is_authenticated and request.resolver_match.url_name not in 'index,login,student_register,staff_register' %}
-        </div>
+            <!-- Mobile Navigation Toggle Button -->
+            <button class="mobile-nav-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <!-- Sidebar Navigation -->
+            <aside class="sidebar">
+                {% if user.user_type == 'student' %}
+                    <!-- Student layout content here -->
+                    <div class="logo">
+                        <img src="{% static 'images/logo.png' %}" alt="College Attendance System">
+                    </div>
+                    <nav class="nav-grid">
+                        <a href="{% url 'profile' %}" class="nav-item profile">
+                            <i class="fas fa-user-circle"></i>
+                            Profile
+                        </a>
+                        <a href="{% url 'student_dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'student_dashboard' %}active{% endif %}">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Dashboard
+                        </a>
+                        <a href="{% url 'institution' %}" class="nav-item {% if request.resolver_match.url_name == 'institution' %}active{% endif %}">
+                            <i class="fas fa-university"></i>
+                            My Institution
+                        </a>
+                        <a href="{% url 'messages' %}" class="nav-item {% if request.resolver_match.url_name == 'messages' %}active{% endif %}">
+                            <i class="fas fa-envelope"></i>
+                            Messages
+                        </a>
+                        <a href="{% url 'attendance' %}" class="nav-item {% if request.resolver_match.url_name == 'attendance' %}active{% endif %}">
+                            <i class="fas fa-clipboard-check"></i>
+                            Attendance
+                        </a>
+                        <a href="{% url 'timetable' %}" class="nav-item {% if request.resolver_match.url_name == 'timetable' %}active{% endif %}">
+                            <i class="fas fa-calendar-alt"></i>
+                            Timetable
+                        </a>
+                        <a href="{% url 'teaching_content' %}" class="nav-item {% if request.resolver_match.url_name == 'teaching_content' %}active{% endif %}">
+                            <i class="fas fa-book-reader"></i>
+                            Teaching Content
+                        </a>
+                        <a href="{% url 'exam_schedules' %}" class="nav-item {% if request.resolver_match.url_name == 'exam_schedules' %}active{% endif %}">
+                            <i class="fas fa-file-alt"></i>
+                            Exam Schedules
+                        </a>
+                        <a href="{% url 'reports' %}" class="nav-item {% if request.resolver_match.url_name == 'reports' %}active{% endif %}">
+                            <i class="fas fa-chart-bar"></i>
+                            Reports
+                        </a>
+                        <a href="{% url 'assessments' %}" class="nav-item {% if request.resolver_match.url_name == 'assessments' %}active{% endif %}">
+                            <i class="fas fa-star"></i>
+                            Assessments
+                        </a>
+                        <a href="{% url 'holidays' %}" class="nav-item {% if request.resolver_match.url_name == 'holidays' %}active{% endif %}">
+                            <i class="fas fa-umbrella-beach"></i>
+                            Holidays
+                        </a>
+                        <a href="{% url 'leave' %}" class="nav-item {% if request.resolver_match.url_name == 'leave' %}active{% endif %}">
+                            <i class="fas fa-hotel"></i>
+                            Apply Leave
+                        </a>
+                        <a href="{% url 'services' %}" class="nav-item {% if request.resolver_match.url_name == 'services' %}active{% endif %}">
+                            <i class="fas fa-cogs"></i>
+                            Services
+                        </a>
+                        <a href="{% url 'billing' %}" class="nav-item {% if request.resolver_match.url_name == 'billing' %}active{% endif %}">
+                            <i class="fas fa-money-bill-wave"></i>
+                            Billing
+                        </a>
+                        <a href="{% url 'enrollment' %}" class="nav-item {% if request.resolver_match.url_name == 'enrollment' %}active{% endif %}">
+                            <i class="fas fa-user-plus"></i>
+                            Enrollment
+                        </a>
+                        <a href="{% url 'logout' %}" class="nav-item logout">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </a>
+                    </nav>
+                {% elif user.user_type == 'staff' %}
+                    <!-- Staff layout content here -->
+                    <div class="logo">
+                        <img src="{% static 'images/logo.png' %}" alt="College Attendance System">
+                    </div>
+                    <nav class="nav-grid">
+                        <a href="{% url 'profile' %}" class="nav-item profile">
+                            <i class="fas fa-user-circle"></i>
+                            Profile
+                        </a>
+                        
+                        <!-- Staff Navigation Items -->
+                        <div class="nav-category">
+                            <a href="#" class="nav-item dropdown-toggle">
+                                <i class="fas fa-user"></i>
+                                <span>Staff</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </a>
+                            <div class="nav-submenu">
+                                <a href="{% url 'mark_attendance' %}" class="nav-subitem">Mark Attendance</a>
+                                <a href="{% url 'staff_attendance' %}" class="nav-subitem">Staff Attendance</a>
+                            </div>
+                        </div>
+
+                        <div class="nav-category">
+                            <a href="#" class="nav-item dropdown-toggle">
+                                <i class="fas fa-book"></i>
+                                <span>Academic Plan</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </a>
+                            <div class="nav-submenu">
+                                <a href="{% url 'staff_schedule' %}" class="nav-subitem">Staff Schedule</a>
+                                <a href="{% url 'staff_teaching_content' %}" class="nav-subitem">Teaching Content</a>
+                                <a href="{% url 'teaching_plans' %}" class="nav-subitem">Teaching Plans</a>
+                                <a href="{% url 'manage_advisors' %}" class="nav-subitem">Manage Advisors</a>
+                            </div>
+                        </div>
+
+                        <div class="nav-category">
+                            <a href="#" class="nav-item dropdown-toggle">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>Dashboard</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </a>
+                            <div class="nav-submenu">
+                                <a href="{% url 'staff_dashboard' %}" class="nav-subitem">Staff Dashboard</a>
+                            </div>
+                        </div>
+
+                        <div class="nav-category">
+                            <a href="#" class="nav-item dropdown-toggle">
+                                <i class="fas fa-tasks"></i>
+                                <span>Assignment</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </a>
+                            <div class="nav-submenu">
+                                <a href="{% url 'staff_assignments' %}" class="nav-subitem">Assignment List</a>
+                                <a href="{% url 'assignment_tracker' %}" class="nav-subitem">Assignment Tracker</a>
+                                <a href="{% url 'assignment_approval' %}" class="nav-subitem">Assignment Approval</a>
+                            </div>
+                        </div>
+
+                        <div class="nav-category">
+                            <a href="#" class="nav-item dropdown-toggle">
+                                <i class="fas fa-chart-bar"></i>
+                                <span>Reports</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </a>
+                            <div class="nav-submenu">
+                                <a href="{% url 'staff_reports' %}" class="nav-subitem">View Reports</a>
+                            </div>
+                        </div>
+
+                        <div class="nav-category">
+                            <a href="#" class="nav-item dropdown-toggle">
+                                <i class="fas fa-file-alt"></i>
+                                <span>Exam Mgmt.</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </a>
+                            <div class="nav-submenu">
+                                <a href="{% url 'create_exam' %}" class="nav-subitem">Create Exams</a>
+                            </div>
+                        </div>
+
+                        <div class="nav-category">
+                            <a href="#" class="nav-item dropdown-toggle">
+                                <i class="fas fa-clipboard-check"></i>
+                                <span>Assessment</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </a>
+                            <div class="nav-submenu">
+                                <a href="{% url 'staff_assessments' %}" class="nav-subitem">View Assessments</a>
+                            </div>
+                        </div>
+
+                        <div class="nav-category">
+                            <a href="#" class="nav-item dropdown-toggle">
+                                <i class="fas fa-comment"></i>
+                                <span>Communication</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </a>
+                            <div class="nav-submenu">
+                                <a href="{% url 'staff_messages' %}" class="nav-subitem">Messages</a>
+                            </div>
+                        </div>
+                        
+                        <a href="{% url 'logout' %}" class="nav-item logout">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </a>
+                    </nav>
+                {% elif user.user_type == 'hod' %}
+                    <div class="logo">
+                        <img src="{% static 'images/logo.png' %}" alt="College Attendance System">
+                    </div>
+                    <nav class="nav-grid">
+                        <a href="{% url 'profile' %}" class="nav-item profile">
+                            <i class="fas fa-user-circle"></i>
+                            Profile
+                        </a>
+                        <a href="{% url 'hod_dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'hod_dashboard' %}active{% endif %}">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Dashboard
+                        </a>
+                        <a href="{% url 'hod_staff' %}" class="nav-item {% if request.resolver_match.url_name == 'hod_staff' %}active{% endif %}">
+                            <i class="fas fa-users"></i>
+                            Manage Staff
+                        </a>
+                        <a href="{% url 'hod_students' %}" class="nav-item {% if request.resolver_match.url_name == 'hod_students' %}active{% endif %}">
+                            <i class="fas fa-user-graduate"></i>
+                            Manage Students
+                        </a>
+                        <a href="{% url 'hod_courses' %}" class="nav-item {% if request.resolver_match.url_name == 'hod_courses' %}active{% endif %}">
+                            <i class="fas fa-book"></i>
+                            Manage Courses
+                        </a>
+                        <a href="{% url 'hod_attendance' %}" class="nav-item {% if request.resolver_match.url_name == 'hod_attendance' %}active{% endif %}">
+                            <i class="fas fa-clipboard-check"></i>
+                            Attendance
+                        </a>
+                        <a href="{% url 'hod_reports' %}" class="nav-item {% if request.resolver_match.url_name == 'hod_reports' %}active{% endif %}">
+                            <i class="fas fa-chart-bar"></i>
+                            Reports
+                        </a>
+                        <a href="{% url 'logout' %}" class="nav-item logout">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </a>
+                    </nav>
+                {% endif %}
+            </aside>
+            
+            <!-- Main Content Area -->
+            <main class="main-content">
+                {% if user.user_type == 'student' %}
+                    {% block student_content %}{% endblock %}
+                {% elif user.user_type == 'staff' %}
+                    {% block staff_content %}{% endblock %}
+                {% elif user.user_type == 'hod' %}
+                    {% block hod_content %}{% endblock %}
+                {% endif %}
+            </main>
+        {% else %}
+            {% block content %}{% endblock %}
         {% endif %}
     </div>
 
@@ -310,99 +566,219 @@
         <i class="fas fa-magic"></i>
     </div>
 
-    <!-- Bootstrap JS Bundle -->
+    <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Theme Toggle Script -->
+    <!-- Theme Toggle Buttons -->
+    <button id="lightThemeBtn" class="theme-toggle" style="bottom: 80px;" title="Switch to Light Theme">
+        <i class="fas fa-sun"></i>
+    </button>
+    <button id="darkThemeBtn" class="theme-toggle" style="bottom: 20px;" title="Switch to Dark Theme">
+        <i class="fas fa-moon"></i>
+    </button>
+    <button id="autoThemeBtn" class="theme-toggle auto-theme" style="bottom: 140px;" title="Use System Theme">
+        <i class="fas fa-magic"></i>
+    </button>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize tooltips
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
+            // Initialize Bootstrap tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+            
+            // Sidebar toggle functionality
+            const body = document.body;
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            
+            function openSidebar() {
+                body.classList.add('sidebar-open');
+                document.body.style.overflow = 'hidden'; // Prevent scrolling
+            }
+            
+            function closeSidebar() {
+                body.classList.remove('sidebar-open');
+                document.body.style.overflow = ''; // Restore scrolling
+            }
+            
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    if (body.classList.contains('sidebar-open')) {
+                        closeSidebar();
+                    } else {
+                        openSidebar();
+                    }
+                });
+            }
+            
+            // Close sidebar when clicking outside
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', closeSidebar);
+            }
+            
+            // Close sidebar when pressing Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && body.classList.contains('sidebar-open')) {
+                    closeSidebar();
+                }
             });
             
             // Theme toggle functionality
-            const themeToggle = document.getElementById('themeToggle');
-            const themeIcon = document.getElementById('themeIcon');
-            const autoTheme = document.getElementById('autoTheme');
-            const body = document.body;
+            const lightThemeBtn = document.getElementById('lightThemeBtn');
+            const darkThemeBtn = document.getElementById('darkThemeBtn');
+            const autoThemeBtn = document.getElementById('autoThemeBtn');
             
-            // Check for saved theme preference or auto mode
+            // Check for saved theme preference
             const savedTheme = localStorage.getItem('theme');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const autoTheme = localStorage.getItem('autoTheme') === 'true';
             
-            // Function to apply theme based on system preference
-            function applySystemTheme() {
-                if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                    body.classList.add('dark-theme');
-                    themeIcon.classList.replace('fa-moon', 'fa-sun');
-                } else {
-                    body.classList.remove('dark-theme');
-                    themeIcon.classList.replace('fa-sun', 'fa-moon');
-                }
+            // Apply saved theme or auto theme
+            if (autoTheme) {
+                body.classList.toggle('dark-theme', systemPrefersDark);
+                autoThemeBtn.classList.add('active');
+            } else if (savedTheme) {
+                body.classList.toggle('dark-theme', savedTheme === 'dark');
             }
             
-            // Apply theme based on saved preference or system preference
-            if (savedTheme === 'auto') {
-                autoTheme.classList.add('active');
-                applySystemTheme();
-            } else if (savedTheme === 'dark') {
+            // Light theme button
+            lightThemeBtn.addEventListener('click', function() {
+                body.classList.remove('dark-theme');
+                localStorage.setItem('theme', 'light');
+                localStorage.setItem('autoTheme', 'false');
+                autoThemeBtn.classList.remove('active');
+            });
+            
+            // Dark theme button
+            darkThemeBtn.addEventListener('click', function() {
                 body.classList.add('dark-theme');
-                themeIcon.classList.replace('fa-moon', 'fa-sun');
+                localStorage.setItem('theme', 'dark');
+                localStorage.setItem('autoTheme', 'false');
+                autoThemeBtn.classList.remove('active');
+            });
+            
+            // Auto theme button
+            autoThemeBtn.addEventListener('click', function() {
+                const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                body.classList.toggle('dark-theme', systemPrefersDark);
+                localStorage.setItem('autoTheme', 'true');
+                autoThemeBtn.classList.add('active');
+            });
+
+            // Toggle sidebar on mobile
+            const toggleBtn = document.querySelector('.mobile-nav-toggle');
+            const sidebar = document.querySelector('.sidebar');
+            
+            if (toggleBtn && sidebar) {
+                toggleBtn.addEventListener('click', function() {
+                    sidebar.classList.toggle('show');
+                    console.log('Toggling sidebar', sidebar.classList.contains('show'));
+                    
+                    // Add overlay when sidebar is shown
+                    if (sidebar.classList.contains('show')) {
+                        document.body.classList.add('sidebar-open');
+                    } else {
+                        document.body.classList.remove('sidebar-open');
+                    }
+                });
+                
+                // Close sidebar when clicking outside
+                document.addEventListener('click', function(event) {
+                    const isClickInside = sidebar.contains(event.target) || toggleBtn.contains(event.target);
+                    
+                    if (!isClickInside && sidebar.classList.contains('show')) {
+                        sidebar.classList.remove('show');
+                        document.body.classList.remove('sidebar-open');
+                    }
+                });
             }
             
-            // Toggle theme when button is clicked
-            themeToggle.addEventListener('click', function() {
-                if (localStorage.getItem('theme') === 'auto') {
-                    localStorage.setItem('theme', body.classList.contains('dark-theme') ? 'light' : 'dark');
-                    autoTheme.classList.remove('active');
-                }
-                
-                body.classList.toggle('dark-theme');
-                
-                if (body.classList.contains('dark-theme')) {
-                    localStorage.setItem('theme', 'dark');
-                    themeIcon.classList.replace('fa-moon', 'fa-sun');
-                } else {
-                    localStorage.setItem('theme', 'light');
-                    themeIcon.classList.replace('fa-sun', 'fa-moon');
-                }
-            });
+            // Dark mode toggle
+            const themeToggler = document.getElementById('theme-toggler');
             
-            // Auto theme button handler
-            autoTheme.addEventListener('click', function() {
-                autoTheme.classList.toggle('active');
-                
-                if (autoTheme.classList.contains('active')) {
-                    localStorage.setItem('theme', 'auto');
-                    applySystemTheme();
-                } else {
-                    // If turning off auto, set to current state
-                    localStorage.setItem('theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
-                }
-            });
-            
-            // Listen for system theme changes when in auto mode
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
-                if (localStorage.getItem('theme') === 'auto') {
-                    applySystemTheme();
-                }
-            });
-            
-            // Auto-dismiss alerts after 5 seconds
-            setTimeout(function() {
-                var alerts = document.querySelectorAll('.alert');
-                alerts.forEach(function(alert) {
-                    var bsAlert = new bootstrap.Alert(alert);
-                    bsAlert.close();
+            if (themeToggler) {
+                themeToggler.addEventListener('click', function() {
+                    body.classList.toggle('dark-theme');
+                    
+                    // Save preference to localStorage
+                    if (body.classList.contains('dark-theme')) {
+                        localStorage.setItem('theme', 'dark');
+                        themeToggler.innerHTML = '<i class="fas fa-sun"></i>';
+                    } else {
+                        localStorage.setItem('theme', 'light');
+                        themeToggler.innerHTML = '<i class="fas fa-moon"></i>';
+                    }
                 });
-            }, 5000);
+                
+                // Check for saved theme preference
+                const savedTheme = localStorage.getItem('theme');
+                if (savedTheme === 'dark') {
+                    body.classList.add('dark-theme');
+                    themeToggler.innerHTML = '<i class="fas fa-sun"></i>';
+                }
+            }
+
+            // Dropdown menu toggles for staff navigation
+            const dropdownToggles = document.querySelectorAll('.nav-item.dropdown-toggle');
+            
+            dropdownToggles.forEach(toggle => {
+                toggle.addEventListener('click', function(e) {
+                    e.preventDefault(); // Prevent the default link behavior
+                    const category = this.closest('.nav-category');
+                    
+                    // Close other open categories
+                    document.querySelectorAll('.nav-category.open').forEach(openCategory => {
+                        if (openCategory !== category) {
+                            openCategory.classList.remove('open');
+                        }
+                    });
+                    
+                    // Toggle current category
+                    category.classList.toggle('open');
+                });
+            });
+            
+            // Initialize dropdowns - open the current section based on URL
+            document.addEventListener('DOMContentLoaded', function() {
+                // Get current URL path
+                const currentPath = window.location.pathname;
+                
+                // Find matching nav items and open their parent category
+                document.querySelectorAll('.nav-submenu a').forEach(link => {
+                    if (link.getAttribute('href') === currentPath || 
+                        currentPath.includes(link.getAttribute('href'))) {
+                        const category = link.closest('.nav-category');
+                        if (category) {
+                            category.classList.add('open');
+                            link.classList.add('active');
+                        }
+                    }
+                });
+            });
+            
+            // Remove external SVG arrows
+            document.querySelectorAll('body > svg').forEach(svg => {
+                svg.remove();
+            });
+            
+            // Remove them when they get added
+            const observer = new MutationObserver(mutations => {
+                mutations.forEach(mutation => {
+                    if (mutation.addedNodes) {
+                        mutation.addedNodes.forEach(node => {
+                            if (node.nodeName === 'svg') {
+                                node.remove();
+                            }
+                        });
+                    }
+                });
+            });
+            
+            observer.observe(document.body, { childList: true });
         });
     </script>
-    
-    <!-- jQuery (if needed) -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     
     {% block extra_js %}{% endblock %}
 </body>

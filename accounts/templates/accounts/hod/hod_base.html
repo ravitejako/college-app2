@@ -1,0 +1,299 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}HOD Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* HOD-specific styling */
+  .hod-container {
+    background-color: #f9fafb;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Responsive adjustments for HOD pages */
+  @media (max-width: 768px) {
+    .hod-container {
+      margin-top: 70px !important; /* Space for mobile header */
+    }
+    
+    /* Ensure content doesn't go under the header */
+    .hod-content {
+      padding-top: 10px !important;
+      position: relative !important;
+      z-index: 5 !important;
+    }
+    
+    /* Fix dashboard display on mobile */
+    .dashboard-layout {
+      padding-top: 0 !important;
+    }
+    
+    /* Improve spacing for mobile elements */
+    .card, .stat-card {
+      margin-bottom: 15px !important;
+    }
+  }
+
+  .hod-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 1rem;
+  }
+
+  .hod-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+    display: flex;
+    align-items: center;
+  }
+  
+  .hod-title i {
+    margin-right: 0.75rem;
+    color: #4f46e5;
+  }
+
+  .hod-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .hod-content {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+
+  .stat-card {
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    border-radius: 8px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: all 0.3s;
+    border-left: 4px solid #6c757d;
+    height: 100%;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+
+  .stat-card.blue {
+    border-left-color: #2563eb;
+  }
+
+  .stat-card.green {
+    border-left-color: #059669;
+  }
+
+  .stat-card.yellow {
+    border-left-color: #d97706;
+  }
+
+  .stat-card.purple {
+    border-left-color: #7c3aed;
+  }
+
+  .stat-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+  }
+
+  .stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+  }
+
+  .table-container {
+    overflow-x: auto;
+    margin: 1rem 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border-radius: 8px;
+  }
+
+  .hod-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .hod-table th {
+    background-color: #f3f4f6;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    text-align: left;
+    color: #374151;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .hod-table th:first-child {
+    border-top-left-radius: 8px;
+  }
+
+  .hod-table th:last-child {
+    border-top-right-radius: 8px;
+  }
+
+  .hod-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    color: #1f2937;
+  }
+
+  .hod-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .hod-table tr:hover {
+    background-color: #f9fafb;
+  }
+
+  .action-btn {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: white;
+  }
+
+  .action-btn-view {
+    background-color: #00BCD4;
+  }
+
+  .action-btn-edit {
+    background-color: #FFC107;
+  }
+
+  .action-btn-delete {
+    background-color: #F44336;
+  }
+
+  .action-btn-assign {
+    background-color: #2196F3;
+  }
+
+  .form-section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    margin-bottom: 1.5rem;
+  }
+
+  .filter-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+
+  .filter-item {
+    flex: 1;
+    min-width: 200px;
+  }
+  
+  /* List group styling */
+  .list-group-item {
+    border: none;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding: 1rem;
+  }
+  
+  .list-group-item:last-child {
+    border-bottom: none;
+  }
+  
+  /* Quick action buttons */
+  .btn-outline-info, .btn-outline-success, .btn-outline-warning {
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: all 0.3s;
+  }
+  
+  .btn-outline-info:hover, .btn-outline-success:hover, .btn-outline-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+
+  @media (max-width: 576px) {
+    .hod-container {
+      padding: 1rem;
+    }
+    
+    .hod-content {
+      padding: 0.75rem;
+    }
+    
+    .stat-card {
+      padding: 0.75rem;
+    }
+    
+    .stat-value {
+      font-size: 1.75rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block hod_content %}
+<div class="container-fluid hod-container">
+    <div class="row">
+        <!-- Content Header -->
+        <div class="col-12 mb-4">
+            <div class="card h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-0">
+                        <div class="d-flex align-items-center mb-3 mb-md-0">
+                            <div class="header-icon me-3">
+                                {% block header_icon %}{% endblock %}
+                            </div>
+                            <h2 class="header-title mb-0">{% block header_title %}{% endblock %}</h2>
+                        </div>
+                        <div class="header-actions">
+                            {% block header_actions %}{% endblock %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-12">
+            {% block hod_content_inner %}{% endblock %}
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}{% endblock %}
+{% endblock %} 

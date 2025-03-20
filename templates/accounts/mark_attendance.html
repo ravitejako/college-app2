@@ -159,7 +159,7 @@
 </style>
 {% endblock %}
 
-{% block content %}
+{% block staff_content %}
 <div class="attendance-container">
     <div class="page-header">
         <h1 class="page-title">Mark Attendance</h1>
@@ -281,7 +281,6 @@
     </div>
 </div>
 
-{% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const classSelect = document.getElementById('class_select');
@@ -303,5 +302,4 @@
         }
     });
 </script>
-{% endblock %}
 {% endblock %} 

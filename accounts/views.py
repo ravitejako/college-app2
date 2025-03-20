@@ -157,61 +157,84 @@ def staff_dashboard(request):
     
     # Get all subjects taught by the staff member
     subjects = Subject.objects.filter(staff=user)
+    subjects_count = subjects.count()
     
-    # Get all classes and their attendance for today
-    todays_classes = Class.objects.filter(
-        subject__staff=user,
-        date=today
-    ).select_related('subject')
+    # Get student count across all taught subjects
+    students = CustomUser.objects.filter(user_type='student').distinct()
+    students_count = students.count()
     
-    # Calculate attendance statistics
-    attendance_stats = []
-    chart_data = []
-    chart_labels = []
+    # Get assignments count
+    assignments = Assignment.objects.filter(created_by=user)
+    assignments_count = assignments.count()
     
-    for subject in subjects:
-        # Get all attendance records for this subject
-        # Use the subject ID instead of the subject object
-        class_sessions = Class.objects.filter(subject_id=subject.id)
-        total_students = CustomUser.objects.filter(user_type='student').count()
-        total_attendance = Attendance.objects.filter(class_session__subject_id=subject.id)
-        present_count = total_attendance.filter(is_present=True).count()
-        total_count = total_attendance.count()
-        
-        if total_count > 0:
-            attendance_percentage = round((present_count / total_count * 100), 1)
-        else:
-            attendance_percentage = 0
-        
-        attendance_stats.append({
-            'subject': subject.name,
-            'code': subject.code,
-            'total_classes': class_sessions.count(),
-            'total_students': total_students,
-            'attendance_percentage': attendance_percentage
-        })
-        
-        chart_labels.append(f'"{subject.name}"')
-        chart_data.append(attendance_percentage)
+    # Get all classes for subjects taught by this staff
+    subject_ids = subjects.values_list('id', flat=True)
+    classes = Class.objects.filter(subject_id__in=subject_ids)
+    sessions_count = classes.count()
     
     # Get recent attendance records
-    recent_attendance = Attendance.objects.filter(
-        class_session__subject__staff=user
-    ).select_related(
-        'student', 'class_session', 'class_session__subject'
-    ).order_by('-class_session__date')[:10]
+    recent_attendance = []
+    for subject in subjects:
+        class_sessions = Class.objects.filter(subject_id=subject.id).order_by('-date')[:5]
+        for session in class_sessions:
+            present_count = Attendance.objects.filter(class_session=session, is_present=True).count()
+            absent_count = Attendance.objects.filter(class_session=session, is_present=False).count()
+            recent_attendance.append({
+                'date': session.date,
+                'subject': subject,
+                'present_count': present_count,
+                'absent_count': absent_count
+            })
+    
+    # Sort by date, most recent first
+    recent_attendance = sorted(recent_attendance, key=lambda x: x['date'], reverse=True)[:5]
+    
+    # Get recent assignments
+    recent_assignments = Assignment.objects.filter(created_by=user).order_by('-created_at')[:5]
     
     context = {
         'today_date': today.strftime('%B %d, %Y'),
-        'subjects_count': subjects.count(),
-        'todays_classes': todays_classes,
-        'attendance_stats': attendance_stats,
+        'subjects_count': subjects_count,
+        'students_count': students_count,
+        'assignments_count': assignments_count,
+        'sessions_count': sessions_count,
         'recent_attendance': recent_attendance,
-        'chart_data': chart_data,
-        'chart_labels': chart_labels,
+        'recent_assignments': recent_assignments,
     }
     
-    return render(request, 'accounts/staff_dashboard.html', context)
+    return render(request, 'accounts/staff/staff_dashboard.html', context)
+
+@login_required
+def staff_dashboard_simple(request):
+    """A simplified staff dashboard view."""
+    if request.user.user_type != 'staff':
+        messages.error(request, 'Access denied. Staff access only.')
+        return redirect('login')
+    
+    # Get counts for dashboard stats
+    subjects_count = Subject.objects.filter(staff=request.user).count()
+    students_count = CustomUser.objects.filter(user_type='student').count()
+    assignments_count = Assignment.objects.filter(created_by=request.user).count()
+    
+    # Get approximate session count
+    # This is simplified - in a real app you'd query actual class sessions
+    sessions_count = 0
+    try:
+        subjects = Subject.objects.filter(staff=request.user)
+        for subject in subjects:
+            sessions_count += Class.objects.filter(subject=subject).count()
+    except:
+        # Handle any errors gracefully
+        sessions_count = 0
+    
+    context = {
+        'subjects_count': subjects_count,
+        'students_count': students_count,
+        'assignments_count': assignments_count,
+        'sessions_count': sessions_count,
+    }
+    
+    return render(request, 'accounts/staff/staff_dashboard_simple.html', context)
 
 @login_required
 def profile(request):
@@ -245,10 +268,10 @@ def index(request):
 
 @login_required
 def logout_view(request):
-    if request.method == 'POST':
-        logout(request)
-        return redirect('index')
-    return render(request, 'accounts/logout.html')
+    # Always perform logout regardless of request method
+    logout(request)
+    messages.success(request, 'You have been successfully logged out.')
+    return redirect('login')
 
 def login_view(request):
     role = request.GET.get('role', '')
@@ -272,10 +295,15 @@ def login_view(request):
                 else:
                     login(request, user)
                     messages.success(request, f'Welcome back, {user.get_full_name()}!')
+                    
+                    # Always direct users to their respective dashboard
                     if user.user_type == 'staff':
                         return redirect('staff_dashboard')
                     elif user.user_type == 'hod':
                         return redirect('hod_dashboard')
+                    elif user.user_type == 'student':
+                        # Use profile instead of student_dashboard to avoid URL conflicts
+                        return redirect('profile')
                     else:
                         return redirect('profile')
             else:
@@ -621,15 +649,12 @@ def timetable(request):
 
 @login_required
 def teaching_content(request):
-    user = request.user
-    if user.user_type != 'student':
-        messages.error(request, 'Access denied. Student access only.')
+    """View for staff to access teaching content."""
+    if request.user.user_type != 'staff':
+        messages.error(request, 'Access denied. Staff access only.')
         return redirect('login')
-    context = {
-        'user': user,
-        'page_title': 'Teaching Content'
-    }
-    return render(request, 'accounts/teaching_content.html', context)
+    
+    return render(request, 'accounts/staff/teaching_content.html')
 
 @login_required
 def leave(request):
@@ -1157,3 +1182,105 @@ def take_attendance(request, subject_id, date=None):
     }
     
     return render(request, 'accounts/take_attendance.html', context)
+
+@login_required
+def test_staff_view(request):
+    """A simple view to test that staff templates are rendering correctly."""
+    if request.user.user_type != 'staff':
+        messages.error(request, 'Access denied. Staff access only.')
+        return redirect('login')
+    
+    return render(request, 'accounts/test_staff.html')
+
+def test_view(request):
+    return render(request, 'base_new.html')
+
+@login_required
+def staff_attendance(request):
+    """View for staff to see their own attendance records."""
+    if request.user.user_type != 'staff':
+        messages.error(request, 'Access denied. Staff access only.')
+        return redirect('login')
+    
+    return render(request, 'accounts/staff/staff_attendance.html')
+
+@login_required
+def staff_schedule(request):
+    """View for staff to see their teaching schedule."""
+    if request.user.user_type != 'staff':
+        messages.error(request, 'Access denied. Staff access only.')
+        return redirect('login')
+    
+    return render(request, 'accounts/staff/staff_schedule.html')
+
+@login_required
+def teaching_plans(request):
+    """View for staff to manage their teaching plans."""
+    if request.user.user_type != 'staff':
+        messages.error(request, 'Access denied. Staff access only.')
+        return redirect('login')
+    
+    return render(request, 'accounts/staff/teaching_plans.html')
+
+@login_required
+def assignment_tracker(request):
+    """View for staff to track assignment progress and submissions."""
+    if request.user.user_type != 'staff':
+        messages.error(request, 'Access denied. Staff access only.')
+        return redirect('login')
+    
+    return render(request, 'accounts/staff/assignment_tracker.html')
+
+@login_required
+def manage_advisors(request):
+    """View for staff to manage advisors."""
+    if request.user.user_type != 'staff':
+        messages.error(request, 'Access denied. Staff access only.')
+        return redirect('login')
+    
+    return render(request, 'accounts/staff/manage_advisors.html')
+
+@login_required
+def create_exam(request):
+    """View for staff to create and manage exams."""
+    if request.user.user_type != 'staff':
+        messages.error(request, 'Access denied. Staff access only.')
+        return redirect('login')
+    
+    return render(request, 'accounts/staff/create_exam.html')
+
+@login_required
+def staff_assessments(request):
+    """View for staff to manage student assessments."""
+    if request.user.user_type != 'staff':
+        messages.error(request, 'Access denied. Staff access only.')
+        return redirect('login')
+    
+    return render(request, 'accounts/staff/staff_assessments.html')
+
+@login_required
+def staff_messages(request):
+    """View for staff to access their messages."""
+    if request.user.user_type != 'staff':
+        messages.error(request, 'Access denied. Staff access only.')
+        return redirect('login')
+    
+    return render(request, 'accounts/staff/staff_messages.html')
+
+@login_required
+def staff_reports(request):
+    """View for staff to access and generate reports."""
+    if request.user.user_type != 'staff':
+        messages.error(request, 'Access denied. Staff access only.')
+        return redirect('login')
+    
+    return render(request, 'accounts/staff/staff_reports.html')
+
+@login_required
+def assignment_approval(request):
+    """View for staff to approve or reject assignments."""
+    if request.user.user_type != 'staff':
+        messages.error(request, 'Access denied. Staff access only.')
+        return redirect('login')
+    
+    return render(request, 'accounts/staff/assignment_approval.html')

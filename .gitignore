@@ -22,22 +22,23 @@ var/
 
 # Django
 *.log
+*.pot
+*.pyc
 local_settings.py
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*,cover
-.hypothesis/
+db.sqlite3
+db.sqlite3-journal
+media
 
 # Virtual Environment
 venv/
 ENV/
+env/
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
 
 # macOS
 .DS_Store
@@ -57,12 +58,13 @@ ENV/
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
 
-# Visual Studio Code
-.vscode/
-.history/
-
-# Pycharm
-.idea/
-
-# SQLite database is included!
-# DO NOT add db.sqlite3 here since we want to include it 
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/ 

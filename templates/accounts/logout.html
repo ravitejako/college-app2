@@ -74,18 +74,29 @@
 {% endblock %}
 
 {% block content %}
-<div class="logout-container">
-    <div class="logout-icon">
-        <i class="fas fa-sign-out-alt"></i>
-    </div>
-    <h2 class="logout-title">Logout Confirmation</h2>
-    <p class="logout-message">Are you sure you want to logout from your account?</p>
-    <div class="btn-group">
-        <a href="{% url 'student_dashboard' %}" class="btn-cancel">Cancel</a>
-        <form method="post" action="{% url 'logout' %}" style="display: inline;">
-            {% csrf_token %}
-            <button type="submit" class="btn-logout">Logout</button>
-        </form>
+<div class="container py-5">
+    <div class="logout-container">
+        <div class="logout-icon">
+            <i class="fas fa-sign-out-alt"></i>
+        </div>
+        <h2 class="logout-title">Logout Confirmation</h2>
+        <p class="logout-message">Are you sure you want to logout from your account?</p>
+        <div class="btn-group">
+            {% if request.user.user_type == 'student' %}
+                <a href="{% url 'profile' %}" class="btn-cancel">Cancel</a>
+            {% elif request.user.user_type == 'staff' %}
+                <a href="{% url 'staff_dashboard' %}" class="btn-cancel">Cancel</a>
+            {% elif request.user.user_type == 'hod' %}
+                <a href="{% url 'hod_dashboard' %}" class="btn-cancel">Cancel</a>
+            {% else %}
+                <a href="{% url 'index' %}" class="btn-cancel">Cancel</a>
+            {% endif %}
+            
+            <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </div>
     </div>
 </div>
 {% endblock %} 

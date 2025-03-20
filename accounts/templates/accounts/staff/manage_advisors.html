@@ -1,0 +1,345 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Advisors{% endblock %}
+
+{% block staff_content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-users-cog me-2"></i> Manage Advisors
+                    </h5>
+                    <div>
+                        <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addAdvisorModal">
+                            <i class="fas fa-plus me-1"></i> Add Advisor
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <div class="row g-2">
+                            <div class="col-md-3">
+                                <select class="form-select" id="departmentFilter">
+                                    <option value="">All Departments</option>
+                                    <option value="computerscience">Computer Science</option>
+                                    <option value="electrical">Electrical Engineering</option>
+                                    <option value="mechanical">Mechanical Engineering</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" id="semesterFilter">
+                                    <option value="">All Semesters</option>
+                                    <option value="1">Semester 1</option>
+                                    <option value="2">Semester 2</option>
+                                    <option value="3">Semester 3</option>
+                                    <option value="4">Semester 4</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" id="statusFilter">
+                                    <option value="">All Status</option>
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search advisors...">
+                                    <button class="btn btn-outline-secondary" type="button">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Advisors Table -->
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Advisor</th>
+                                    <th>Department</th>
+                                    <th>Semester</th>
+                                    <th>Students</th>
+                                    <th>Status</th>
+                                    <th>Last Activity</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40" class="rounded-circle me-2" alt="Profile">
+                                            <div>
+                                                <div><strong>Dr. John Smith</strong></div>
+                                                <div class="text-muted small">john.smith@example.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Computer Science</td>
+                                    <td>Semester 1</td>
+                                    <td>25 students</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                    <td>Today at 10:30 AM</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="tooltip" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary me-1" data-bs-toggle="tooltip" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="Remove">
+                                            <i class="fas fa-user-minus"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40" class="rounded-circle me-2" alt="Profile">
+                                            <div>
+                                                <div><strong>Dr. Emily Johnson</strong></div>
+                                                <div class="text-muted small">emily.johnson@example.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Electrical Engineering</td>
+                                    <td>Semester 2</td>
+                                    <td>18 students</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                    <td>Yesterday at 3:45 PM</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="tooltip" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary me-1" data-bs-toggle="tooltip" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="Remove">
+                                            <i class="fas fa-user-minus"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40" class="rounded-circle me-2" alt="Profile">
+                                            <div>
+                                                <div><strong>Dr. Michael Williams</strong></div>
+                                                <div class="text-muted small">michael.williams@example.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Mechanical Engineering</td>
+                                    <td>Semester 3</td>
+                                    <td>22 students</td>
+                                    <td><span class="badge bg-secondary">Inactive</span></td>
+                                    <td>Mar 18, 2025</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="tooltip" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary me-1" data-bs-toggle="tooltip" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success" data-bs-toggle="tooltip" title="Activate">
+                                            <i class="fas fa-user-check"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Statistics and Reports -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Advisor Statistics</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4 mb-3">
+                            <h2 class="text-primary">15</h2>
+                            <p class="text-muted mb-0">Total Advisors</p>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <h2 class="text-success">12</h2>
+                            <p class="text-muted mb-0">Active</p>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <h2 class="text-secondary">3</h2>
+                            <p class="text-muted mb-0">Inactive</p>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <h6 class="mb-3">Student to Advisor Ratio</h6>
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Computer Science</span>
+                            <span>25:1</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: 83%;" aria-valuenow="83" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Electrical Engineering</span>
+                            <span>18:1</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 60%;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Mechanical Engineering</span>
+                            <span>22:1</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: 73%;" aria-valuenow="73" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Recent Activity</h6>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-success me-3">
+                                    <i class="fas fa-user-plus"></i>
+                                </span>
+                                <div>
+                                    <div>Dr. John Smith added as advisor for Computer Science</div>
+                                    <small class="text-muted">Today at 10:30 AM</small>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-primary me-3">
+                                    <i class="fas fa-edit"></i>
+                                </span>
+                                <div>
+                                    <div>Dr. Emily Johnson's student count updated</div>
+                                    <small class="text-muted">Yesterday at 3:45 PM</small>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-secondary me-3">
+                                    <i class="fas fa-user-slash"></i>
+                                </span>
+                                <div>
+                                    <div>Dr. Michael Williams set to inactive</div>
+                                    <small class="text-muted">Mar 18, 2025</small>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-info me-3">
+                                    <i class="fas fa-sync"></i>
+                                </span>
+                                <div>
+                                    <div>Advisors reassigned for Semester 3</div>
+                                    <small class="text-muted">Mar 15, 2025</small>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Advisor Modal -->
+<div class="modal fade" id="addAdvisorModal" tabindex="-1" aria-labelledby="addAdvisorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAdvisorModalLabel">Add New Advisor</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="advisorName" class="form-label">Staff Member</label>
+                        <select class="form-select" id="advisorName" required>
+                            <option value="" selected disabled>Select staff member</option>
+                            <option value="1">Dr. Robert Brown</option>
+                            <option value="2">Dr. Sarah Miller</option>
+                            <option value="3">Dr. James Wilson</option>
+                        </select>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="advisorDepartment" class="form-label">Department</label>
+                            <select class="form-select" id="advisorDepartment" required>
+                                <option value="" selected disabled>Select department</option>
+                                <option value="computerscience">Computer Science</option>
+                                <option value="electrical">Electrical Engineering</option>
+                                <option value="mechanical">Mechanical Engineering</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="advisorSemester" class="form-label">Semester</label>
+                            <select class="form-select" id="advisorSemester" required>
+                                <option value="" selected disabled>Select semester</option>
+                                <option value="1">Semester 1</option>
+                                <option value="2">Semester 2</option>
+                                <option value="3">Semester 3</option>
+                                <option value="4">Semester 4</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="advisorStudents" class="form-label">Maximum Students</label>
+                        <input type="number" class="form-control" id="advisorStudents" min="5" max="30" value="20">
+                    </div>
+                    <div class="mb-3">
+                        <label for="advisorNotes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="advisorNotes" rows="3" placeholder="Any specific instructions or notes"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Add Advisor</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+</script>
+{% endblock %} 

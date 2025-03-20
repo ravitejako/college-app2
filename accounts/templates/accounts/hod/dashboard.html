@@ -1,218 +1,175 @@
-{% extends 'base.html' %}
+{% extends 'accounts/hod/hod_base.html' %}
 {% load static %}
 
 {% block title %}HOD Dashboard{% endblock %}
 
-{% block extra_css %}
-<style>
-    .dashboard-container {
-        padding: 20px;
-    }
-    
-    .stat-card {
-        border-radius: 10px;
-        padding: 20px;
-        color: white;
-        margin-bottom: 20px;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .stat-card.blue {
-        background-color: #4361ee;
-    }
-    
-    .stat-card.green {
-        background-color: #38b000;
-    }
-    
-    .stat-number {
-        font-size: 60px;
-        font-weight: bold;
-        line-height: 1;
-        margin-bottom: 10px;
-    }
-    
-    .stat-label {
-        font-size: 18px;
-        margin-bottom: 20px;
-    }
-    
-    .stat-link {
-        color: white;
-        text-decoration: none;
-        margin-top: auto;
-    }
-    
-    .stat-link:hover {
-        text-decoration: underline;
-    }
-    
-    .list-card {
-        border: 1px solid #e0e0e0;
-        border-radius: 10px;
-        overflow: hidden;
-        margin-bottom: 20px;
-        height: 100%;
-    }
-    
-    .list-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 15px 20px;
-        background-color: #f8f9fa;
-        border-bottom: 1px solid #e0e0e0;
-    }
-    
-    .list-title {
-        margin: 0;
-        font-size: 16px;
-        font-weight: 600;
-    }
-    
-    .list-item {
-        padding: 15px 20px;
-        border-bottom: 1px solid #e0e0e0;
-    }
-    
-    .list-item:last-child {
-        border-bottom: none;
-    }
-    
-    .item-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 5px;
-    }
-    
-    .item-name {
-        font-weight: 600;
-        margin: 0;
-    }
-    
-    .item-details {
-        color: #666;
-        font-size: 14px;
-        margin: 0;
-    }
-    
-    .badge-custom {
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 12px;
-        color: white;
-    }
-    
-    .badge-secondary {
-        background-color: #6c757d;
-    }
-    
-    .badge-primary {
-        background-color: #4361ee;
-    }
-    
-    .empty-message {
-        padding: 15px;
-        text-align: center;
-        color: #666;
-    }
-    
-    @media (max-width: 767px) {
-        .dashboard-container {
-            padding: 10px;
-        }
-        
-        .stat-number {
-            font-size: 40px;
-        }
-        
-        .stat-label {
-            font-size: 16px;
-        }
-    }
-</style>
+{% block header_icon %}<i class="fas fa-tachometer-alt"></i>{% endblock %}
+{% block header_title %}Department Head Dashboard{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'hod_manage_staff' %}" class="btn btn-primary">
+  <i class="fas fa-users me-2"></i> Manage Staff
+</a>
+<a href="{% url 'hod_manage_subjects' %}" class="btn btn-success">
+  <i class="fas fa-book me-2"></i> Manage Subjects
+</a>
 {% endblock %}
 
-{% block content %}
-<div class="dashboard-container">
-    <h1 class="mb-4">Department Head Dashboard</h1>
-    
-    <div class="row">
-        <!-- Staff Members Card -->
-        <div class="col-md-6">
-            <div class="stat-card blue">
-                <div class="stat-number">{{ staff_count }}</div>
-                <div class="stat-label">Staff Members</div>
-                <a href="{% url 'hod_manage_staff' %}" class="stat-link">
-                    Manage Staff →
-                </a>
-            </div>
+{% block hod_content_inner %}
+  <!-- Stats Overview Section -->
+  <div class="row mb-4">
+    <div class="col-md-3 col-sm-6 mb-3">
+      <div class="stat-card blue">
+        <div class="stat-icon">
+          <i class="fas fa-users" style="color: #2563eb;"></i>
         </div>
-        
-        <!-- Subjects Card -->
-        <div class="col-md-6">
-            <div class="stat-card green">
-                <div class="stat-number">{{ subject_count }}</div>
-                <div class="stat-label">Subjects</div>
-                <a href="{% url 'hod_manage_subjects' %}" class="stat-link">
-                    Manage Subjects →
-                </a>
-            </div>
-        </div>
+        <div class="stat-value">{{ staff_count }}</div>
+        <div class="stat-label">Staff Members</div>
+      </div>
     </div>
     
-    <div class="row">
-        <!-- Recent Staff Members -->
-        <div class="col-md-6">
-            <div class="list-card">
-                <div class="list-header">
-                    <h5 class="list-title">Recent Staff Members</h5>
-                    <a href="{% url 'hod_manage_staff' %}" class="btn btn-primary btn-sm">View All</a>
-                </div>
-                {% if staff_members %}
-                    {% for staff in staff_members %}
-                    <div class="list-item">
-                        <div class="item-header">
-                            <h6 class="item-name">{{ staff.get_full_name }}</h6>
-                            <span class="badge-custom badge-secondary">{{ staff.designation }}</span>
-                        </div>
-                        <p class="item-details">{{ staff.specialization|default:"" }}</p>
-                    </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="empty-message">No staff members found.</div>
-                {% endif %}
-            </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+      <div class="stat-card green">
+        <div class="stat-icon">
+          <i class="fas fa-book" style="color: #059669;"></i>
         </div>
-        
-        <!-- Recent Subjects -->
-        <div class="col-md-6">
-            <div class="list-card">
-                <div class="list-header">
-                    <h5 class="list-title">Recent Subjects</h5>
-                    <a href="{% url 'hod_manage_subjects' %}" class="btn btn-primary btn-sm">View All</a>
-                </div>
-                {% if subjects %}
-                    {% for subject in subjects %}
-                    <div class="list-item">
-                        <div class="item-header">
-                            <h6 class="item-name">{{ subject.name }}</h6>
-                            <span class="badge-custom badge-primary">{{ subject.code }}</span>
-                        </div>
-                        <p class="item-details">
-                            Semester: {{ subject.semester }} | 
-                            Staff: {{ subject.staff.get_full_name|default:"Not Assigned" }}
-                        </p>
-                    </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="empty-message">No subjects found.</div>
-                {% endif %}
-            </div>
-        </div>
+        <div class="stat-value">{{ subject_count }}</div>
+        <div class="stat-label">Subjects</div>
+      </div>
     </div>
-</div>
-{% endblock content %} 
+    
+    <div class="col-md-3 col-sm-6 mb-3">
+      <div class="stat-card" style="border-left-color: #d97706;">
+        <div class="stat-icon">
+          <i class="fas fa-user-check" style="color: #d97706;"></i>
+        </div>
+        <div class="stat-value">{{ assigned_subjects_count|default:"0" }}</div>
+        <div class="stat-label">Assigned Subjects</div>
+      </div>
+    </div>
+    
+    <div class="col-md-3 col-sm-6 mb-3">
+      <div class="stat-card" style="border-left-color: #7c3aed;">
+        <div class="stat-icon">
+          <i class="fas fa-user-graduate" style="color: #7c3aed;"></i>
+        </div>
+        <div class="stat-value">{{ unassigned_subjects_count|default:"0" }}</div>
+        <div class="stat-label">Unassigned Subjects</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Recent Activity Section -->
+  <div class="row">
+    <div class="col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <h5 class="card-title m-0">Recent Staff Members</h5>
+          <a href="{% url 'hod_manage_staff' %}" class="btn btn-sm btn-primary">View All</a>
+        </div>
+        <div class="card-body p-0">
+          {% if staff_members %}
+            <div class="list-group list-group-flush">
+              {% for staff in staff_members %}
+                <div class="list-group-item">
+                  <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">{{ staff.get_full_name }}</h6>
+                    <span class="badge bg-secondary">{{ staff.designation }}</span>
+                  </div>
+                  <p class="mb-1 text-muted small">
+                    <i class="fas fa-graduation-cap me-1"></i> {{ staff.qualification|default:"" }}
+                  </p>
+                  <p class="mb-0 text-muted small">
+                    <i class="fas fa-star me-1"></i> {{ staff.specialization|default:"" }}
+                  </p>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="text-center py-4">
+              <i class="fas fa-user-slash text-muted mb-3" style="font-size: 2rem;"></i>
+              <p class="text-muted">No staff members found.</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <h5 class="card-title m-0">Recent Subjects</h5>
+          <a href="{% url 'hod_manage_subjects' %}" class="btn btn-sm btn-primary">View All</a>
+        </div>
+        <div class="card-body p-0">
+          {% if subjects %}
+            <div class="list-group list-group-flush">
+              {% for subject in subjects %}
+                <div class="list-group-item">
+                  <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">{{ subject.name }}</h6>
+                    <span class="badge bg-primary">{{ subject.code }}</span>
+                  </div>
+                  <div class="d-flex mb-1">
+                    <span class="text-muted small me-3">
+                      <i class="fas fa-calendar-alt me-1"></i> Semester {{ subject.semester }}
+                    </span>
+                    <span class="text-muted small">
+                      <i class="fas fa-star me-1"></i> {{ subject.credits }} Credits
+                    </span>
+                  </div>
+                  <div class="text-muted small">
+                    <i class="fas fa-user me-1"></i> Staff: 
+                    {% if subject.staff %}
+                      <a href="#" class="text-primary">{{ subject.staff.get_full_name }}</a>
+                    {% else %}
+                      <span class="text-danger">Not Assigned</span>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="text-center py-4">
+              <i class="fas fa-book-open text-muted mb-3" style="font-size: 2rem;"></i>
+              <p class="text-muted">No subjects found.</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Quick Actions Section -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-white">
+          <h5 class="card-title m-0">Quick Actions</h5>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <a href="{% url 'hod_staff_directory' %}" class="btn btn-outline-info d-flex align-items-center justify-content-center flex-column py-3 w-100">
+                <i class="fas fa-address-book mb-2" style="font-size: 1.5rem;"></i>
+                Staff Directory
+              </a>
+            </div>
+            <div class="col-md-4">
+              <a href="{% url 'hod_manage_subjects' %}" class="btn btn-outline-success d-flex align-items-center justify-content-center flex-column py-3 w-100">
+                <i class="fas fa-book-medical mb-2" style="font-size: 1.5rem;"></i>
+                Add New Subject
+              </a>
+            </div>
+            <div class="col-md-4">
+              <a href="#" class="btn btn-outline-warning d-flex align-items-center justify-content-center flex-column py-3 w-100">
+                <i class="fas fa-file-alt mb-2" style="font-size: 1.5rem;"></i>
+                Generate Reports
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %} 

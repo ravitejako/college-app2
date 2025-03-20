@@ -1,0 +1,26 @@
+{% extends 'accounts/hod/hod_base.html' %}
+{% load static %}
+
+{% block title %}Reports{% endblock %}
+
+{% block header_icon %}<i class="fas fa-chart-bar"></i>{% endblock %}
+{% block header_title %}Reports{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'hod_dashboard' %}" class="btn btn-secondary">
+  <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+</a>
+{% endblock %}
+
+{% block hod_content %}
+  <div class="card mb-4">
+    <div class="card-header bg-white">
+      <h5 class="card-title m-0">Department Reports</h5>
+    </div>
+    <div class="card-body">
+      <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i> Reports interface is under development.
+      </div>
+    </div>
+  </div>
+{% endblock %} 

@@ -1,0 +1,29 @@
+{% extends 'accounts/hod/hod_base.html' %}
+{% load static %}
+
+{% block title %}Timetable Management{% endblock %}
+
+{% block header_icon %}<i class="fas fa-calendar-alt"></i>{% endblock %}
+{% block header_title %}Timetable Management{% endblock %}
+
+{% block header_actions %}
+<a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addScheduleModal">
+  <i class="fas fa-plus me-2"></i> Add Schedule
+</a>
+<a href="{% url 'hod_dashboard' %}" class="btn btn-secondary">
+  <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+</a>
+{% endblock %}
+
+{% block hod_content %}
+  <div class="card mb-4">
+    <div class="card-header bg-white">
+      <h5 class="card-title m-0">Weekly Timetable Schedule</h5>
+    </div>
+    <div class="card-body">
+      <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i> Timetable management interface is under development.
+      </div>
+    </div>
+  </div>
+{% endblock %} 

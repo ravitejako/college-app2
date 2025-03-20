@@ -1,17 +1,203 @@
 /* Additional custom styles for the college attendance system */
 
 body {
-  padding-top: 60px; /* Adjust this value based on your navbar height */
+  margin: 0;
+  padding-top: 60px !important; /* Match the height of your fixed navbar */
   transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
 }
 
-.navbar {
-  z-index: 1030; /* Ensure navbar stays above other content */
+/* Global layout fixes to prevent overflow issues */
+html, body {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+/* Fix dashboard layout for mobile */
+.dashboard-layout {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+.nav-container {
+  width: 280px;
+  background: white;
+  min-height: 100vh;
+  padding: 1.5rem 1rem;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  box-shadow: none;
+  overflow-y: auto;
+  z-index: 1060; /* Higher z-index to appear above content */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 280px; /* Match nav width */
+  padding: 2rem;
+  min-height: 100vh; /* Ensure full height */
+  width: calc(100% - 280px); /* Calculate correct width */
+  position: relative; /* For proper stacking */
+  z-index: 1010 !important;
+  margin-top: 10px !important; /* Additional spacing */
 }
 
 .content-wrapper {
-  margin-top: 20px; /* Add additional space between navbar and content */
-  overflow-x: hidden; /* Prevent horizontal overflow */
+  padding-top: 20px !important;
+  padding-bottom: 80px !important; /* Space for theme toggle button */
+  overflow-x: hidden !important; /* Prevent horizontal overflow */
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Fixed mobile header positioning */
+.mobile-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  z-index: 1030 !important; /* Higher z-index to ensure it stays on top */
+}
+
+/* Responsive behavior for sidebar and content */
+@media (max-width: 768px) {
+  /* Apply padding to body for mobile */
+  body {
+    padding-top: 60px !important; /* Match mobile header height */
+  }
+  
+  /* Clear any existing padding/margins */
+  .dashboard-layout {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }
+  
+  /* Ensure content doesn't go under header */
+  .main-content, 
+  .content-wrapper,
+  .container,
+  .container-fluid,
+  #content {
+    padding-top: 15px !important; /* Content padding, not related to header */
+    margin-top: 0 !important;
+  }
+  
+  /* HOD container specific fix */
+  .hod-container {
+    margin-top: 15px !important;
+    padding-top: 15px !important;
+  }
+  
+  /* Fix sidebar behavior */
+  .nav-container {
+    transform: translateX(-100%);
+    width: 250px; /* Slightly narrower on mobile */
+  }
+  
+  .nav-container.show-sidebar {
+    transform: translateX(0);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  }
+  
+  .sidebar-overlay.active {
+    display: block;
+    opacity: 1;
+  }
+  
+  /* Ensure nav toggle button is visible */
+  .sidebar-toggle {
+    display: flex;
+    z-index: 1061; /* Above the sidebar */
+  }
+  
+  /* Hide scrollbars when sidebar is open */
+  body.no-scroll {
+    overflow: hidden !important;
+  }
+  
+  /* Ensure proper padding and margins on mobile */
+  .card, .container, .row {
+    margin-top: 5px !important;
+  }
+  
+  /* Fix header and content alignment */
+  .container-fluid, .hod-container {
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+    padding-top: 70px !important; /* Extra space for fixed navbar */
+  }
+  
+  /* Ensure proper sidebar behavior */
+  body.sidebar-open .sidebar {
+    transform: translateX(0) !important;
+  }
+  
+  /* Ensure proper sidebar toggle behavior */
+  .sidebar-toggle {
+    position: relative;
+    z-index: 1040 !important;
+  }
+  
+  /* Fix z-index for modals */
+  .modal {
+    z-index: 1060 !important;
+  }
+  
+  .modal-backdrop {
+    z-index: 1050 !important;
+  }
+  
+  /* Ensure form controls are visible in modals */
+  .modal-body input,
+  .modal-body select,
+  .modal-body textarea {
+    z-index: 5 !important;
+    position: relative !important;
+  }
+  
+  /* Fix table overflow on mobile */
+  .table-responsive {
+    overflow-x: auto !important;
+  }
+  
+  /* Fix button alignment on mobile */
+  .header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-start;
+  }
+  
+  /* Ensure action buttons are properly sized on mobile */
+  .btn-sm {
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.875rem !important;
+  }
+}
+
+/* Additional responsive adjustments for smaller screens */
+@media (max-width: 576px) {
+  body {
+    padding-top: 60px !important; /* Consistent across screen sizes */
+  }
+}
+
+.navbar {
+  position: fixed !important;
+  top: 0 !important;
+  width: 100% !important;
+  z-index: 1030 !important; /* Higher z-index to ensure navbar stays on top */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
 }
 
 /* ==== LAYOUT FIXES FOR HOD TEMPLATES ==== */
@@ -22,7 +208,9 @@ body {
   flex-direction: column;
   width: 100%;
   max-width: 100%;
-  padding: 0 15px;
+  padding: 15px !important;
+  padding-top: 15px !important;
+  padding-bottom: 15px !important;
   box-sizing: border-box;
 }
 
@@ -33,12 +221,13 @@ body {
   width: 100%;
   margin-left: -15px;
   margin-right: -15px;
+  margin-bottom: 15px !important;
 }
 
 .row > [class*="col-"] {
   padding-left: 15px;
   padding-right: 15px;
-  margin-bottom: 15px;
+  margin-bottom: 20px !important;
   display: flex;
   flex-direction: column;
 }
@@ -49,6 +238,9 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  margin-bottom: 20px !important;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05) !important;
+  border-radius: 5px !important;
 }
 
 .card-body {
@@ -103,26 +295,6 @@ td [class*="btn"] {
   .dashboard-card, .list-card, .stat-card {
     width: 100%;
     margin-bottom: 16px;
-  }
-}
-
-@media (max-width: 768px) {
-  .d-flex.justify-content-between {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .d-flex.justify-content-between > div {
-    margin-top: 10px;
-    width: 100%;
-  }
-  
-  td [class*="btn"] {
-    padding: 6px 8px;
-  }
-  
-  .btn {
-    margin-bottom: 5px;
   }
 }
 
@@ -182,7 +354,8 @@ td [class*="btn"] {
 
 /* Fix for action buttons alignment */
 td[style="text-align: right;"] {
-  white-space: nowrap;
+  white-space: nowrap !important;
+  min-width: 160px !important;
 }
 
 /* Ensure modals don't overflow on small screens */
@@ -311,7 +484,7 @@ body.dark-theme .btn-info {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  z-index: 1040;
+  z-index: 1060 !important; /* Higher than navbar */
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -458,10 +631,11 @@ td.p-2[style="text-align: right;"] {
 
 /* For action button groups */
 .action-buttons-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 4px;
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  gap: 4px !important;
 }
 
 /* Action buttons should maintain their size */
@@ -488,5 +662,678 @@ a.btn[style*="width: 36px"] {
     padding-left: 15px;
     padding-right: 15px;
     width: calc(100% + 30px);
+  }
+}
+
+/* HOD Template Complete Fixes */
+
+/* Fix for general table layout */
+.table-responsive table {
+  table-layout: auto;
+  box-sizing: border-box;
+}
+
+/* Force tables to show headers and maintain column widths */
+.table th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #fff;
+}
+
+body.dark-theme .table th {
+  background-color: #2a2a2a !important;
+}
+
+/* Fix column width issues */
+.table th[width] {
+  width: auto !important;
+}
+
+/* Improve table cell spacing */
+.table td, .table th {
+  padding: 0.75rem !important;
+  vertical-align: middle !important;
+}
+
+/* Ensure action columns have enough width and right alignment */
+td.p-2[style="text-align: right;"], 
+th[style="text-align: right;"] {
+  min-width: 180px !important;
+  width: auto !important;
+  text-align: right !important;
+}
+
+/* Better button container */
+.action-buttons-container {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-end !important;
+  gap: 5px !important;
+  min-height: 36px;
+}
+
+/* Make buttons more consistent */
+.action-buttons-container .btn,
+td[style="text-align: right;"] .btn {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  padding: 6px 0 !important;
+  margin: 0 2px !important;
+  border-radius: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  font-size: 14px !important;
+  vertical-align: middle !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  transition: opacity 0.2s ease-in-out !important;
+}
+
+/* Hover effects for action buttons */
+.action-buttons-container .btn:hover,
+td[style="text-align: right;"] .btn:hover {
+  opacity: 0.85 !important;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.2) !important;
+}
+
+/* Fix for table cells with action buttons */
+td.p-2[style="text-align: right;"], 
+td[style="text-align: right;"] {
+  padding-right: 8px !important;
+  white-space: nowrap !important;
+  min-width: 180px !important;
+  width: auto !important;
+  text-align: right !important;
+}
+
+/* Fix modal display issues */
+.modal {
+  overflow-y: auto !important;
+}
+
+.modal-open {
+  overflow: hidden;
+  padding-right: 0 !important;
+}
+
+.modal-dialog {
+  margin: 1.75rem auto !important;
+}
+
+/* Fix dropdown menus in HOD templates */
+.dropdown-menu {
+  min-width: 10rem;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* Improve card layout in HOD dashboard */
+.list-card {
+  margin-bottom: 1.5rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+body.dark-theme .list-header {
+  background-color: #2a2a2a !important;
+  border-color: #444 !important;
+}
+
+.list-title {
+  margin-bottom: 0;
+  font-weight: 600;
+}
+
+.list-item {
+  padding: 1rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+body.dark-theme .list-item {
+  border-color: #444 !important;
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.item-name {
+  margin-bottom: 0;
+  font-weight: 600;
+}
+
+.item-details {
+  margin-bottom: 0;
+  color: #6c757d;
+}
+
+body.dark-theme .item-details {
+  color: #adb5bd !important;
+}
+
+.badge-custom {
+  padding: 0.25em 0.5em;
+  font-size: 0.75em;
+  font-weight: 600;
+  border-radius: 0.25rem;
+}
+
+/* Ensure table cells have correct padding */
+.p-2 {
+  padding: 0.75rem !important;
+}
+
+/* Fix alignment for tables */
+.text-center {
+  text-align: center !important;
+}
+
+/* Ensure images and icons don't break layout */
+img, svg, i {
+  max-width: 100% !important;
+  vertical-align: middle !important;
+}
+
+/* Ensure that form controls have proper margins */
+.form-control, .form-select, .btn {
+  margin-bottom: 0.5rem !important;
+}
+
+/* Prevent button text from wrapping */
+.btn {
+  white-space: nowrap !important;
+}
+
+/* Add spacing between adjacent elements */
+* + * {
+  margin-top: 0 !important;
+}
+
+/* Fix any remaining issues with HOD templates */
+@media print {
+  .action-buttons-container {
+    display: none !important;
+  }
+}
+
+/* Ensure form modals display properly */
+.modal-open {
+  padding-right: 0 !important;
+}
+
+/* Specific button colors */
+.btn[style*="background-color: #00BCD4"] {
+  background-color: #00BCD4 !important;
+  color: white !important;
+}
+
+.btn[style*="background-color: #2196F3"] {
+  background-color: #2196F3 !important;
+  color: white !important;
+}
+
+.btn[style*="background-color: #FFC107"] {
+  background-color: #FFC107 !important;
+  color: white !important;
+}
+
+.btn[style*="background-color: #F44336"] {
+  background-color: #F44336 !important;
+  color: white !important;
+}
+
+/* Fix for mobile devices */
+@media (max-width: 576px) {
+  /* Make action buttons clearer on small screens */
+  .action-buttons-container .btn,
+  td[style="text-align: right;"] .btn {
+    margin: 0 3px !important;
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+  }
+  
+  /* Increase contrast for better visibility */
+  .action-buttons-container .btn i,
+  td[style="text-align: right;"] .btn i {
+    font-size: 16px !important;
+  }
+  
+  /* Ensure cells have enough space for buttons */
+  td.p-2[style="text-align: right;"], 
+  td[style="text-align: right;"] {
+    padding: 10px 8px !important;
+  }
+}
+
+/* Fix for Safari and iOS */
+@supports (-webkit-touch-callout: none) {
+  .action-buttons-container .btn,
+  td[style="text-align: right;"] .btn {
+    /* Fix for Safari's rendering issues with flex */
+    display: inline-block !important;
+    line-height: 24px !important;
+  }
+}
+
+/* Fix for Firefox */
+@-moz-document url-prefix() {
+  .action-buttons-container .btn,
+  td[style="text-align: right;"] .btn {
+    line-height: 24px !important;
+  }
+}
+
+/* Avatar styling for all pages */
+.avatar-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  background-color: #2563eb;
+}
+
+.avatar-circle.large {
+  width: 80px;
+  height: 80px;
+  font-size: 30px;
+}
+
+/* Stat card styling fixes */
+.stat-card {
+  background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  border-radius: 8px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: all 0.3s;
+  border-left: 4px solid #6c757d;
+  height: 100%;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.stat-card.blue {
+  border-left-color: #2563eb;
+}
+
+.stat-card.green {
+  border-left-color: #059669;
+}
+
+.stat-card.yellow {
+  border-left-color: #d97706;
+}
+
+.stat-card.purple {
+  border-left-color: #7c3aed;
+}
+
+/* List item improvements */
+.list-group-item {
+  border: none;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  padding: 1rem;
+}
+
+.list-group-item:last-child {
+  border-bottom: none;
+}
+
+/* Subject specific styling */
+.list-group-item .badge {
+  padding: 0.4rem 0.6rem;
+  font-weight: 500;
+  font-size: 0.75rem;
+}
+
+.list-group-item h6 {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: #1f2937;
+}
+
+/* Fix mobile responsiveness */
+@media (max-width: 768px) {
+  .row > [class*="col-"] {
+    margin-bottom: 1rem;
+  }
+  
+  .hod-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .hod-actions {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .list-group-item {
+    padding: 0.75rem;
+  }
+  
+  .card-header {
+    padding: 0.75rem;
+  }
+  
+  .stat-card {
+    padding: 1rem;
+  }
+}
+
+/* Fix action buttons layout */
+.action-buttons-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+/* Fix button styles */
+.btn {
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ensure all modals appear properly */
+.modal-dialog {
+  max-width: 95%;
+  margin: 1.75rem auto;
+}
+
+@media (min-width: 576px) {
+  .modal-dialog {
+    max-width: 500px;
+  }
+}
+
+/* Ensure proper font sizes */
+.text-muted.small {
+  font-size: 0.825rem;
+  line-height: 1.4;
+}
+
+/* Ensure spacing between icons and text */
+i.fas, i.far, i.fab {
+  display: inline-flex;
+}
+
+/* Make Quick Actions buttons look like the mockup */
+.btn-outline-info, .btn-outline-success, .btn-outline-warning {
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transition: all 0.3s;
+}
+
+.btn-outline-info:hover, .btn-outline-success:hover, .btn-outline-warning:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Mobile Navigation Toggle Styles */
+.sidebar-toggle {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1040;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+.sidebar-toggle:hover {
+  background: #2563eb;
+}
+
+.sidebar-toggle i {
+  font-size: 18px;
+}
+
+.mobile-title {
+  font-weight: 600;
+  font-size: 18px;
+  margin-left: 55px;
+}
+
+body.dark-theme .mobile-header {
+  background-color: #1e1e1e;
+}
+
+body.dark-theme .mobile-title {
+  color: #f8f9fa;
+}
+
+.nav-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.nav-brand {
+  font-weight: 700;
+  font-size: 20px;
+  color: #3b82f6;
+}
+
+.nav-close {
+  display: none;
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+body.dark-theme .nav-brand {
+  color: #60a5fa;
+}
+
+body.dark-theme .nav-close {
+  color: #9ca3af;
+}
+
+/* Sidebar overlay for mobile */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1019 !important; /* Just below sidebar */
+  animation: fadeIn 0.3s ease;
+}
+
+body.sidebar-open {
+  overflow: hidden !important;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Show overlay when sidebar is open */
+body.sidebar-open .sidebar-overlay {
+  display: block;
+}
+
+/* Ensure proper mobile positioning */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    position: fixed;
+    top: 60px; /* Match navbar height */
+    bottom: 0;
+    left: 0;
+    width: 250px;
+    z-index: 1020 !important;
+    overflow-y: auto;
+  }
+  
+  body.sidebar-open .sidebar {
+    transform: translateX(0);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* Additional fixes for smaller screens */
+@media (max-width: 576px) {
+  /* Ensure content padding is appropriate */
+  .main-content, #content, .content, .content-wrapper {
+    padding: 15px !important;
+    padding-top: 70px !important;
+  }
+  
+  /* Fix HOD container for small screens */
+  .hod-container {
+    padding: 10px !important;
+    margin-top: 70px !important;
+  }
+}
+
+/* Critical fix for mobile layout - add to the bottom of the file */
+@media (max-width: 768px) {
+  /* Force proper padding on all possible content containers */
+  .main-content,
+  .content-wrapper,
+  .hod-container,
+  .container,
+  .container-fluid,
+  .dashboard-layout > div:not(.nav-container):not(.mobile-header),
+  #content,
+  .dashboard-content,
+  .card-container,
+  .row:first-child,
+  .col-md-12:first-child > *:first-child {
+    padding-top: 80px !important;
+    margin-top: 0 !important;
+  }
+  
+  /* Special fix for nested containers to avoid double-padding */
+  .content-wrapper > *:first-child,
+  .main-content > *:first-child,
+  .container > *:first-child,
+  .container-fluid > *:first-child,
+  .dashboard-layout > div:not(.nav-container):not(.mobile-header) > *:first-child {
+    padding-top: 0 !important;
+  }
+  
+  /* Fix stacking context to ensure proper z-index hierarchy */
+  .mobile-header {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1050 !important;
+  }
+  
+  .nav-container {
+    z-index: 1060 !important;
+  }
+  
+  /* Ensure no negative margins that might cause layout issues */
+  * {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  
+  /* Fix for tables and other overflow elements */
+  .table-responsive,
+  .overflow-auto,
+  .overflow-scroll {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+  }
+}
+
+/* Ensure content doesn't go under navbar */
+body {
+  padding-top: 60px !important; /* Match the height of your fixed navbar */
+}
+
+.navbar, .mobile-header {
+  z-index: 1030 !important; /* Higher z-index to ensure it stays on top */
+  position: fixed !important;
+  top: 0;
+  width: 100%;
+}
+
+.sidebar {
+  z-index: 1020 !important; /* Below navbar but above content */
+  padding-top: 60px !important; /* Match navbar height */
+}
+
+.main-content {
+  z-index: 1010 !important;
+  position: relative;
+  margin-top: 10px !important; /* Additional spacing */
+}
+
+/* Ensure action buttons don't get hidden */
+.action-buttons {
+  z-index: 1015 !important;
+}
+
+/* Table fixes for mobile */
+@media (max-width: 768px) {
+  .table-responsive {
+    overflow-x: auto;
+  }
+  
+  /* Ensure proper padding and margins on mobile */
+  .card, .container, .row {
+    margin-top: 5px !important;
   }
 } 

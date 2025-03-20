@@ -1,0 +1,282 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Staff Messages{% endblock %}
+
+{% block staff_content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Messages</h5>
+                        <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#composeMessageModal">
+                            <i class="fas fa-plus me-1"></i> New Message
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="input-group p-3 border-bottom">
+                        <input type="text" class="form-control" placeholder="Search messages...">
+                        <button class="btn btn-outline-secondary" type="button">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+
+                    <ul class="nav nav-tabs nav-fill" id="messagesTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="inbox-tab" data-bs-toggle="tab" data-bs-target="#inbox" type="button" role="tab" aria-controls="inbox" aria-selected="true">
+                                Inbox <span class="badge bg-danger">3</span>
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="sent-tab" data-bs-toggle="tab" data-bs-target="#sent" type="button" role="tab" aria-controls="sent" aria-selected="false">
+                                Sent
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="messagesTabsContent">
+                        <div class="tab-pane fade show active" id="inbox" role="tabpanel" aria-labelledby="inbox-tab">
+                            <div class="list-group list-group-flush message-list">
+                                <a href="#" class="list-group-item list-group-item-action active py-3 px-3" data-message-id="1">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1 text-truncate">John Smith</h6>
+                                        <small>2m ago</small>
+                                    </div>
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <p class="mb-1 text-truncate">Assignment clarification needed</p>
+                                        <span class="badge bg-danger">New</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action py-3 px-3" data-message-id="2">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1 text-truncate">Emily Wilson</h6>
+                                        <small>1h ago</small>
+                                    </div>
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <p class="mb-1 text-truncate">Request for deadline extension</p>
+                                        <span class="badge bg-danger">New</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action py-3 px-3" data-message-id="3">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1 text-truncate">Michael Brown</h6>
+                                        <small>3h ago</small>
+                                    </div>
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <p class="mb-1 text-truncate">Additional resources for Database chapter</p>
+                                        <span class="badge bg-danger">New</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action py-3 px-3" data-message-id="4">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1 text-truncate">Sarah Johnson</h6>
+                                        <small>Yesterday</small>
+                                    </div>
+                                    <p class="mb-1 text-truncate">Absence notification for next week's class</p>
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action py-3 px-3" data-message-id="5">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1 text-truncate">David Williams</h6>
+                                        <small>2 days ago</small>
+                                    </div>
+                                    <p class="mb-1 text-truncate">Question about the midterm examination</p>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="sent" role="tabpanel" aria-labelledby="sent-tab">
+                            <div class="list-group list-group-flush message-list">
+                                <a href="#" class="list-group-item list-group-item-action py-3 px-3" data-message-id="6">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1 text-truncate">CS101 Students</h6>
+                                        <small>1h ago</small>
+                                    </div>
+                                    <p class="mb-1 text-truncate">Assignment deadline reminder</p>
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action py-3 px-3" data-message-id="7">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1 text-truncate">Emily Wilson</h6>
+                                        <small>Yesterday</small>
+                                    </div>
+                                    <p class="mb-1 text-truncate">Re: Request for deadline extension</p>
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action py-3 px-3" data-message-id="8">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1 text-truncate">Database Systems Group</h6>
+                                        <small>3 days ago</small>
+                                    </div>
+                                    <p class="mb-1 text-truncate">Extra study materials for upcoming quiz</p>
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action py-3 px-3" data-message-id="9">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1 text-truncate">Academic Department</h6>
+                                        <small>Mar 15</small>
+                                    </div>
+                                    <p class="mb-1 text-truncate">Grading submission reminder</p>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0" id="message-header">Assignment clarification needed</h5>
+                        <div>
+                            <button class="btn btn-light btn-sm me-1">
+                                <i class="fas fa-reply"></i> Reply
+                            </button>
+                            <button class="btn btn-light btn-sm">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3 d-flex justify-content-between">
+                        <div>
+                            <span class="fw-bold">From: </span>John Smith (john.smith@example.com)
+                        </div>
+                        <div>
+                            <span class="text-muted">Today, 10:25 AM</span>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <span class="fw-bold">Subject: </span>Assignment clarification needed
+                    </div>
+                    <div class="message-content mb-4">
+                        <p>Dear Professor,</p>
+                        <p>I'm working on the Database Design assignment due next week and had a few questions about the requirements:</p>
+                        <ol>
+                            <li>For the ER diagram, are we required to use any specific notation (Chen, Crow's Foot, etc.)?</li>
+                            <li>The assignment mentions "at least 5 entities," but does this include weak entities or only strong entities?</li>
+                            <li>Are we expected to include triggers and stored procedures in our SQL implementation, or just the table definitions and relationships?</li>
+                        </ol>
+                        <p>Any clarification would be greatly appreciated. I want to make sure I'm on the right track before proceeding further.</p>
+                        <p>Thank you!</p>
+                        <p>John Smith<br>Student ID: ST12345<br>Database Systems</p>
+                    </div>
+                    <div class="mt-4 border-top pt-3">
+                        <form>
+                            <div class="mb-3">
+                                <label for="replyMessage" class="form-label">Reply:</label>
+                                <textarea class="form-control" id="replyMessage" rows="5"></textarea>
+                            </div>
+                            <div class="text-end">
+                                <button type="button" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane me-1"></i> Send Reply
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Compose Message Modal -->
+<div class="modal fade" id="composeMessageModal" tabindex="-1" aria-labelledby="composeMessageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="composeMessageModalLabel">Compose New Message</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="messageTo" class="form-label">To:</label>
+                        <select class="form-select" id="messageTo">
+                            <option value="">Select recipient</option>
+                            <optgroup label="Students">
+                                <option value="john.smith">John Smith</option>
+                                <option value="emily.wilson">Emily Wilson</option>
+                                <option value="michael.brown">Michael Brown</option>
+                                <option value="sarah.johnson">Sarah Johnson</option>
+                                <option value="david.williams">David Williams</option>
+                            </optgroup>
+                            <optgroup label="Groups">
+                                <option value="cs101">All CS101 Students</option>
+                                <option value="db203">All Database Systems Students</option>
+                                <option value="net305">All Computer Networks Students</option>
+                            </optgroup>
+                            <optgroup label="Staff">
+                                <option value="academic.dept">Academic Department</option>
+                                <option value="it.support">IT Support</option>
+                                <option value="admin.office">Administrative Office</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="messageSubject" class="form-label">Subject:</label>
+                        <input type="text" class="form-control" id="messageSubject">
+                    </div>
+                    <div class="mb-3">
+                        <label for="messageBody" class="form-label">Message:</label>
+                        <textarea class="form-control" id="messageBody" rows="8"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="messageAttachment" class="form-label">Attachment (optional):</label>
+                        <input class="form-control" type="file" id="messageAttachment">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Send Message</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .message-list .list-group-item.active {
+        background-color: #f8f9fa;
+        color: #212529;
+        border-color: rgba(0, 0, 0, 0.125);
+        border-left: 3px solid #0d6efd;
+    }
+    
+    .message-list .list-group-item:hover {
+        background-color: #f1f3f5;
+    }
+    
+    .message-content {
+        min-height: 200px;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Handle message selection
+    document.querySelectorAll('.message-list .list-group-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Remove active class from all messages
+            document.querySelectorAll('.message-list .list-group-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Add active class to clicked message
+            this.classList.add('active');
+            
+            // In a real application, you would load the message content here
+            // For demo purposes, we're just updating the header
+            const sender = this.querySelector('h6').textContent;
+            const subject = this.querySelector('p').textContent;
+            document.getElementById('message-header').textContent = subject;
+        });
+    });
+</script>
+{% endblock %} 
